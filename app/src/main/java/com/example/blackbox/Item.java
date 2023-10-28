@@ -44,6 +44,13 @@ public class Item {
         this.comment = comment;
     }
 
+    // testing constructor
+    public Item(String name, double estimatedValue, String description) {
+        this.name = name;
+        this.estimatedValue = estimatedValue;
+        this.description = description;
+    }
+
     public String getName() {
         return name;
     }
