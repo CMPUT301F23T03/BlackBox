@@ -39,6 +39,11 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
     }
+    /**
+     * Load and replace a new Fragment within the given FrameLayout container.
+     *
+     * @param fragment The Fragment to be loaded and displayed.
+     */
     private void loadFragment(Fragment fragment) {
         // Create a FragmentManager from the support library
         FragmentManager fm = getSupportFragmentManager();
