@@ -9,8 +9,8 @@
 
     <TextView
         android:id="@+id/name"
-        android:layout_width="84dp"
-        android:layout_height="47dp"
+        android:layout_width="224dp"
+        android:layout_height="45dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="4dp"
         android:padding="14sp"
@@ -22,8 +22,8 @@
 
     <TextView
         android:id="@+id/value"
-        android:layout_width="108dp"
-        android:layout_height="48dp"
+        android:layout_width="83dp"
+        android:layout_height="46dp"
         android:layout_marginTop="4dp"
         android:layout_marginEnd="4dp"
         android:padding="14dp"
@@ -34,23 +34,23 @@
 
     <TextView
         android:id="@+id/desc"
-        android:layout_width="278dp"
-        android:layout_height="57dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="280dp"
+        android:layout_height="68dp"
+        android:layout_marginTop="28dp"
         android:padding="20dp"
         android:text="desc"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.684"
+        app:layout_constraintHorizontal_bias="0.748"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/name"></TextView>
+        app:layout_constraintTop_toTopOf="parent"></TextView>
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="67dp"
         android:layout_height="50dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />

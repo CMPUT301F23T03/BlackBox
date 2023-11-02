@@ -2,10 +2,11 @@ package com.example.blackbox;
 
 import android.media.Image;
 
+import java.io.Serializable;
 import java.net.URL;
 import java.util.ArrayList;
 
-public class Item {
+public class Item implements Serializable {
 
     // initialize data members
     // we might add a data member of reference to an image later on
@@ -44,7 +45,7 @@ public class Item {
         this.comment = comment;
     }
 
-    // testing constructor
+    // testing constructor - this constructor allows faster testing for add/edit
     public Item(String name, double estimatedValue, String description) {
         this.name = name;
         this.estimatedValue = estimatedValue;

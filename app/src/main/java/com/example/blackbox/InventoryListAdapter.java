@@ -42,7 +42,7 @@ public class InventoryListAdapter extends ArrayAdapter {
             name.setText(item.getName());
             String str_val = String.format("%.2f", item.getEstimatedValue()); // convert double to string with 2 decimal places
             value.setText("$" + str_val);
-            desc.setText("Comment: " + item.getDescription());
+            desc.setText(item.getDescription());
 
             return view;
         }
