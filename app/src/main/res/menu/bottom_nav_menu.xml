@@ -9,7 +9,7 @@
         android:title=""
         android:icon="@drawable/rounded_corner"/>
     <item
-        android:id="@+id/barcode"
+        android:id="@+id/scan"
         android:title=""
         android:icon="@drawable/rounded_corner"/>
     <item
