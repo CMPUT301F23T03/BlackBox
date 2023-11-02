@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">BlackBox</string>
+    <string name="add_button">Add an item</string>
+    <string name="app">BlackBox 💵</string>
 </resources>
