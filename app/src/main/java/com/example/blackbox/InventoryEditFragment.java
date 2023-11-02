@@ -13,18 +13,19 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-public class InventoryAddFragment extends Fragment {
+public class InventoryEditFragment extends Fragment {
     private EditText itemName;
     private EditText itemValue;
     private EditText itemDescription;
 
-    public InventoryAddFragment(){}
+    public InventoryEditFragment(){}
+
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-        View addItemFragmentLayout = inflater.inflate(R.layout.add_fragment, container, false);
-        return addItemFragmentLayout;
+        View editItemFragmentLayout = inflater.inflate(R.layout.edit_fragment, container, false);
+        return editItemFragmentLayout;
     }
 
     @Override
@@ -44,25 +45,27 @@ public class InventoryAddFragment extends Fragment {
         itemValue = view.findViewById(R.id.value_editText);
         itemDescription = view.findViewById(R.id.desc_editText);
 
-        // add an item by clicking the small add button
-        Button small_add_button = view.findViewById(R.id.small_add_button);
-        small_add_button.setOnClickListener(v -> {
+        // save an edited item by clicking the small add button
+        Button small_save_button = view.findViewById(R.id.small_save_button);
+        small_save_button.setOnClickListener(v -> {
 
             // get text field values as String
             String name = itemName.getText().toString();
             String value = itemValue.getText().toString();
             String desc = itemDescription.getText().toString();
 
-            // create an Item object and send it to inventory fragment
-            Item new_item = new Item(name, Integer.parseInt(value), desc);
-            InventoryFragment fragment;
-            fragment = InventoryFragment.newInstance(new_item);
+            InventoryFragment fragment = new InventoryFragment();
+
+            // pass in edited values to inventory fragment
+            fragment.onItemEdited(name, value, desc);
 
             // switch to inventory fragment
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
             transaction.replace(R.id.contentFragment, fragment);
             transaction.addToBackStack(null);
             transaction.commit();
+
+
         });
 
         // back button - go back to inventory fragment

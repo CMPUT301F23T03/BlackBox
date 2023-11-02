@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -23,6 +24,8 @@ public class InventoryFragment extends Fragment {
     ArrayList<Item> itemList;              // list of Item objects
     Button addButton;                      // add item button
     private Context activityContext;
+    int index;                             // index of an Item in the inventory list
+
     public InventoryFragment(){}
     @Override
     public void onAttach(@NonNull Context context) {
@@ -47,6 +50,15 @@ public class InventoryFragment extends Fragment {
     ) {
         View ItemFragmentLayout = inflater.inflate(R.layout.inventory_fragment, container, false);
         return ItemFragmentLayout;
+    }
+
+    public void onItemEdited(String name, String value, String desc) {
+        Item itemToEdit = itemList.get(index);
+        itemToEdit.setName(name);
+        itemToEdit.setEstimatedValue(Integer.parseInt(value));
+        itemToEdit.setDescription(desc);
+        inventoryAdapter = new InventoryListAdapter(activityContext, itemList);
+        itemViewList.setAdapter(inventoryAdapter);
     }
 
     @Override
@@ -78,6 +90,23 @@ public class InventoryFragment extends Fragment {
             transaction.replace(R.id.contentFragment, myFragment);
             transaction.addToBackStack(null);
             transaction.commit();
+        });
+
+        // edit item - display edit fragment
+        itemViewList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                // get item selected and send it to edit fragment to edit
+                Item item = itemList.get(i);
+                index = i;
+                InventoryEditFragment fragment = new InventoryEditFragment();
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+                // switch to edit fragment
+                transaction.replace(R.id.contentFragment, fragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+            }
         });
     }
 }

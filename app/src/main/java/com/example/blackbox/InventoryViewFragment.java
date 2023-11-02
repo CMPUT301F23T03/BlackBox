@@ -6,38 +6,29 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
-public class InventoryAddFragment extends Fragment {
+public class InventoryViewFragment extends Fragment {
     private EditText itemName;
     private EditText itemValue;
     private EditText itemDescription;
 
-    public InventoryAddFragment(){}
+    public InventoryViewFragment(){}
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-        View addItemFragmentLayout = inflater.inflate(R.layout.add_fragment, container, false);
-        return addItemFragmentLayout;
+        View viewItemFragmentLayout = inflater.inflate(R.layout.view_fragment, container, false);
+        return viewItemFragmentLayout;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        // scroll view settings
-        ScrollView sv = (ScrollView) view.findViewById(R.id.scrollView2);
-        sv.post(new Runnable() {
-            public void run() {
-                sv.smoothScrollTo(0, 270);
-            }
-        });
 
         // get text fields
         itemName = view.findViewById(R.id.name_editText);
@@ -55,7 +46,7 @@ public class InventoryAddFragment extends Fragment {
 
             // create an Item object and send it to inventory fragment
             Item new_item = new Item(name, Integer.parseInt(value), desc);
-            InventoryFragment fragment;
+            InventoryFragment fragment = new InventoryFragment();
             fragment = InventoryFragment.newInstance(new_item);
 
             // switch to inventory fragment
