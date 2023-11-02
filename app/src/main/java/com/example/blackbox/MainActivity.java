@@ -8,16 +8,14 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
-import java.util.ArrayList;
-
-public class MainActivity extends AppCompatActivity {
-import android.view.MenuItem;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import java.util.ArrayList;
+import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
@@ -71,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         // Create a FragmentTransaction to begin the transaction and replace the Fragment
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
         // Replace the FrameLayout with the new Fragment
-        fragmentTransaction.replace(R.id.frameLayout, fragment);
+        fragmentTransaction.replace(R.id.contentFragment, fragment);
         // Save the changes
         fragmentTransaction.commit();
     }
