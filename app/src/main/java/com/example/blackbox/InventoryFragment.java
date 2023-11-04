@@ -24,6 +24,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
+/**
+ * A Fragment that displays and manages an inventory of items. It includes features to add and edit items.
+ */
 public class InventoryFragment extends Fragment {
     ListView itemViewList;                 // ListView of all Item views
     ArrayAdapter<Item> inventoryAdapter;   // customized array adapter
@@ -37,18 +40,37 @@ public class InventoryFragment extends Fragment {
 
     InventoryAddFragment inventoryAddFragment = new InventoryAddFragment();
 
-
+    /**
+     * Default constructor for the InventoryFragment.
+     */
     public InventoryFragment(){}
+
+    /**
+     * Called when the fragment is attached to an activity.
+     *
+     * @param context The context of the activity to which the fragment is attached.
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         activityContext = context;
     }
+
+    /**
+     * Called when the fragment is detached from the activity.
+     */
     @Override
     public void onDetach() {
         super.onDetach();
         activityContext = null;
     }
+
+    /**
+     * Create a new instance of the InventoryFragment with the provided Item object as an argument.
+     *
+     * @param item The Item object to be associated with the fragment.
+     * @return A new instance of InventoryFragment.
+     */
     static InventoryFragment newInstance(Item item) {
         Bundle args = new Bundle();
         args.putSerializable("item",item);    // serialize Item object
@@ -56,6 +78,15 @@ public class InventoryFragment extends Fragment {
         fragment.setArguments(args);    // set the Item object to be this fragment's argument
         return fragment;
     }
+
+    /**
+     * Called to create the view for the fragment.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate views.
+     * @param container          The parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState  A Bundle containing the saved state of the fragment.
+     * @return The view for the fragment.
+     */
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
@@ -64,6 +95,9 @@ public class InventoryFragment extends Fragment {
         return ItemFragmentLayout;
     }
 
+    /**
+     * Check if an item has been added and, if so, add it to the database.
+     */
     public void onItemAdded() {
         // check if there is any item being added
         Bundle arguments = getArguments();
@@ -75,9 +109,18 @@ public class InventoryFragment extends Fragment {
         }
     }
 
+    /**
+     * To be done. (No further documentation provided for this method)
+     */
     public void onItemEdited(String name, String value, String desc) {
     }
 
+    /**
+     * Called when the fragment's view has been created.
+     *
+     * @param view               The root view of the fragment.
+     * @param savedInstanceState  A Bundle containing the saved state of the fragment.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -107,6 +150,11 @@ public class InventoryFragment extends Fragment {
         });
     }
 
+    /**
+     * Switch to a new fragment by replacing the current fragment in the layout container.
+     *
+     * @param fragment The new fragment to replace the current one.
+     */
     private void loadFragment(Fragment fragment) {
         // create a FragmentManager from the support library
         FragmentManager fm =  getFragmentManager();
