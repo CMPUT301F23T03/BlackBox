@@ -37,6 +37,14 @@ public class InventoryDB {
     }
 
     /**
+     * Get the inventory collection
+     * @return inventory    a CollectionReference object
+     */
+    public CollectionReference getInventory() {
+        return inventory;
+    }
+
+    /**
      * Adds a snapshot listener to the 'inventory' collection, updating the provided data list and adapter
      * when changes occur in the Firestore database.
      *
