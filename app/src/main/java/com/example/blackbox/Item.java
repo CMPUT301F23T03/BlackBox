@@ -45,13 +45,20 @@ public class Item implements Serializable {
         this.comment = comment;
     }
 
-    // testing constructor - this constructor allows faster testing for add/edit
+    /**
+     * Constructor for a simplified Item object primarily for testing purposes.
+     *
+     * @param name        The name of the item.
+     * @param estimatedValue The estimated value of the item.
+     * @param description The description of the item.
+     */
     public Item(String name, double estimatedValue, String description) {
         this.name = name;
         this.estimatedValue = estimatedValue;
         this.description = description;
     }
 
+    // Getters and setters for various properties
     public String getName() {
         return name;
     }
