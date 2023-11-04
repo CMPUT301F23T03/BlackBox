@@ -17,7 +17,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -35,9 +39,7 @@ public class InventoryFragment extends Fragment {
     private Context activityContext;       // context of MainActivity
     int index;                             // index of an Item in the inventory list
     InventoryDB inventoryDB;               // database connector
-
     InventoryEditFragment inventoryEditFragment = new InventoryEditFragment();
-
     InventoryAddFragment inventoryAddFragment = new InventoryAddFragment();
 
     /**
@@ -124,17 +126,18 @@ public class InventoryFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
         // initialize database
         inventoryDB = new InventoryDB();
-
-        // check if there is any item to add
-        onItemAdded();
 
         // display the inventory list
         itemList = new ArrayList<>();
         itemViewList = (ListView) view.findViewById(R.id.item_list);
         inventoryAdapter = new InventoryListAdapter(activityContext, itemList);
         itemViewList.setAdapter(inventoryAdapter);
+
+        // check if there is any item to add
+        onItemAdded();
 
         // add an item - display add fragment
         addButton = (Button) view.findViewById(R.id.add_button);
