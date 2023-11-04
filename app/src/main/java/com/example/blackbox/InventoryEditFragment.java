@@ -11,15 +11,30 @@ import android.widget.ScrollView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+/**
+ * A Fragment responsible for editing an inventory item's details.
+ */
 public class InventoryEditFragment extends Fragment {
-    private EditText itemName;
-    private EditText itemValue;
-    private EditText itemDescription;
+    private EditText itemName;  // itemName text box
+    private EditText itemValue; // itemValue text box
+    private EditText itemDescription;   // itemDescription text box
 
+    /**
+     * Default constructor for the InventoryEditFragment.
+     */
     public InventoryEditFragment(){}
 
+    /**
+     * Called to create the view for the fragment.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate views.
+     * @param container          The parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState  A Bundle containing the saved state of the fragment.
+     * @return The view for the fragment.
+     */
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
@@ -28,6 +43,12 @@ public class InventoryEditFragment extends Fragment {
         return editItemFragmentLayout;
     }
 
+    /**
+     * Called when the fragment's view has been created. Handles user interactions for editing an item.
+     *
+     * @param view               The root view of the fragment.
+     * @param savedInstanceState  A Bundle containing the saved state of the fragment.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -54,32 +75,35 @@ public class InventoryEditFragment extends Fragment {
             String value = itemValue.getText().toString();
             String desc = itemDescription.getText().toString();
 
-            InventoryFragment fragment = new InventoryFragment();
-
             // pass in edited values to inventory fragment
-            fragment.onItemEdited(name, value, desc);
+            InventoryFragment inventoryFragment = new InventoryFragment();
+            inventoryFragment.onItemEdited(name, value, desc);
 
             // switch to inventory fragment
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.replace(R.id.contentFragment, fragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
-
-
+            switchFragment(inventoryFragment);
         });
 
         // back button - go back to inventory fragment
         Button backbutton = (Button) view.findViewById(R.id.back_button);
         backbutton.setOnClickListener((v) -> {
-            InventoryFragment myFragment = new InventoryFragment();
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.replace(R.id.contentFragment, myFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
+            InventoryFragment inventoryFragment = new InventoryFragment();
+            switchFragment(inventoryFragment);
         });
+    }
 
-        // dropdown customization for tags and date
-        // ...
-
+    /**
+     * Switch to a new fragment by replacing the current fragment in the layout container.
+     *
+     * @param fragment The new fragment to replace the current one.
+     */
+    private void switchFragment(Fragment fragment) {
+        // create a FragmentManager from the support library
+        FragmentManager fm =  getFragmentManager();
+        // create a FragmentTransaction to begin the transaction and replace the Fragment
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        // replace the FrameLayout with the new Fragment
+        fragmentTransaction.replace(R.id.contentFragment, fragment);
+        // save the changes
+        fragmentTransaction.commit();
     }
 }

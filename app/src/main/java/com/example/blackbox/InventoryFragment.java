@@ -2,6 +2,7 @@ package com.example.blackbox;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,11 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import java.util.ArrayList;
 
 public class InventoryFragment extends Fragment {
@@ -23,8 +29,14 @@ public class InventoryFragment extends Fragment {
     ArrayAdapter<Item> inventoryAdapter;   // customized array adapter
     ArrayList<Item> itemList;              // list of Item objects
     Button addButton;                      // add item button
-    private Context activityContext;
+    private Context activityContext;       // context of MainActivity
     int index;                             // index of an Item in the inventory list
+    InventoryDB inventoryDB;               // database connector
+
+    InventoryEditFragment inventoryEditFragment = new InventoryEditFragment();
+
+    InventoryAddFragment inventoryAddFragment = new InventoryAddFragment();
+
 
     public InventoryFragment(){}
     @Override
@@ -52,61 +64,57 @@ public class InventoryFragment extends Fragment {
         return ItemFragmentLayout;
     }
 
-    public void onItemEdited(String name, String value, String desc) {
-        Item itemToEdit = itemList.get(index);
-        itemToEdit.setName(name);
-        itemToEdit.setEstimatedValue(Integer.parseInt(value));
-        itemToEdit.setDescription(desc);
-        inventoryAdapter = new InventoryListAdapter(activityContext, itemList);
-        itemViewList.setAdapter(inventoryAdapter);
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        // initialize a list of items
-        itemViewList = (ListView) view.findViewById(R.id.item_list);
-        itemList = new ArrayList<Item>();
-
+    public void onItemAdded() {
         // check if there is any item being added
         Bundle arguments = getArguments();
         if (arguments != null) {
             Item new_item = (Item) arguments.getSerializable("item");
             if (new_item != null) {
-                itemList.add(new_item);
+                inventoryDB.addItemToDB(new_item);
             }
         }
+    }
+
+    public void onItemEdited(String name, String value, String desc) {
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // initialize database
+        inventoryDB = new InventoryDB();
+
+        // check if there is any item to add
+        onItemAdded();
 
         // display the inventory list
+        itemList = new ArrayList<>();
+        itemViewList = (ListView) view.findViewById(R.id.item_list);
         inventoryAdapter = new InventoryListAdapter(activityContext, itemList);
         itemViewList.setAdapter(inventoryAdapter);
 
         // add an item - display add fragment
         addButton = (Button) view.findViewById(R.id.add_button);
         addButton.setOnClickListener((v) -> {
-            InventoryAddFragment myFragment = new InventoryAddFragment();
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-            transaction.replace(R.id.contentFragment, myFragment);
-            transaction.addToBackStack(null);
-            transaction.commit();
+            loadFragment(inventoryAddFragment);
         });
 
         // edit item - display edit fragment
         itemViewList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
-                // get item selected and send it to edit fragment to edit
-                Item item = itemList.get(i);
-                index = i;
-                InventoryEditFragment fragment = new InventoryEditFragment();
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-                // switch to edit fragment
-                transaction.replace(R.id.contentFragment, fragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
+                loadFragment(inventoryEditFragment);
             }
         });
+    }
+
+    private void loadFragment(Fragment fragment) {
+        // create a FragmentManager from the support library
+        FragmentManager fm =  getFragmentManager();
+        // create a FragmentTransaction to begin the transaction and replace the Fragment
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        // replace the FrameLayout with the new Fragment
+        fragmentTransaction.replace(R.id.contentFragment, fragment);
+        // save the changes
+        fragmentTransaction.commit();
     }
 }
