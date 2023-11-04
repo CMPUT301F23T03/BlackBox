@@ -55,11 +55,11 @@ public class InventoryAddFragment extends Fragment {
 
         // Scroll view settings
         ScrollView sv = (ScrollView) view.findViewById(R.id.scrollView2);
-        sv.post(new Runnable() {
-            public void run() {
-                sv.smoothScrollTo(0, 270);
-            }
-        });
+        //sv.post(new Runnable() {
+        //    public void run() {
+        //        sv.smoothScrollTo(0, 270);
+        //    }
+        //});
 
         // Get text fields
         itemName = view.findViewById(R.id.name_editText);
