@@ -130,6 +130,27 @@ public class InventoryFragment extends Fragment {
         // initialize database
         inventoryDB = new InventoryDB();
 
+        // listener
+        inventoryDB.getInventory().addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    // Handle any errors or exceptions
+                    return;
+                }
+                itemList.clear();
+                for (QueryDocumentSnapshot doc : value) {
+                    String name = doc.getString("name");
+                    Double val = doc.getDouble("value");
+                    String desc = doc.getString("description");
+                    itemList.add(new Item(name, val, desc));
+                }
+                // Notify the adapter that the data has changed
+                inventoryAdapter.notifyDataSetChanged();
+            }
+        });
+
         // display the inventory list
         itemList = new ArrayList<>();
         itemViewList = (ListView) view.findViewById(R.id.item_list);
