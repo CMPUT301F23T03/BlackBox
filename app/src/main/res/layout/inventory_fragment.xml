@@ -10,6 +10,8 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="-80px"
+        android:layout_marginBottom="30px"
         app:layout_anchor="@+id/constraintLayout"
         app:layout_anchorGravity="center"
         tools:context=".MainActivity">

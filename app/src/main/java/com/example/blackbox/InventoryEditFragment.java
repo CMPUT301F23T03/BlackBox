@@ -28,6 +28,20 @@ public class InventoryEditFragment extends Fragment {
     public InventoryEditFragment(){}
 
     /**
+     * Create a new instance of the InventoryEditFragment with the provided Item object as an argument.
+     *
+     * @param index The index of Item object to be associated with the fragment.
+     * @return A new instance of InventoryEditFragment.
+     */
+    static InventoryEditFragment newInstance(int index) {
+        Bundle args = new Bundle();
+        args.putSerializable("itemToEditIndex", index);    // serialize Item object
+        InventoryEditFragment fragment = new InventoryEditFragment();
+        fragment.setArguments(args);    // set the Item object to be this fragment's argument
+        return fragment;
+    }
+
+    /**
      * Called to create the view for the fragment.
      *
      * @param inflater           The LayoutInflater object that can be used to inflate views.
@@ -53,13 +67,8 @@ public class InventoryEditFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // scroll view settings
-        ScrollView sv = (ScrollView) view.findViewById(R.id.scrollView2);
-        sv.post(new Runnable() {
-            public void run() {
-                sv.smoothScrollTo(0, 270);
-            }
-        });
+        // get the index of item to be edited
+        int itemToEditIndex = (int) getArguments().getSerializable("itemToEditIndex");
 
         // get text fields
         itemName = view.findViewById(R.id.name_editText);
@@ -74,10 +83,11 @@ public class InventoryEditFragment extends Fragment {
             String name = itemName.getText().toString();
             String value = itemValue.getText().toString();
             String desc = itemDescription.getText().toString();
+            Item editedItem = new Item(name, Double.parseDouble(value), desc);
 
             // pass in edited values to inventory fragment
-            InventoryFragment inventoryFragment = new InventoryFragment();
-            inventoryFragment.onItemEdited(name, value, desc);
+            InventoryFragment inventoryFragment;
+            inventoryFragment = InventoryFragment.newInstance(editedItem, itemToEditIndex);
 
             // switch to inventory fragment
             switchFragment(inventoryFragment);

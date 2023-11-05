@@ -53,21 +53,13 @@ public class InventoryAddFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Scroll view settings
-        ScrollView sv = (ScrollView) view.findViewById(R.id.scrollView2);
-        //sv.post(new Runnable() {
-        //    public void run() {
-        //        sv.smoothScrollTo(0, 270);
-        //    }
-        //});
-
         // Get text fields
         itemName = view.findViewById(R.id.name_editText);
         itemValue = view.findViewById(R.id.value_editText);
         itemDescription = view.findViewById(R.id.desc_editText);
 
         // Add an item by clicking the small add button
-        Button small_add_button = view.findViewById(R.id.small_add_button);
+        Button small_add_button = view.findViewById(R.id.small_save_button);
         small_add_button.setOnClickListener(v -> {
 
             // Get text field values as String
@@ -77,7 +69,7 @@ public class InventoryAddFragment extends Fragment {
 
             // Create an Item object and send it to the inventory fragment
             InventoryFragment inventoryFragment;
-            Item new_item = new Item(name, Integer.parseInt(value), desc);
+            Item new_item = new Item(name, Double.parseDouble(value), desc);
             inventoryFragment = InventoryFragment.newInstance(new_item);
 
             // Switch to the inventory fragment
