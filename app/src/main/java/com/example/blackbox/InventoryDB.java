@@ -3,10 +3,13 @@ package com.example.blackbox;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -37,40 +40,11 @@ public class InventoryDB {
     }
 
     /**
-     * Get the inventory collection
+     * Gets the inventory collection
      * @return inventory    a CollectionReference object
      */
     public CollectionReference getInventory() {
         return inventory;
-    }
-
-    /**
-     * Adds a snapshot listener to the 'inventory' collection, updating the provided data list and adapter
-     * when changes occur in the Firestore database.
-     *
-     * @param dataList         The list of Item objects to be updated based on changes in the database.
-     * @param inventoryAdapter The ArrayAdapter used for displaying items in the UI.
-     */
-    public void addSnapShotListener(ArrayList<Item> dataList, ArrayAdapter<Item> inventoryAdapter) {
-        inventory.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value,
-                                @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    // Handle any errors or exceptions
-                    return;
-                }
-                dataList.clear();
-                for (QueryDocumentSnapshot doc : value) {
-                    String name = doc.getString("name");
-                    String val = doc.getString("value");
-                    String desc = doc.getString("description");
-                    dataList.add(new Item(name, Integer.parseInt(val), desc));
-                }
-                // Notify the adapter that the data has changed
-                inventoryAdapter.notifyDataSetChanged();
-            }
-        });
     }
 
     /**
@@ -83,8 +57,21 @@ public class InventoryDB {
         data.put("name", item.getName());
         data.put("value", item.getEstimatedValue());
         data.put("description", item.getDescription());
-        // Add the item data to the Firestore collection
         inventory.add(data);
+    }
+
+    /**
+     * Updates an item in the Firestore database with the specified ID by updating its fields.
+     *
+     * @param id    The unique identifier of the item document in the Firestore collection.
+     * @param item  The updated item object containing the new data for the item.
+     */
+    public void updateItemInDB(String id, Item item) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", item.getName());
+        data.put("value", item.getEstimatedValue());
+        data.put("description", item.getDescription());
+        inventory.document(id).set(data);
     }
 }
 
