@@ -73,30 +73,14 @@ public class InventoryAddFragment extends Fragment {
             inventoryFragment = InventoryFragment.newInstance(new_item);
 
             // Switch to the inventory fragment
-            switchFragment(inventoryFragment);
+            NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());
         });
 
         // Back button - go back to the inventory fragment
         Button backbutton = (Button) view.findViewById(R.id.back_button);
         backbutton.setOnClickListener((v) -> {
             InventoryFragment inventoryFragment = new InventoryFragment();
-            switchFragment(inventoryFragment);
+            NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());
         });
-    }
-
-    /**
-     * Switch to a new fragment by replacing the current fragment in the layout container.
-     *
-     * @param fragment The new fragment to replace the current one.
-     */
-    private void switchFragment(Fragment fragment) {
-        // Create a FragmentManager from the support library
-        FragmentManager fm =  getParentFragmentManager();
-        // Create a FragmentTransaction to begin the transaction and replace the Fragment
-        FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        // Replace the FrameLayout with the new Fragment
-        fragmentTransaction.replace(R.id.contentFragment, fragment);
-        // Save the changes
-        fragmentTransaction.commit();
     }
 }

@@ -40,10 +40,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final FragmentManager fm = getSupportFragmentManager();
+
         // load home page
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.inventory);
-        loadFragment(new InventoryFragment());
+        NavigationManager.switchFragment(new InventoryFragment(), fm);
         
         // set a listener to handle item selection in the BottomNavigationView
         bottomNavigationView.setOnNavigationItemSelectedListener(
@@ -54,15 +56,15 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("ItemId", String.format("%d",id));
                         if (id == R.id.inventory){
                             // load inventory fragment
-                            loadFragment(new InventoryFragment());
+                            NavigationManager.switchFragment(new InventoryFragment(), fm);
                         }
                         else if (id == R.id.scan){
                             // load scan fragment
-                            loadFragment(new ScanFragment());
+                            NavigationManager.switchFragment(new ScanFragment(), fm);
                         }
                         else if (id == R.id.settings){
                             // load tag fragment
-                            loadFragment(new TagFragment());
+                            NavigationManager.switchFragment(new TagFragment(), fm);
                         }
                         return true;
                     }
@@ -70,19 +72,4 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    /**
-     * Load and replace a new Fragment within the given FrameLayout container.
-     *
-     * @param fragment The Fragment to be loaded and displayed.
-     */
-    private void loadFragment(Fragment fragment) {
-        // create a FragmentManager from the support library
-        FragmentManager fm = getSupportFragmentManager();
-        // create a FragmentTransaction to begin the transaction and replace the Fragment
-        FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        // replace the FrameLayout with the new Fragment
-        fragmentTransaction.replace(R.id.contentFragment, fragment);
-        // save the changes
-        fragmentTransaction.commit();
-    }
 }
