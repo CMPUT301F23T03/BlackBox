@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         int id = item.getItemId();
+                        Log.d("ItemId", String.format("%d",id));
                         if (id == R.id.inventory){
                             // load inventory fragment
                             loadFragment(new InventoryFragment());
@@ -57,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
                         else if (id == R.id.scan){
                             // load scan fragment
                             loadFragment(new ScanFragment());
+                        }
+                        else if (id == R.id.settings){
+                            // load tag fragment
+                            loadFragment(new TagFragment());
                         }
                         return true;
                     }
