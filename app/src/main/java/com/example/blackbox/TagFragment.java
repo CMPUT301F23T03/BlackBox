@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -15,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.database.collection.LLRBNode;
 import com.google.firebase.firestore.EventListener;
@@ -60,10 +63,18 @@ public class TagFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
+
+        // initialize tag list
+        tagList = new ArrayList<>();
+        tagListView = view.findViewById(R.id.tag_view);
+        tagAdapter = new TagAdapter(activityContext, tagList);
+        tagListView.setAdapter(tagAdapter);
+        tagAdapter.notifyDataSetChanged();
+
         // initialize database
         tagDB = new TagDB();
-
-        // listener
+        // DB listener
         tagDB.getTags().addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value,
@@ -83,16 +94,13 @@ public class TagFragment extends Fragment {
                 tagAdapter.notifyDataSetChanged();
             }
         });
+        final Button addButton = (Button) view.findViewById(R.id.add_tag_button);
+        addButton.setOnClickListener((v) -> {
+            TagAddFragment tagAddFragment = new TagAddFragment();
+            loadFragment(tagAddFragment);
+        });
 
-        // initialize tag list
-        tagList = new ArrayList<>();
-        tagListView = view.findViewById(R.id.tag_view);
-        tagAdapter = new TagAdapter(activityContext, tagList);
-        tagListView.setAdapter(tagAdapter);
 
-        // tagList.add(new Tag("Tag 1", ContextCompat.getColor(activityContext, R.color.red)));
-        // tagList.add(new Tag("Tag 2", ContextCompat.getColor(activityContext, R.color.primary), "Overwritten description"));
-        tagAdapter.notifyDataSetChanged();
     }
     /**
      * Called when the fragment is attached to an activity.
@@ -113,5 +121,19 @@ public class TagFragment extends Fragment {
         super.onDetach();
         activityContext = null;
     }
-
+    /**
+     * Switch to a new fragment by replacing the current fragment in the layout container.
+     *
+     * @param fragment The new fragment to replace the current one.
+     */
+    private void loadFragment(Fragment fragment) {
+        // create a FragmentManager from the support library
+        FragmentManager fm =  getParentFragmentManager();
+        // create a FragmentTransaction to begin the transaction and replace the Fragment
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        // replace the FrameLayout with the new Fragment
+        fragmentTransaction.replace(R.id.contentFragment, fragment);
+        // save the changes
+        fragmentTransaction.commit();
+    }
 }
