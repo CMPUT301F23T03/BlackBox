@@ -1,9 +1,11 @@
 package com.example.blackbox;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
@@ -45,5 +47,23 @@ public class TagAddFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        final Button backButton = view.findViewById(R.id.back_button);
+        backButton.setOnClickListener(v -> {
+            NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
+        });
+
+        // An onclick listener for the add/save buttons
+        View.OnClickListener saveOnClickListener = new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
+            }
+        };
+        // attach the listener to the save/add buttons
+        final Button bigSaveButton = view.findViewById(R.id.add_tag_button);
+        final Button smallSaveButton = view.findViewById(R.id.small_save_button);
+        bigSaveButton.setOnClickListener(saveOnClickListener);
+        smallSaveButton.setOnClickListener(saveOnClickListener);
     }
 }

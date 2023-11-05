@@ -97,7 +97,7 @@ public class TagFragment extends Fragment {
         final Button addButton = (Button) view.findViewById(R.id.add_tag_button);
         addButton.setOnClickListener((v) -> {
             TagAddFragment tagAddFragment = new TagAddFragment();
-            loadFragment(tagAddFragment);
+            NavigationManager.switchFragment(tagAddFragment, getParentFragmentManager());
         });
 
 
@@ -121,19 +121,5 @@ public class TagFragment extends Fragment {
         super.onDetach();
         activityContext = null;
     }
-    /**
-     * Switch to a new fragment by replacing the current fragment in the layout container.
-     *
-     * @param fragment The new fragment to replace the current one.
-     */
-    private void loadFragment(Fragment fragment) {
-        // create a FragmentManager from the support library
-        FragmentManager fm =  getParentFragmentManager();
-        // create a FragmentTransaction to begin the transaction and replace the Fragment
-        FragmentTransaction fragmentTransaction = fm.beginTransaction();
-        // replace the FrameLayout with the new Fragment
-        fragmentTransaction.replace(R.id.contentFragment, fragment);
-        // save the changes
-        fragmentTransaction.commit();
-    }
+
 }

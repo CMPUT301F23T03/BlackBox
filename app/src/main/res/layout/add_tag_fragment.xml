@@ -122,7 +122,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:id="@+id/title_edit_item"
+            android:id="@+id/add_tag_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Add Tag"
