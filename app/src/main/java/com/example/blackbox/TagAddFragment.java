@@ -5,8 +5,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -16,6 +20,8 @@ public class TagAddFragment extends Fragment {
     private EditText tagName;  // itemName text box
     private EditText tagColor; // itemValue text box
     private EditText tagDescription;   // itemDescription text box
+    private TagDB tagDB;
+    private Integer selectedColor;
 
     /**
      * Default constructor for the TagAddFragment.
@@ -53,11 +59,19 @@ public class TagAddFragment extends Fragment {
             NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
         });
 
+
+        // init DB
+        tagDB = new TagDB();
+
+        tagName = view.findViewById(R.id.name_editText);
+        tagColor = view.findViewById(R.id.color_editText);
+        tagDescription = view.findViewById(R.id.desc_editText);
+
         // An onclick listener for the add/save buttons
         View.OnClickListener saveOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
+                    saveTag();
             }
         };
         // attach the listener to the save/add buttons
@@ -65,5 +79,53 @@ public class TagAddFragment extends Fragment {
         final Button smallSaveButton = view.findViewById(R.id.small_save_button);
         bigSaveButton.setOnClickListener(saveOnClickListener);
         smallSaveButton.setOnClickListener(saveOnClickListener);
+
+        // populate spinner
+        Spinner spinner = view.findViewById(R.id.color_spinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        adapter.add("Item 1");
+        adapter.add("Item 2");
+        adapter.add("Item 3");
+
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // Handle the selected item here
+                String item = adapter.getItem(position);
+                Log.d("onItemSelected", "Selected: " + item);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {
+                // Do nothing when nothing is selected
+            }
+        });
+    }
+
+    public void saveTag(){
+        // Get text field values as String
+        String name = tagName.getText().toString();
+        String colorStr = tagColor.getText().toString();
+        Integer color = null;
+        Log.d("Color String", colorStr);
+        if (colorStr.length() > 0){
+            color = Integer.parseInt(colorStr);
+        }
+        String desc = tagDescription.getText().toString();
+        if (name.length() > 0 && color != null && desc.length() > 0) {
+
+            // Create an Tag object and add it to the DB
+            Tag new_tag = new Tag(name, color, desc);
+            tagDB.addTagToDB(new_tag);
+
+            // switch back to tag fragment
+            NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
+        }
+        else{
+            // display error message
+            Toast.makeText(getActivity(), "Missing Information", Toast.LENGTH_SHORT).show();
+        }
     }
 }
