@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public class Tag {
     private String name;
+    private String description;
     private int color;
     /**
      * Constructor of an Tag object
@@ -13,6 +14,11 @@ public class Tag {
     public Tag(String name, int color) {
         this.name = name;
         this.color = color;
+        this.description = "";
+    }
+    public Tag(String name, int color, String description) {
+        this(name,color);
+        this.description = description;
     }
 
     public String getName() {
@@ -24,5 +30,9 @@ public class Tag {
     }
     public int getColor() {
         return color;
+    }
+
+    public String getDescription() {
+        return description;
     }
 }

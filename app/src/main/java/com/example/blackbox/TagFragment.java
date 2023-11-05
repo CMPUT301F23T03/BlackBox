@@ -62,7 +62,7 @@ public class TagFragment extends Fragment {
         tagListView.setAdapter(tagAdapter);
 
         tagList.add(new Tag("Tag 1", ContextCompat.getColor(activityContext, R.color.red)));
-        tagList.add(new Tag("Tag 2", ContextCompat.getColor(activityContext, R.color.primary)));
+        tagList.add(new Tag("Tag 2", ContextCompat.getColor(activityContext, R.color.primary), "Overwritten description"));
         tagAdapter.notifyDataSetChanged();
     }
     /**

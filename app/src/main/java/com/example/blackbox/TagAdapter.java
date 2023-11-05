@@ -57,10 +57,12 @@ public class TagAdapter extends ArrayAdapter {
         // Get the elements of the item
         TextView name = view.findViewById(R.id.name);
         ImageView colorBox = view.findViewById(R.id.color);
+        TextView description = view.findViewById(R.id.description);
 
         // Set the text for the elements of the item
         name.setText(tag.getName());
         colorBox.setBackgroundTintList(ColorStateList.valueOf(tag.getColor()));
+        description.setText(tag.getDescription());
 
         return view;
     }
