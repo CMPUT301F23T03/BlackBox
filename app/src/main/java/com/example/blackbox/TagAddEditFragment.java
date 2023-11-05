@@ -1,37 +1,35 @@
 package com.example.blackbox;
 
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
-public class TagAddFragment extends Fragment {
+public class TagAddEditFragment extends Fragment {
     private EditText tagName;  // itemName text box
     private EditText tagDescription;   // itemDescription text box
     private TagDB tagDB;
     private Integer selectedColor;     // the value of the currently selected color
-
+    private String name;
+    private String desc;
+    private int fragment_id;
 
     /**
-     * Default constructor for the TagAddFragment.
+     * Default constructor for the TagAddEditFragment.
      */
-    public TagAddFragment(){}
-
+    public TagAddEditFragment(int fragment_id){
+        this.fragment_id = fragment_id;
+    }
     /**
      * Called to create the view for the fragment.
      *
@@ -45,47 +43,32 @@ public class TagAddFragment extends Fragment {
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
-        View addTagFragmentLayout = inflater.inflate(R.layout.add_tag_fragment, container, false);
-        return addTagFragmentLayout;
+        View fragmentLayout = inflater.inflate(fragment_id, container, false);
+        return fragmentLayout;
     }
 
-    /**
-     * Called when the fragment's view has been created. Handles user interactions for adding a new item.
-     *
-     * @param view               The root view of the fragment.
-     * @param savedInstanceState  A Bundle containing the saved state of the fragment.
-     */
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void setupFragment(View view){
+        // init DB
+        tagDB = new TagDB();
+        // init name and description boxes
+        tagName = view.findViewById(R.id.name_editText);
+        tagDescription = view.findViewById(R.id.desc_editText);
+        // init spinner for selected color
+        setupBackButtonListener(view);
+        setupColorSpinnerListener(view);
+    }
 
+
+    public void setupBackButtonListener(View view){
         final Button backButton = view.findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> {
             NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
         });
+    }
 
-
-        // init DB
-        tagDB = new TagDB();
-
-        tagName = view.findViewById(R.id.name_editText);
-        tagDescription = view.findViewById(R.id.desc_editText);
-
-        // An onclick listener for the add/save buttons
-        View.OnClickListener saveOnClickListener = new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                    saveTag();
-            }
-        };
-        // attach the listener to the save/add buttons
-        final Button bigSaveButton = view.findViewById(R.id.add_tag_button);
-        final Button smallSaveButton = view.findViewById(R.id.small_save_button);
-        bigSaveButton.setOnClickListener(saveOnClickListener);
-        smallSaveButton.setOnClickListener(saveOnClickListener);
-
+    public void setupColorSpinnerListener(View view){
         // populate spinner
-        Spinner spinner = view.findViewById(R.id.color_spinner);
+        final Spinner spinner = view.findViewById(R.id.color_spinner);
         ColorSpinnerAdapter adapter = new ColorSpinnerAdapter(getActivity(), new ArrayList<TagColor>());
         adapter.populateColors(getResources());
         spinner.setAdapter(adapter);
@@ -103,23 +86,17 @@ public class TagAddFragment extends Fragment {
             }
         });
     }
-
-    public void saveTag(){
-        // Get text field values as String
-        String name = tagName.getText().toString();
-        String desc = tagDescription.getText().toString();
+    public Boolean validateInput(View view){
+        name = tagName.getText().toString();
+        desc = tagDescription.getText().toString();
         if (name.length() > 0 && selectedColor != null && desc.length() > 0) {
-
-            // Create an Tag object and add it to the DB
-            Tag new_tag = new Tag(name, selectedColor, desc);
-            tagDB.addTagToDB(new_tag);
-
-            // switch back to tag fragment
-            NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
-        }
+            // allow save action
+            return Boolean.TRUE;
+            }
         else{
             // display error message
             Toast.makeText(getActivity(), "Missing Information", Toast.LENGTH_SHORT).show();
+            return Boolean.FALSE;
         }
     }
 }

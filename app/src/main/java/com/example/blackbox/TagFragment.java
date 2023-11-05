@@ -100,6 +100,11 @@ public class TagFragment extends Fragment {
             NavigationManager.switchFragment(tagAddFragment, getParentFragmentManager());
         });
 
+        tagListView.setOnItemClickListener((parent, view1, position, id) -> {
+            TagEditFragment tagEditFragment = new TagEditFragment();
+            NavigationManager.switchFragment(tagEditFragment, getParentFragmentManager());
+        });
+
 
     }
     /**
