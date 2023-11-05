@@ -91,7 +91,7 @@ public class InventoryAddFragment extends Fragment {
      */
     private void switchFragment(Fragment fragment) {
         // Create a FragmentManager from the support library
-        FragmentManager fm =  getFragmentManager();
+        FragmentManager fm =  getParentFragmentManager();
         // Create a FragmentTransaction to begin the transaction and replace the Fragment
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
         // Replace the FrameLayout with the new Fragment
