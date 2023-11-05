@@ -3,6 +3,7 @@ package com.example.blackbox;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,10 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.database.collection.LLRBNode;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
@@ -28,7 +33,7 @@ public class TagFragment extends Fragment {
     private ArrayAdapter<Tag> tagAdapter;
     private View view;
     private Context activityContext;       // context of MainActivity
-
+    private TagDB tagDB;
     /**
      * Called to create the view for the fragment.
      *
@@ -56,13 +61,37 @@ public class TagFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // initialize database
+        tagDB = new TagDB();
+
+        // listener
+        tagDB.getTags().addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    // Handle any errors or exceptions
+                    return;
+                }
+                tagList.clear();
+                for (QueryDocumentSnapshot doc : value) {
+                    String name = doc.getString("name");
+                    int val = doc.getLong("color").intValue();
+                    String desc = doc.getString("description");
+                    tagList.add(new Tag(name, val, desc));
+                }
+                // Notify the adapter that the data has changed
+                tagAdapter.notifyDataSetChanged();
+            }
+        });
+
+        // initialize tag list
         tagList = new ArrayList<>();
         tagListView = view.findViewById(R.id.tag_view);
         tagAdapter = new TagAdapter(activityContext, tagList);
         tagListView.setAdapter(tagAdapter);
 
-        tagList.add(new Tag("Tag 1", ContextCompat.getColor(activityContext, R.color.red)));
-        tagList.add(new Tag("Tag 2", ContextCompat.getColor(activityContext, R.color.primary), "Overwritten description"));
+        // tagList.add(new Tag("Tag 1", ContextCompat.getColor(activityContext, R.color.red)));
+        // tagList.add(new Tag("Tag 2", ContextCompat.getColor(activityContext, R.color.primary), "Overwritten description"));
         tagAdapter.notifyDataSetChanged();
     }
     /**
