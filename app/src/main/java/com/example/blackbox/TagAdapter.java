@@ -60,8 +60,7 @@ public class TagAdapter extends ArrayAdapter {
 
         // Set the text for the elements of the item
         name.setText(tag.getName());
-        int arbitraryColor = Color.parseColor(tag.getColor());
-        colorBox.setBackgroundTintList(ColorStateList.valueOf(arbitraryColor));
+        colorBox.setBackgroundTintList(ColorStateList.valueOf(tag.getColor()));
 
         return view;
     }

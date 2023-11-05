@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 public class Tag {
     private String name;
-    private String color;
+    private int color;
     /**
      * Constructor of an Tag object
      *
      * @param  name  the name of the tag
      */
-    public Tag(String name, String color) {
+    public Tag(String name, int color) {
         this.name = name;
         this.color = color;
     }
@@ -19,7 +19,10 @@ public class Tag {
         return name;
     }
 
-    public String getColor() {
+    public String getHexStringColor(){
+        return String.format("#%02x", color);
+    }
+    public int getColor() {
         return color;
     }
 }

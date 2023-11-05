@@ -12,7 +12,10 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+
+import com.google.firebase.database.collection.LLRBNode;
 
 import java.util.ArrayList;
 
@@ -58,8 +61,8 @@ public class TagFragment extends Fragment {
         tagAdapter = new TagAdapter(activityContext, tagList);
         tagListView.setAdapter(tagAdapter);
 
-        tagList.add(new Tag("Tag 1", "#FF5733"));
-        tagList.add(new Tag("Tag 2", "#FF1230"));
+        tagList.add(new Tag("Tag 1", ContextCompat.getColor(activityContext, R.color.red)));
+        tagList.add(new Tag("Tag 2", ContextCompat.getColor(activityContext, R.color.primary)));
         tagAdapter.notifyDataSetChanged();
     }
     /**
