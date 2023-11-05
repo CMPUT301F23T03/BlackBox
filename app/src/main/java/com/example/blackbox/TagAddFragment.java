@@ -1,5 +1,7 @@
 package com.example.blackbox;
 
+import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,12 +18,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import java.util.ArrayList;
+
 public class TagAddFragment extends Fragment {
     private EditText tagName;  // itemName text box
-    private EditText tagColor; // itemValue text box
     private EditText tagDescription;   // itemDescription text box
     private TagDB tagDB;
-    private Integer selectedColor;
+    private Integer selectedColor;     // the value of the currently selected color
 
     /**
      * Default constructor for the TagAddFragment.
@@ -64,7 +67,6 @@ public class TagAddFragment extends Fragment {
         tagDB = new TagDB();
 
         tagName = view.findViewById(R.id.name_editText);
-        tagColor = view.findViewById(R.id.color_editText);
         tagDescription = view.findViewById(R.id.desc_editText);
 
         // An onclick listener for the add/save buttons
@@ -82,20 +84,16 @@ public class TagAddFragment extends Fragment {
 
         // populate spinner
         Spinner spinner = view.findViewById(R.id.color_spinner);
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        adapter.add("Item 1");
-        adapter.add("Item 2");
-        adapter.add("Item 3");
-
+        ColorSpinnerAdapter adapter = new ColorSpinnerAdapter(getActivity(), new ArrayList<TagColor>());
+        adapter.populateColors(getResources());
         spinner.setAdapter(adapter);
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // Handle the selected item here
-                String item = adapter.getItem(position);
-                Log.d("onItemSelected", "Selected: " + item);
+                selectedColor = adapter.getItem(position).getColor();
+                Log.d("onItemSelected", "Selected: " + selectedColor.toString());
             }
             @Override
             public void onNothingSelected(AdapterView<?> parentView) {
@@ -107,17 +105,11 @@ public class TagAddFragment extends Fragment {
     public void saveTag(){
         // Get text field values as String
         String name = tagName.getText().toString();
-        String colorStr = tagColor.getText().toString();
-        Integer color = null;
-        Log.d("Color String", colorStr);
-        if (colorStr.length() > 0){
-            color = Integer.parseInt(colorStr);
-        }
         String desc = tagDescription.getText().toString();
-        if (name.length() > 0 && color != null && desc.length() > 0) {
+        if (name.length() > 0 && selectedColor != null && desc.length() > 0) {
 
             // Create an Tag object and add it to the DB
-            Tag new_tag = new Tag(name, color, desc);
+            Tag new_tag = new Tag(name, selectedColor, desc);
             tagDB.addTagToDB(new_tag);
 
             // switch back to tag fragment
