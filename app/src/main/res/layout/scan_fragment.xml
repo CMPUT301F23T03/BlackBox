@@ -1,10 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/tabName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:textSize="25sp"
+        android:text="Barcode Scanning"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="217dp"
+        android:layout_marginTop="100dp"
+        android:text="Scan or insert a picture of Barcode"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/button_gallery"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tabName" />
+
+    <Button
+        android:id="@+id/button_camera"
+        android:layout_width="293dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="54dp"
+        android:text="Open Camera"
+        app:layout_constraintBottom_toTopOf="@+id/button_gallery"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <Button
+        android:id="@+id/button_gallery"
+        android:layout_width="289dp"
+        android:layout_height="46dp"
+        android:layout_marginBottom="357dp"
+        android:text="Pick From Gallery"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_camera" />
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
