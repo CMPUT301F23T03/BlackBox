@@ -17,30 +17,13 @@ import androidx.fragment.app.FragmentTransaction;
 /**
  * A Fragment responsible for adding a new item to the inventory. Allows users to input the item's name, value, and description.
  */
-public class InventoryAddFragment extends Fragment {
-    private EditText itemName;  // itemName text box
-    private EditText itemValue; // itemValue text box
-    private EditText itemDescription;   // itemDescription text box
+public class InventoryAddFragment extends InventoryAddEditFragment {
 
     /**
      * Default constructor for the InventoryAddFragment.
      */
-    public InventoryAddFragment(){}
-
-    /**
-     * Called to create the view for the fragment.
-     *
-     * @param inflater           The LayoutInflater object that can be used to inflate views.
-     * @param container          The parent view that the fragment's UI should be attached to.
-     * @param savedInstanceState  A Bundle containing the saved state of the fragment.
-     * @return The view for the fragment.
-     */
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState
-    ) {
-        View addItemFragmentLayout = inflater.inflate(R.layout.add_fragment, container, false);
-        return addItemFragmentLayout;
+    public InventoryAddFragment(){
+        super(R.layout.add_fragment);
     }
 
     /**
@@ -53,34 +36,15 @@ public class InventoryAddFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Get text fields
-        itemName = view.findViewById(R.id.name_editText);
-        itemValue = view.findViewById(R.id.value_editText);
-        itemDescription = view.findViewById(R.id.desc_editText);
+        // setup the fragment's db and text fields
+        setupFragment(view);
 
         // Add an item by clicking the small add button
         Button small_add_button = view.findViewById(R.id.small_save_button);
         small_add_button.setOnClickListener(v -> {
-
-            // Get text field values as String
-            String name = itemName.getText().toString();
-            String value = itemValue.getText().toString();
-            String desc = itemDescription.getText().toString();
-
-            // Create an Item object and send it to the inventory fragment
-            InventoryFragment inventoryFragment;
-            Item new_item = new Item(name, Double.parseDouble(value), desc);
-            inventoryFragment = InventoryFragment.newInstance(new_item);
-
-            // Switch to the inventory fragment
-            NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());
-        });
-
-        // Back button - go back to the inventory fragment
-        Button backbutton = (Button) view.findViewById(R.id.back_button);
-        backbutton.setOnClickListener((v) -> {
-            InventoryFragment inventoryFragment = new InventoryFragment();
-            NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());
+            if (validateInput()) {
+                generateItem();
+            }
         });
     }
 }
