@@ -86,9 +86,11 @@ public class TagFragment extends Fragment {
                 tagList.clear();
                 for (QueryDocumentSnapshot doc : value) {
                     String name = doc.getString("name");
-                    int val = doc.getLong("color").intValue();
+                    int col = doc.getLong("color").intValue();
                     String desc = doc.getString("description");
-                    tagList.add(new Tag(name, val, desc));
+                    String colorName = doc.getString("color_name");
+                    String dbID = doc.getId();
+                    tagList.add(new Tag(name, col, colorName, desc, dbID));
                 }
                 // Notify the adapter that the data has changed
                 tagAdapter.notifyDataSetChanged();
@@ -98,6 +100,11 @@ public class TagFragment extends Fragment {
         addButton.setOnClickListener((v) -> {
             TagAddFragment tagAddFragment = new TagAddFragment();
             NavigationManager.switchFragment(tagAddFragment, getParentFragmentManager());
+        });
+
+        tagListView.setOnItemClickListener((parent, view1, position, id) -> {
+            TagEditFragment tagEditFragment = TagEditFragment.newInstance(tagList.get(position));
+            NavigationManager.switchFragment(tagEditFragment, getParentFragmentManager());
         });
 
 

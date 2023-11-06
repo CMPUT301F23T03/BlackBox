@@ -2,6 +2,7 @@ package com.example.blackbox;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.media.Image;
 import android.view.LayoutInflater;
@@ -35,6 +36,7 @@ public class TagAdapter extends ArrayAdapter {
         this.tags = tags;
         this.context = context;
     }
+
 
     /**
      * Get a view that displays the data at the specified position in the data set.

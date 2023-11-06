@@ -3,4 +3,5 @@
     <string name="add_button">Add an item</string>
     <string name="app">BlackBox 💵</string>
     <string name="add_tag">Add Tag</string>
+    <string name="are_you_sure_you_would_nlike_to_delete_this">Are you sure you would \nlike to delete this?</string>
 </resources>
