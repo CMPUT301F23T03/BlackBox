@@ -11,11 +11,12 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
-public class TagAddEditFragment extends Fragment {
+public class TagAddEditFragment extends DialogFragment {
     private EditText tagName;  // itemName text box
     private EditText tagDescription;   // itemDescription text box
     private TagDB tagDB;
@@ -159,11 +160,13 @@ public class TagAddEditFragment extends Fragment {
 
     /**
      * A method to delete a tag in the database
-     * @param tag
+     * @param   tag
      *      The tag to be deleted
      */
     public void deleteTag(Tag tag){
         tagDB.deleteTag(tag);
         NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
     }
+
+
 }

@@ -1,6 +1,7 @@
 package com.example.blackbox;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +10,9 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class TagEditFragment extends TagAddEditFragment {
+public class TagEditFragment extends TagAddEditFragment{
+    private Tag tag;
+
     /**
      * Default constructor for the TagEditFragment.
      * Provides fragment ID to parent class
@@ -42,7 +45,7 @@ public class TagEditFragment extends TagAddEditFragment {
         super.onViewCreated(view, savedInstanceState);
         setupFragment(view);
         // fill in with data from tag passed as argument
-        Tag tag = (Tag) getArguments().getSerializable("tagToEdit");
+        tag = (Tag) getArguments().getSerializable("tagToEdit");
         adjustFields(tag);
         // set up on click listener for save button
         final Button saveButton = view.findViewById(R.id.save_tag_button);
@@ -51,9 +54,25 @@ public class TagEditFragment extends TagAddEditFragment {
                 editTag(tag);
             }
         });
+
         final Button deleteButton = view.findViewById(R.id.delete_tag_button);
         deleteButton.setOnClickListener(v -> {
-            deleteTag(tag);
+            showDeletePopup();
         });
     }
+
+    private void showDeletePopup(){
+        DeletePopupFragment confirmationPopup = new DeletePopupFragment();
+        getParentFragmentManager().setFragmentResultListener("DELETE_RESULT_KEY", this, (requestKey, result) -> {
+            if (requestKey.equals("DELETE_RESULT_KEY")) {
+                // Handle the result here
+                boolean deleted = result.getBoolean("delete_confirmation", false);
+                if (deleted) {
+                    deleteTag(tag);
+                }
+            }
+        });
+        confirmationPopup.show(getParentFragmentManager(), "DELETE_TAG");
+    }
+
 }
