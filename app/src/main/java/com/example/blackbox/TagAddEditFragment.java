@@ -22,6 +22,9 @@ public class TagAddEditFragment extends Fragment {
     private Integer selectedColor;     // the value of the currently selected color
     private String name;
     private String desc;
+    private String colorName;
+    private Spinner spinner;
+    private ColorSpinnerAdapter spinnerAdapter;
     private int fragment_id;
 
     /**
@@ -47,6 +50,12 @@ public class TagAddEditFragment extends Fragment {
         return fragmentLayout;
     }
 
+    /**
+     * A method which sets up the database, listeners,
+     * and variables for the fragment
+     * @param view
+     *      The view from which to find UI elements
+     */
     public void setupFragment(View view){
         // init DB
         tagDB = new TagDB();
@@ -58,7 +67,11 @@ public class TagAddEditFragment extends Fragment {
         setupColorSpinnerListener(view);
     }
 
-
+    /**
+     * A method which sets up a listener track whether the back button is pressed
+     * @param view
+     *      The view from which to find UI elements
+     */
     public void setupBackButtonListener(View view){
         final Button backButton = view.findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> {
@@ -66,18 +79,24 @@ public class TagAddEditFragment extends Fragment {
         });
     }
 
+    /**
+     * A method which sets up a listener to keep track of the selected color
+     * @param view
+     *      The view from which to find UI elements
+     */
     public void setupColorSpinnerListener(View view){
         // populate spinner
-        final Spinner spinner = view.findViewById(R.id.color_spinner);
-        ColorSpinnerAdapter adapter = new ColorSpinnerAdapter(getActivity(), new ArrayList<TagColor>());
-        adapter.populateColors(getResources());
-        spinner.setAdapter(adapter);
+        spinner = view.findViewById(R.id.color_spinner);
+        spinnerAdapter = new ColorSpinnerAdapter(getActivity(), new ArrayList<TagColor>());
+        spinnerAdapter.populateColors(getResources());
+        spinner.setAdapter(spinnerAdapter);
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // Handle the selected item here
-                selectedColor = adapter.getItem(position).getColor();
+                selectedColor = spinnerAdapter.getItem(position).getColor();
+                colorName = spinnerAdapter.getItem(position).getName();
                 Log.d("onItemSelected", "Selected: " + selectedColor.toString());
             }
             @Override
@@ -86,7 +105,13 @@ public class TagAddEditFragment extends Fragment {
             }
         });
     }
-    public Boolean validateInput(View view){
+
+    /**
+     * A method which gets user input from the fragment and validates if it is correct
+     * @return
+     *      A Boolean representing whether the current user input is valid
+     */
+    public Boolean validateInput(){
         name = tagName.getText().toString();
         desc = tagDescription.getText().toString();
         if (name.length() > 0 && selectedColor != null && desc.length() > 0) {
@@ -99,4 +124,38 @@ public class TagAddEditFragment extends Fragment {
             return Boolean.FALSE;
         }
     }
+
+    /**
+     * A method which creates a new tag and adds it to the database
+     */
+    public void generateTag(){
+        Tag new_tag = new Tag(name, selectedColor, colorName, desc);
+        tagDB.addTagToDB(new_tag);
+        NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
+    }
+
+    /**
+     * A method to adjust the fields to reflect the data from a tag
+     */
+    public void adjustFields(Tag tag){
+        tagName.setText(tag.getName());
+        tagDescription.setText(tag.getDescription());
+        int index = spinnerAdapter.getColorIndex(tag.getColorName());
+        if (index != -1){
+            spinner.setSelection(index);
+        }
+    }
+
+    /**
+     * A method to replace a tag in the database with a new one
+     * @param tag
+     *      The tag to be replaced
+     */
+    public void editTag(Tag tag){
+        Tag new_tag = new Tag(name, selectedColor, colorName, desc);
+        tagDB.editTag(tag, new_tag);
+        NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
+    }
+
+
 }

@@ -45,6 +45,23 @@ public class ColorSpinnerAdapter extends ArrayAdapter<TagColor> {
         return colors;
     }
 
+
+    /**
+     * A method which returns the index of a color in the adapters colors list
+     * @param color
+     *      The color to find in the list
+     * @return
+     *      The index of the provided color in the list
+     */
+    public int getColorIndex(String color){
+        for (int i = 0; i < colors.size(); i++) {
+            String element = colors.get(i).getName();
+            if (element.equalsIgnoreCase(color)){
+                return i;
+            }
+        }
+        return -1;
+    }
     /**
      * Get a view for a color that displays when the dropdown is closed
      *
