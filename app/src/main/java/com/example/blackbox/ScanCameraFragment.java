@@ -29,6 +29,7 @@ import java.io.IOException;
 
 /**
  * This class represents a Fragment for scanning barcodes using the device's camera.
+ * It returns the serial number of the barcode. If successful, it will give a sound.
  */
 public class ScanCameraFragment extends Fragment {
     private SurfaceView surfaceView;
