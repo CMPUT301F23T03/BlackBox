@@ -103,4 +103,15 @@ public class InventoryAddEditFragment extends Fragment {
         itemDB.addItemToDB(new_item);
         NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
     }
+
+    /**
+     * A method to replace an item in the database with a new one
+     * @param item
+     *      The item to be replaced
+     */
+    public void editItem(Item item){
+        Item new_item = new Item(name, val, desc);
+        itemDB.updateItemInDB(item, new_item);
+        NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
+    }
 }

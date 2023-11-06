@@ -61,17 +61,17 @@ public class InventoryDB {
     }
 
     /**
-     * Updates an item in the Firestore database with the specified ID by updating its fields.
+     * Updates an item in the Firestore database with new values
      *
-     * @param id    The unique identifier of the item document in the Firestore collection.
-     * @param item  The updated item object containing the new data for the item.
+     * @param old_item  The item to be replaced.
+     * @param new_item  The item from which the new values should come.
      */
-    public void updateItemInDB(String id, Item item) {
+    public void updateItemInDB(Item old_item, Item new_item) {
         Map<String, Object> data = new HashMap<>();
-        data.put("name", item.getName());
-        data.put("value", item.getEstimatedValue());
-        data.put("description", item.getDescription());
-        inventory.document(id).set(data);
+        data.put("name", new_item.getName());
+        data.put("value", new_item.getEstimatedValue());
+        data.put("description", new_item.getDescription());
+        inventory.document(old_item.getID()).set(data);
     }
 }
 

@@ -11,6 +11,7 @@ public class Item implements Serializable {
     // initialize data members
     // we might add a data member of reference to an image later on
     private String name;
+    private String ID;
     private ArrayList<Tag> tags;
     private String dateOfPurchase;  // this can be a Date object
     private double estimatedValue;
@@ -56,6 +57,20 @@ public class Item implements Serializable {
         this.name = name;
         this.estimatedValue = estimatedValue;
         this.description = description;
+    }
+    /**
+     * Constructor for a simplified Item object with ID primarily for testing purposes.
+     *
+     * @param name        The name of the item.
+     * @param estimatedValue The estimated value of the item.
+     * @param description The description of the item.
+     * @param id The id of the item.
+     */
+    public Item(String name, double estimatedValue, String description, String ID) {
+        this.name = name;
+        this.estimatedValue = estimatedValue;
+        this.description = description;
+        this.ID = ID;
     }
 
     // Getters and setters for various properties
@@ -129,5 +144,9 @@ public class Item implements Serializable {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public String getID() {
+        return ID;
     }
 }
