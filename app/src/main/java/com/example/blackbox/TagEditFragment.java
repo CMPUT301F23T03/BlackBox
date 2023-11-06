@@ -51,5 +51,9 @@ public class TagEditFragment extends TagAddEditFragment {
                 editTag(tag);
             }
         });
+        final Button deleteButton = view.findViewById(R.id.delete_tag_button);
+        deleteButton.setOnClickListener(v -> {
+            deleteTag(tag);
+        });
     }
 }

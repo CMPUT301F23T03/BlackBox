@@ -71,5 +71,15 @@ public class TagDB {
         }
 
     }
+
+    public void deleteTag(Tag tag){
+        if (tag.getDataBaseID() != null) {
+            tags.document(tag.getDataBaseID()).delete();
+            Log.d("Firestore", "Tag deleted Successfully");
+        }
+        else{
+            Log.d("Firestore", "Deletion failed, no tag to update specified");
+        }
+    }
 }
 

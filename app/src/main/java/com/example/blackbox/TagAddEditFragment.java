@@ -157,5 +157,13 @@ public class TagAddEditFragment extends Fragment {
         NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
     }
 
-
+    /**
+     * A method to delete a tag in the database
+     * @param tag
+     *      The tag to be deleted
+     */
+    public void deleteTag(Tag tag){
+        tagDB.deleteTag(tag);
+        NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
+    }
 }

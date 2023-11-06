@@ -15,7 +15,7 @@
         android:background="@drawable/rounded_square"
         android:backgroundTint="@color/gray02"
         android:text="Delete Tag"
-        android:textColor="@color/primary"
+        android:textColor="@color/warning"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
