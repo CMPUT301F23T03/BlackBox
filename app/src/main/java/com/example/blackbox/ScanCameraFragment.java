@@ -26,6 +26,10 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
+
+/**
+ * This class represents a Fragment for scanning barcodes using the device's camera.
+ */
 public class ScanCameraFragment extends Fragment {
     private SurfaceView surfaceView;
     private BarcodeDetector barcodeDetector;
@@ -35,6 +39,13 @@ public class ScanCameraFragment extends Fragment {
     private TextView barcodeText;
     private String barcodeData;
 
+    /**
+     * Inflates the layout for the barcode scanning fragment and initializes necessary components.
+     * @param inflater       LayoutInflater to inflate the layout.
+     * @param container      ViewGroup that the fragment is attached to.
+     * @param savedInstanceState  Bundle for saved instance state.
+     * @return  The created view for the fragment.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.camera_scan_fragment, container, false);
@@ -47,6 +58,10 @@ public class ScanCameraFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Sets up a click listener for the back button in the fragment.
+     * @param view  The parent view containing the back button.
+     */
     public void setupBackButtonListener(View view){
         final Button backButton = view.findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> {
@@ -55,26 +70,31 @@ public class ScanCameraFragment extends Fragment {
         });
     }
 
+    /**
+     * Initializes barcode detection and camera source for scanning.
+     */
     private void initializeDetectorsAndSources() {
-
-        // Toast.makeText(getActivity(), "Barcode scanner started", Toast.LENGTH_SHORT).show();
-
+        // Initialize a barcode detector with all barcode formats.
         barcodeDetector = new BarcodeDetector.Builder(requireContext())
                 .setBarcodeFormats(Barcode.ALL_FORMATS)
                 .build();
 
+        // Initialize a camera source using the barcode detector and configure it.
         cameraSource = new CameraSource.Builder(requireContext(), barcodeDetector)
                 .setRequestedPreviewSize(1920, 1080)
-                .setAutoFocusEnabled(true) //you should add this feature
+                .setAutoFocusEnabled(true)
                 .build();
 
+        // Set up a callback for the SurfaceView to handle surface-related events.
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
                 try {
+                    // Check camera permission and start the camera source if granted.
                     if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                         cameraSource.start(surfaceView.getHolder());
                     } else {
+                        // Request camera permission if not granted.
                         ActivityCompat.requestPermissions(requireActivity(), new
                                 String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
                     }
@@ -82,18 +102,24 @@ public class ScanCameraFragment extends Fragment {
                     e.printStackTrace();
                 }
             }
+
             @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {}
+            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+                // Handle surface changes if needed.
+            }
+
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
+                // Stop the camera source when the surface is destroyed.
                 cameraSource.stop();
             }
         });
 
+        // Set up a processor to handle barcode detection results.
         barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
-                // Toast.makeText(getApplicationContext(), "To prevent memory leaks barcode scanner has been stopped", Toast.LENGTH_SHORT).show();
+                // Release resources when barcode processing is stopped.
             }
 
             @Override
@@ -104,15 +130,16 @@ public class ScanCameraFragment extends Fragment {
                         @Override
                         public void run() {
                             if (barcodes.valueAt(0).email != null) {
+                                // If a barcode contains an email address, display it and play a tone.
                                 barcodeText.removeCallbacks(null);
                                 barcodeData = barcodes.valueAt(0).email.address;
                                 barcodeText.setText(barcodeData);
                                 toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
                             } else {
+                                // Display the barcode's content and play a tone.
                                 barcodeData = barcodes.valueAt(0).displayValue;
                                 barcodeText.setText(barcodeData);
                                 toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
-
                             }
                         }
                     });
@@ -120,6 +147,11 @@ public class ScanCameraFragment extends Fragment {
             }
         });
     }
+
+
+    /**
+     * Called when the fragment is paused.
+     */
     @Override
     public void onPause() {
         super.onPause();
@@ -129,6 +161,9 @@ public class ScanCameraFragment extends Fragment {
         cameraSource.release();
     }
 
+    /**
+     * Called when the fragment is resumed.
+     */
     @Override
     public void onResume() {
         super.onResume();
