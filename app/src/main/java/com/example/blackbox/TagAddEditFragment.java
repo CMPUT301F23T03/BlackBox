@@ -16,7 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
-public class TagAddEditFragment extends DialogFragment {
+public class TagAddEditFragment extends Fragment {
     private EditText tagName;  // itemName text box
     private EditText tagDescription;   // itemDescription text box
     private TagDB tagDB;
