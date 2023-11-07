@@ -127,6 +127,16 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     }
 
     /**
+     * A method to delete an item in the database
+     * @param  item
+     *      The item to be deleted
+     */
+    public void deleteItem(Item item){
+        itemDB.deleteItem(item);
+        NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
+    }
+
+    /**
      * A method to adjust the fields to reflect the data from an item
      * @param item
      *           The item whose info will be used to fill fields
@@ -140,4 +150,6 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         itemModel.setText(item.getModel());
         itemSerialNumber.setText(item.getSerialNumber());
     }
+
+
 }

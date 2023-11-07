@@ -55,12 +55,17 @@ public class TagEditFragment extends TagAddEditFragment{
             }
         });
 
+        // setup a delete button
         final Button deleteButton = view.findViewById(R.id.delete_tag_button);
         deleteButton.setOnClickListener(v -> {
             showDeletePopup();
         });
     }
 
+
+    /**
+     * Display a confirmation dialog for deleting a tag
+     */
     private void showDeletePopup(){
         DeletePopupFragment confirmationPopup = new DeletePopupFragment();
         getParentFragmentManager().setFragmentResultListener("DELETE_RESULT_KEY", this, (requestKey, result) -> {

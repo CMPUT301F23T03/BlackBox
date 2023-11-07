@@ -104,13 +104,18 @@ public class TagDB {
         return data;
     }
 
+    /**
+     * Delete a specified tag from the database
+     * @param tag
+     *      The tag to be deleted
+     */
     public void deleteTag(Tag tag){
         if (tag.getDataBaseID() != null) {
             tags.document(tag.getDataBaseID()).delete();
             Log.d("Firestore", "Tag deleted Successfully");
         }
         else{
-            Log.d("Firestore", "Deletion failed, no tag to update specified");
+            Log.d("Firestore", "Deletion failed, tag has no ID specified");
         }
     }
 }

@@ -105,5 +105,20 @@ public class InventoryDB {
 
         return data;
     }
+
+    /**
+     * Delete a specified tag from the database
+     * @param item
+     *      The item to be deleted
+     */
+    public void deleteItem(Item item){
+        if (item.getID() != null) {
+            inventory.document(item.getID()).delete();
+            Log.d("Firestore", "Item deleted Successfully");
+        }
+        else{
+            Log.d("Firestore", "Deletion failed, item has no ID specified");
+        }
+    }
 }
 

@@ -30,11 +30,6 @@ import android.view.MenuItem;
  */
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
-    InventoryFragment inventoryFragment;
-    TagFragment tagFragment;
-    ScanFragment scanFragment;
-    ProfileFragment profileFragment;
-    ExpenseFragment expenseFragment;
 
     /**
      * Called when the activity is created. Initializes the main layout and sets up the BottomNavigationView.
@@ -53,13 +48,6 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView.setSelectedItemId(R.id.inventory);
         NavigationManager.switchFragment(new InventoryFragment(), fm);
 
-        // setup fragments
-        inventoryFragment = new InventoryFragment();
-        tagFragment = new TagFragment();
-        scanFragment = new ScanFragment();
-        profileFragment = new ProfileFragment();
-        expenseFragment = new ExpenseFragment();
-        
         // set a listener to handle item selection in the BottomNavigationView
         bottomNavigationView.setOnItemSelectedListener(
                 new NavigationBarView.OnItemSelectedListener() {
@@ -69,21 +57,21 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("ItemId", String.format("%d",id));
                         if (id == R.id.inventory){
                             // load inventory fragment
-                            NavigationManager.switchFragment(inventoryFragment, fm);
+                            NavigationManager.switchFragment(new InventoryFragment(), fm);
                         }
                         else if (id == R.id.expenses){
-                            NavigationManager.switchFragment(expenseFragment, fm);
+                            NavigationManager.switchFragment( new ExpenseFragment(), fm);
                         }
                         else if (id == R.id.scan){
                             // load scan fragment
-                            NavigationManager.switchFragment(scanFragment, fm);
+                            NavigationManager.switchFragment(new ScanFragment(), fm);
                         }
                         else if (id == R.id.profile){
-                            NavigationManager.switchFragment(profileFragment, fm);
+                            NavigationManager.switchFragment(new ProfileFragment(), fm);
                         }
                         else if (id == R.id.settings){
                             // load tag fragment
-                            NavigationManager.switchFragment(tagFragment, fm);
+                            NavigationManager.switchFragment(new TagFragment(), fm);
                         }
                         return true;
                     }
