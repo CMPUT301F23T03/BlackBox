@@ -31,6 +31,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A Fragment that displays and manages an inventory of items. It includes features to add and edit items.
@@ -131,7 +132,16 @@ public class InventoryFragment extends Fragment {
                     String dbID = doc.getId();
                     ArrayList<Tag> tags = new ArrayList<>();
                     String dateOfPurchase = "";
-                    itemList.add(new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID));
+
+                    List<String> tagIDs = (List<String>) doc.get("tags");
+
+                    Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID);
+                    if (tagIDs != null && !tagIDs.isEmpty()) {
+                        fetchTagsForItem(item, tagIDs);
+                    } else {
+                        // Add the item to the list without tags
+                        itemList.add(item);
+                    }
                 }
                 // Notify the adapter that the data has changed
                 inventoryAdapter.notifyDataSetChanged();
@@ -151,5 +161,52 @@ public class InventoryFragment extends Fragment {
                 NavigationManager.switchFragment(inventoryEditFragment, getParentFragmentManager());
             }
         });
+
+    }
+
+    /**
+     * Fetches tags associated with an item from the Firestore database and
+     * populates the item's tag list.
+     *
+     * @param item
+     * @param tagIDs
+     */
+    private void fetchTagsForItem(Item item, List<String> tagIDs) {
+        // Access the db instance from InventoryDB
+        FirebaseFirestore db = inventoryDB.getDb();
+
+        for (String tagID : tagIDs) {
+            db.collection("tags").document(tagID).get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if (task.isSuccessful()) {
+                                DocumentSnapshot document = task.getResult();
+                                if (document.exists()) {
+                                    String name = document.getString("name");
+                                    int color = document.getLong("color").intValue();
+                                    String colorName = document.getString("colorName");
+                                    String description = document.getString("description");
+                                    // Create a Tag object with the retrieved data
+
+                                    Tag tag = new Tag(name, color, colorName, description); // You can add other properties as needed
+                                    item.getTags().add(tag);
+
+                                    // Check if all tags have been retrieved
+                                    if (item.getTags().size() == tagIDs.size()) {
+                                        // Add the item to the list
+                                        itemList.add(item);
+                                        // Notify the adapter that the data has changed
+                                        inventoryAdapter.notifyDataSetChanged();
+                                    }
+                                } else {
+                                    // Handle the case where the document does not exist
+                                }
+                            } else {
+                                // Handle errors or exceptions
+                            }
+                        }
+                    });
+        }
     }
 }

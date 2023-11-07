@@ -41,6 +41,16 @@ public class InventoryDB {
     }
 
     /**
+     * Returns the instance of the Firestore database
+     *
+     * @return db
+     */
+    public FirebaseFirestore getDb() {
+        return db;
+    }
+
+
+    /**
      * Gets the inventory collection
      * @return inventory    a CollectionReference object
      */
@@ -85,6 +95,14 @@ public class InventoryDB {
         data.put("comment", item.getComment());
         item.setDateUpdated(Calendar.getInstance().getTime());
         data.put("update_date", item.getStringDateUpdated());
+
+        // Convert the list of tags to a list of tag IDs
+        List<String> tagIDs = new ArrayList<>();
+        for (Tag tag : item.getTags()) {
+            tagIDs.add(tag.getDataBaseID());
+        }
+        data.put("tags", tagIDs);
+
         return data;
     }
 }

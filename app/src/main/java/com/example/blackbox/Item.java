@@ -104,6 +104,11 @@ public class Item implements Serializable {
         this.ID = ID;
     }
 
+    // Checks if the item has tags or not
+    public boolean hasTags() {
+        return tags != null && !tags.isEmpty();
+    }
+
     // Getters and setters for various properties
     public String getName() {
         return name;
