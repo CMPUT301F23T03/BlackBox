@@ -99,13 +99,13 @@ public abstract class TagAddEditFragment extends AddEditFragment {
     public Boolean validateInput(){
         name = tagName.getText().toString();
         desc = tagDescription.getText().toString();
-        if (name.length() > 0 && selectedColor != null && desc.length() > 0) {
+        if (name.length() > 0 && selectedColor != null) {
             // allow save action
             return Boolean.TRUE;
             }
         else{
             // display error message
-            Toast.makeText(getActivity(), "Missing Information", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Name Required", Toast.LENGTH_SHORT).show();
             return Boolean.FALSE;
         }
     }
@@ -122,6 +122,8 @@ public abstract class TagAddEditFragment extends AddEditFragment {
 
     /**
      * A method to adjust the fields to reflect the data from a tag
+     * @param tag
+     *      The tag whose info will be used to fill fields
      */
     public void adjustFields(Tag tag){
         tagName.setText(tag.getName());

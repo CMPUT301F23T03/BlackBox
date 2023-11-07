@@ -20,6 +20,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,10 +54,7 @@ public class InventoryDB {
      * @param item The Item object to be added to the database.
      */
     public void addItemToDB(Item item) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("name", item.getName());
-        data.put("value", item.getEstimatedValue());
-        data.put("description", item.getDescription());
+        Map<String, Object> data = generateItemHashMap(item);
         inventory.add(data);
     }
 
@@ -67,11 +65,27 @@ public class InventoryDB {
      * @param new_item  The item from which the new values should come.
      */
     public void updateItemInDB(Item old_item, Item new_item) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("name", new_item.getName());
-        data.put("value", new_item.getEstimatedValue());
-        data.put("description", new_item.getDescription());
+        Map<String, Object> data = generateItemHashMap(new_item);
         inventory.document(old_item.getID()).set(data);
+    }
+
+    /**
+     * Creates a HashMap which represents the data of a tag
+     * @param item
+     *      The item to create a HashMap from
+     */
+    private Map<String, Object> generateItemHashMap(Item item){
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", item.getName());
+        data.put("value", item.getEstimatedValue());
+        data.put("description", item.getDescription());
+        data.put("make", item.getMake());
+        data.put("model", item.getModel());
+        data.put("serial_number", item.getSerialNumber());
+        data.put("comment", item.getComment());
+        item.setDateUpdated(Calendar.getInstance().getTime());
+        data.put("update_date", item.getStringDateUpdated());
+        return data;
     }
 }
 
