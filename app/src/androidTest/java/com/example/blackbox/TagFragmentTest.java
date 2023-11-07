@@ -57,7 +57,7 @@ public class TagFragmentTest {
     @Test
     public void testAddActivity(){
         // start with a fresh database
-        FirestoreTest.clearTagDB();
+        TagDBTest.clearTagDB();
         // navigate to view
         onView(withId(R.id.settings)).perform(click());
         // click on addItem
@@ -65,11 +65,16 @@ public class TagFragmentTest {
         // fill information
         onView(withId(R.id.name_editText)).perform(ViewActions.typeText(tagName));
         onView(withId(R.id.desc_editText)).perform(ViewActions.typeText(description));
+        onView(withId(R.id.color_spinner)).perform(click());
+        onView(withText("Orange")).perform(click());
         // add item
         onView(withId(R.id.small_save_button)).perform(click());
         // see if the newly added data is displayed
         onView(withText(tagName)).check(matches(isDisplayed()));
         onView(withText(description)).check(matches(isDisplayed()));
+        onView(withText(tagName)).perform(click());
+        onView(withText("Orange")).check(matches(isDisplayed()));
+
     }
 
     /**
@@ -78,7 +83,7 @@ public class TagFragmentTest {
     @Test
     public void testEditActivity(){
         // start with a fresh database
-        FirestoreTest.clearTagDB();
+        TagDBTest.clearTagDB();
         // navigate to view
         onView(withId(R.id.settings)).perform(click());
         // click on addItem
@@ -108,7 +113,7 @@ public class TagFragmentTest {
     @Test
     public void testDeleteActivity() {
         // start with a fresh database
-        FirestoreTest.clearTagDB();
+        TagDBTest.clearTagDB();
         // navigate to view
         onView(withId(R.id.settings)).perform(click());
         // click on addItem

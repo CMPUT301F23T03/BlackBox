@@ -49,4 +49,8 @@ public class Tag implements Serializable {
     public String getDataBaseID() {
         return dataBaseID;
     }
+
+    public void setID(String ID){
+        this.dataBaseID = ID;
+    }
 }

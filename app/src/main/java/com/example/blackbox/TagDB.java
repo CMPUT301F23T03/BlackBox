@@ -25,11 +25,22 @@ public class TagDB {
     private FirebaseFirestore db;
 
     /**
-     * Initializes the Firestore database and the 'inventory' collection reference.
+     * Initializes the Firestore database and the 'tag' collection reference.
      */
     public TagDB() {
         db = FirebaseFirestore.getInstance();
         tags = db.collection("tags");
+    }
+
+    /**
+     * Initializes the Firestore database with a provided collection reference.
+     * Mostly used for creating test databases.
+     * @param collection
+     *      The name of the collection to associate with the DB
+     */
+    public TagDB(String collection) {
+        db = FirebaseFirestore.getInstance();
+        tags = db.collection(collection);
     }
 
     /**

@@ -9,15 +9,5 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 public class FirestoreTest {
-    public static void clearTagDB(){
-        TagDB tags = new TagDB();
-        CollectionReference tagRef = tags.getTags();
-        Task<QuerySnapshot> querySnapshotTask = tagRef.get();
-        querySnapshotTask.addOnSuccessListener(queryDocumentSnapshots -> {
-            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                // Delete each document in the collection
-                tagRef.document(documentSnapshot.getId()).delete();
-            }
-        });
-    }
+
 }
