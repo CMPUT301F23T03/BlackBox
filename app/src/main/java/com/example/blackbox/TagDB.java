@@ -13,7 +13,11 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,26 +57,26 @@ public class TagDB {
 
 
     /**
-     * Adds a new item to the 'inventory' collection in the Firestore database.
+     * Adds a new tag to the 'tags' collection in the Firestore database.
      *
      * @param tag The tag object to be added to the database.
      */
     public void addTagToDB(Tag tag) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("name", tag.getName());
-        data.put("color", tag.getColor());
-        data.put("description", tag.getDescription());
-        data.put("color_name", tag.getColorName());
+        Map<String, Object> data = generateTagHashMap(tag);
         // Add the item data to the Firestore collection
         tags.add(data);
     }
 
+    /**
+     * Updates a tag in the 'tags' collection in the Firestore database.
+     *
+     * @param oldTag
+     *      The tag object to be updated.
+     * @param newTag
+     *      The tag object to take new info from.
+     */
     public void editTag(Tag oldTag, Tag newTag) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("name", newTag.getName());
-        data.put("color", newTag.getColor());
-        data.put("description", newTag.getDescription());
-        data.put("color_name", newTag.getColorName());
+        Map<String, Object> data = generateTagHashMap(newTag);
         if (oldTag.getDataBaseID() != null) {
             tags.document(oldTag.getDataBaseID()).update(data);
             Log.d("Firestore", "Updated Successfully");
@@ -81,6 +85,23 @@ public class TagDB {
             Log.d("Firestore", "Update failed, no tag to update specified");
         }
 
+    }
+
+    /**
+     * Creates a HashMap which represents the data of a tag
+     * @param tag
+     *      The tag to create a HashMap from
+     */
+    private Map<String, Object> generateTagHashMap(Tag tag){
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", tag.getName());
+        data.put("color", tag.getColor());
+        data.put("description", tag.getDescription());
+        data.put("color_name", tag.getColorName());
+        // note the date of the tag
+        tag.setDateUpdated(Calendar.getInstance().getTime());
+        data.put("update_date", tag.getStringDateUpdated());
+        return data;
     }
 
     public void deleteTag(Tag tag){
