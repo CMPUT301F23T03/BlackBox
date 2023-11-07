@@ -90,7 +90,6 @@ public class InventoryFragment extends Fragment {
             Bundle savedInstanceState
     ) {
         View ItemFragmentLayout = inflater.inflate(R.layout.inventory_fragment, container, false);
-        totalSumTextView = ItemFragmentLayout.findViewById(R.id.total_sum);
         return ItemFragmentLayout;
     }
 
@@ -112,6 +111,7 @@ public class InventoryFragment extends Fragment {
         itemViewList = (ListView) view.findViewById(R.id.item_list);
         inventoryAdapter = new InventoryListAdapter(activityContext, itemList);
         itemViewList.setAdapter(inventoryAdapter);
+        totalSumTextView = view.findViewById(R.id.total_sum);
 
 
         // listener for data changes in DB
@@ -152,9 +152,8 @@ public class InventoryFragment extends Fragment {
                 }
                 // Notify the adapter that the data has changed
                 inventoryAdapter.notifyDataSetChanged();
-
-                // calculates total estimated value sum
                 updateTotalSum();
+
             }
         });
 
@@ -208,9 +207,6 @@ public class InventoryFragment extends Fragment {
                                         itemList.add(item);
                                         // Notify the adapter that the data has changed
                                         inventoryAdapter.notifyDataSetChanged();
-
-                                        // calculates total estimated value sum
-                                        updateTotalSum();
                                     }
                                 } else {
                                     // Handle the case where the document does not exist
@@ -233,6 +229,6 @@ public class InventoryFragment extends Fragment {
 
     public void updateTotalSum() {
         double totalSum = calculateTotalSum(itemList);
-        totalSumTextView.setText(getString(R.string.total_sum_format, totalSum));
+        totalSumTextView.setText(String.format("%.2f",totalSum));
     }
 }
