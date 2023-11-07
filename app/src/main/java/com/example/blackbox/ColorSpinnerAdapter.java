@@ -45,6 +45,14 @@ public class ColorSpinnerAdapter extends ArrayAdapter<TagColor> {
         return colors;
     }
 
+    /**
+     * A method which returns the list of TagColors
+     * @return
+     *      The list of tag colors
+     */
+    public ArrayList<TagColor> getColors(){
+        return colors;
+    }
 
     /**
      * A method which returns the index of a color in the adapters colors list

@@ -1,7 +1,6 @@
 package com.example.blackbox;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 public class Tag implements Serializable {
     private String name;
@@ -49,5 +48,9 @@ public class Tag implements Serializable {
 
     public String getDataBaseID() {
         return dataBaseID;
+    }
+
+    public void setID(String ID){
+        this.dataBaseID = ID;
     }
 }

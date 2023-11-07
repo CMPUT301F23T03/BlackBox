@@ -32,7 +32,7 @@ public class InventoryEditFragment extends InventoryAddEditFragment {
     /**
      * Create a new instance of the InventoryEditFragment with the provided Item object as an argument.
      *
-     * @param index The index of Item object to be associated with the fragment.
+     * @param item The Item object to be associated with the fragment.
      * @return A new instance of InventoryEditFragment.
      */
     static InventoryEditFragment newInstance(Item item) {
