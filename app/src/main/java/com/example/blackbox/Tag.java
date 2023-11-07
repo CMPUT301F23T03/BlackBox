@@ -1,7 +1,6 @@
 package com.example.blackbox;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 
 public class Tag implements Serializable {
     private String name;

@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-public class InventoryAddEditFragment extends Fragment {
+public abstract class InventoryAddEditFragment extends AddEditFragment {
     private EditText itemName;
     private EditText itemValue;
     private EditText itemDescription;
@@ -18,28 +18,14 @@ public class InventoryAddEditFragment extends Fragment {
     private Double val;
     private String desc;
     private InventoryDB itemDB;
-    private int fragment_id;
 
     /**
      * Default constructor for the InventoryAddEditFragment
      */
     public InventoryAddEditFragment(int fragment_id){
-        this.fragment_id = fragment_id;
+        super(fragment_id);
     }
 
-    /**
-     * Called to create the view for the fragment.
-     *
-     * @param inflater           The LayoutInflater object that can be used to inflate views.
-     * @param container          The parent view that the fragment's UI should be attached to.
-     * @param savedInstanceState  A Bundle containing the saved state of the fragment.
-     * @return The view for the fragment.
-     */
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View fragmentLayout = inflater.inflate(fragment_id, container, false);
-        return fragmentLayout;
-    }
 
     /**
      * A method which sets up the database, listeners,
@@ -47,6 +33,7 @@ public class InventoryAddEditFragment extends Fragment {
      * @param view
      *      The view from which to find UI elements
      */
+    @Override
     public void setupFragment(View view) {
         // get database
         itemDB = new InventoryDB();
@@ -56,7 +43,6 @@ public class InventoryAddEditFragment extends Fragment {
         itemValue = view.findViewById(R.id.value_editText);
         itemDescription = view.findViewById(R.id.desc_editText);
         setupBackButtonListener(view);
-
 
     }
 
@@ -98,7 +84,8 @@ public class InventoryAddEditFragment extends Fragment {
     /**
      * A method which creates a new item and adds it to the database
      */
-    public void generateItem(){
+    @Override
+    public void add(){
         Item new_item = new Item(name, val, desc);
         itemDB.addItemToDB(new_item);
         NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());

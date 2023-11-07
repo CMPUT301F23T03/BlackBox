@@ -1,9 +1,6 @@
 package com.example.blackbox;
 
-import android.media.Image;
-
 import java.io.Serializable;
-import java.net.URL;
 import java.util.ArrayList;
 
 public class Item implements Serializable {
