@@ -54,8 +54,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/top_constraint_layout" />
 
-    <SurfaceView
-        android:id="@+id/surface_view"
+    <ImageView
+        android:id="@+id/image_view"
         android:layout_width="416dp"
         android:layout_height="385dp"
         android:layout_marginTop="30dp"
@@ -71,7 +71,7 @@
         android:padding="5dp"
         android:text="Barcode Text"
         android:textSize="25sp"
-        app:layout_constraintTop_toBottomOf="@id/surface_view"
+        app:layout_constraintTop_toBottomOf="@id/image_view"
         tools:layout_editor_absoluteX="0dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
