@@ -22,6 +22,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.firebase.database.collection.LLRBNode;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -38,6 +39,7 @@ public class TagFragment extends Fragment {
     private View view;
     private Context activityContext;       // context of MainActivity
     private TagDB tagDB;
+    private ListenerRegistration tagDBlistener;
     /**
      * Called to create the view for the fragment.
      *
@@ -76,7 +78,7 @@ public class TagFragment extends Fragment {
         // initialize database
         tagDB = new TagDB();
         // DB listener
-        tagDB.getTags()
+        tagDBlistener = tagDB.getTags()
                 .orderBy("update_date", Query.Direction.DESCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -132,6 +134,7 @@ public class TagFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         activityContext = null;
+        tagDBlistener.remove();
     }
 
 }
