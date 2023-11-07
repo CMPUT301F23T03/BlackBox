@@ -1,6 +1,7 @@
 package com.example.blackbox;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,7 +121,9 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     public void editItem(Item item){
         Item new_item = new Item(name, new ArrayList<>(), "", val, make, model, serialNumber, desc, comment);
         itemDB.updateItemInDB(item, new_item);
-        NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
+        InventoryFragment inventoryFragment = new InventoryFragment();
+        Log.d("CONTEXT_IS", inventoryFragment.toString());
+        NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());
     }
 
     /**
