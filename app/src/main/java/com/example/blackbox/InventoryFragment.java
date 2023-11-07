@@ -25,6 +25,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -43,6 +44,7 @@ public class InventoryFragment extends Fragment {
     ArrayAdapter<Item> inventoryAdapter;
     ArrayList<Item> itemList;
     Button addButton;
+    ListenerRegistration dbListener;
     private Context activityContext;
     InventoryDB inventoryDB;
     InventoryEditFragment inventoryEditFragment = new InventoryEditFragment();
@@ -74,6 +76,7 @@ public class InventoryFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         activityContext = null;
+        dbListener.remove();
     }
 
 
@@ -115,7 +118,8 @@ public class InventoryFragment extends Fragment {
 
 
         // listener for data changes in DB
-        inventoryDB.getInventory()
+        dbListener =
+                inventoryDB.getInventory()
                 // whenever database is update it is reordered by add date
                 // THIS MAY BREAK THINGS ONCE SORTING IS IMPLEMENTED
                 .orderBy("update_date", Query.Direction.DESCENDING)
@@ -153,7 +157,8 @@ public class InventoryFragment extends Fragment {
                 // Notify the adapter that the data has changed
                 inventoryAdapter.notifyDataSetChanged();
                 updateTotalSum();
-
+                Log.d("Firestore", activityContext.toString());
+                Log.d("Firestore", "Processed Update");
             }
         });
 
