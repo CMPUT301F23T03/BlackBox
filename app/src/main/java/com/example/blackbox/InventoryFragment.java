@@ -10,6 +10,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,6 +31,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import org.checkerframework.checker.units.qual.A;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +47,9 @@ public class InventoryFragment extends Fragment {
     InventoryDB inventoryDB;
     InventoryEditFragment inventoryEditFragment = new InventoryEditFragment();
     InventoryAddFragment inventoryAddFragment = new InventoryAddFragment();
+    private TextView totalSumTextView;
+    // Add a member variable to store the total sum
+    private double totalSum = 0.0;
 
     /**
      * Default constructor for the InventoryFragment.
@@ -85,6 +90,7 @@ public class InventoryFragment extends Fragment {
             Bundle savedInstanceState
     ) {
         View ItemFragmentLayout = inflater.inflate(R.layout.inventory_fragment, container, false);
+        totalSumTextView = ItemFragmentLayout.findViewById(R.id.total_sum);
         return ItemFragmentLayout;
     }
 
@@ -106,6 +112,7 @@ public class InventoryFragment extends Fragment {
         itemViewList = (ListView) view.findViewById(R.id.item_list);
         inventoryAdapter = new InventoryListAdapter(activityContext, itemList);
         itemViewList.setAdapter(inventoryAdapter);
+
 
         // listener for data changes in DB
         inventoryDB.getInventory()
@@ -145,6 +152,9 @@ public class InventoryFragment extends Fragment {
                 }
                 // Notify the adapter that the data has changed
                 inventoryAdapter.notifyDataSetChanged();
+
+                // calculates total estimated value sum
+                updateTotalSum();
             }
         });
 
@@ -189,7 +199,7 @@ public class InventoryFragment extends Fragment {
                                     String description = document.getString("description");
                                     // Create a Tag object with the retrieved data
 
-                                    Tag tag = new Tag(name, color, colorName, description); // You can add other properties as needed
+                                    Tag tag = new Tag(name, color, colorName, description);
                                     item.getTags().add(tag);
 
                                     // Check if all tags have been retrieved
@@ -198,6 +208,9 @@ public class InventoryFragment extends Fragment {
                                         itemList.add(item);
                                         // Notify the adapter that the data has changed
                                         inventoryAdapter.notifyDataSetChanged();
+
+                                        // calculates total estimated value sum
+                                        updateTotalSum();
                                     }
                                 } else {
                                     // Handle the case where the document does not exist
@@ -208,5 +221,18 @@ public class InventoryFragment extends Fragment {
                         }
                     });
         }
+    }
+
+    private double calculateTotalSum(ArrayList<Item> items) {
+        double totalSum = 0.0;
+        for (Item item : items) {
+            totalSum += item.getEstimatedValue();
+        }
+        return totalSum;
+    }
+
+    public void updateTotalSum() {
+        double totalSum = calculateTotalSum(itemList);
+        totalSumTextView.setText(getString(R.string.total_sum_format, totalSum));
     }
 }
