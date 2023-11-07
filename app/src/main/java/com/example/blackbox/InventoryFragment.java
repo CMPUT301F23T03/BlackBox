@@ -24,6 +24,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -106,7 +107,11 @@ public class InventoryFragment extends Fragment {
         itemViewList.setAdapter(inventoryAdapter);
 
         // listener for data changes in DB
-        inventoryDB.getInventory().addSnapshotListener(new EventListener<QuerySnapshot>() {
+        inventoryDB.getInventory()
+                // whenever database is update it is reordered by add date
+                // THIS MAY BREAK THINGS ONCE SORTING IS IMPLEMENTED
+                .orderBy("update_date", Query.Direction.DESCENDING)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value,
                                 @Nullable FirebaseFirestoreException e) {
@@ -119,8 +124,14 @@ public class InventoryFragment extends Fragment {
                     String name = doc.getString("name");
                     Double val = doc.getDouble("value");
                     String desc = doc.getString("description");
+                    String make = doc.getString("make");
+                    String model = doc.getString("model");
+                    String serialNumber = doc.getString("serial_number");
+                    String comment = doc.getString("comment");
                     String dbID = doc.getId();
-                    itemList.add(new Item(name, val, desc, dbID));
+                    ArrayList<Tag> tags = new ArrayList<>();
+                    String dateOfPurchase = "";
+                    itemList.add(new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID));
                 }
                 // Notify the adapter that the data has changed
                 inventoryAdapter.notifyDataSetChanged();
@@ -128,7 +139,7 @@ public class InventoryFragment extends Fragment {
         });
 
         // add an item - display add fragment
-        addButton = (Button) view.findViewById(R.id.add_button);
+        addButton = view.findViewById(R.id.add_button);
         addButton.setOnClickListener((v) -> {
             NavigationManager.switchFragment(inventoryAddFragment, getParentFragmentManager());
         });

@@ -89,14 +89,17 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         model = itemModel.getText().toString();
         serialNumber = itemSerialNumber.getText().toString();
         comment = itemComment.getText().toString();
-        if (name.length() > 0 && val != null) {
-            // allow save action
-            return Boolean.TRUE;
+        if (name.length() == 0){
+            Toast.makeText(getActivity(), "Name Required", Toast.LENGTH_SHORT).show();
+            return Boolean.FALSE;
+        }
+        else if (val == null) {
+            Toast.makeText(getActivity(), "Estimated Value Required", Toast.LENGTH_SHORT).show();
+            return Boolean.FALSE;
         }
         else {
-            // display error message
-            Toast.makeText(getActivity(), "Missing Information", Toast.LENGTH_SHORT).show();
-            return Boolean.FALSE;
+            // allow input
+            return Boolean.TRUE;
         }
     }
     /**
@@ -118,5 +121,20 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         Item new_item = new Item(name, new ArrayList<>(), "", val, make, model, serialNumber, desc, comment);
         itemDB.updateItemInDB(item, new_item);
         NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
+    }
+
+    /**
+     * A method to adjust the fields to reflect the data from an item
+     * @param item
+     *           The item whose info will be used to fill fields
+     */
+    public void adjustFields(Item item){
+        itemName.setText(item.getName());
+        itemDescription.setText(item.getDescription());
+        itemComment.setText(item.getComment());
+        itemMake.setText(item.getMake());
+        itemValue.setText(item.getStringEstimatedValue());
+        itemModel.setText(item.getModel());
+        itemSerialNumber.setText(item.getSerialNumber());
     }
 }
