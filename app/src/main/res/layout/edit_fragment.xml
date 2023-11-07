@@ -148,7 +148,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.086"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/date_editText" />
+                    app:layout_constraintTop_toBottomOf="@+id/date_editText"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <TextView
                     android:id="@+id/enter_name_prompt5"
@@ -174,7 +175,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.086"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/name_editText5" />
+                    app:layout_constraintTop_toBottomOf="@+id/make_editText" />
 
                 <TextView
                     android:id="@+id/enter_name_prompt7"
@@ -187,7 +188,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.087"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/name_editText6" />
+                    app:layout_constraintTop_toBottomOf="@+id/model_editText" />
 
                 <TextView
                     android:id="@+id/enter_name_prompt8"
@@ -200,7 +201,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.087"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/name_editText7" />
+                    app:layout_constraintTop_toBottomOf="@+id/serial_number_editText" />
 
                 <TextView
                     android:id="@+id/enter_name_prompt9"
@@ -237,12 +238,13 @@
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
+                    android:inputType="number"
                     android:hint="Value"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt4" />
 
                 <EditText
-                    android:id="@+id/name_editText5"
+                    android:id="@+id/make_editText"
                     android:layout_width="297dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -255,7 +257,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt5" />
 
                 <EditText
-                    android:id="@+id/name_editText6"
+                    android:id="@+id/model_editText"
                     android:layout_width="297dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -268,7 +270,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt6" />
 
                 <EditText
-                    android:id="@+id/name_editText7"
+                    android:id="@+id/serial_number_editText"
                     android:layout_width="297dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -277,11 +279,12 @@
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
                     android:hint="Serial Number"
+                    android:inputType="number"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt7" />
 
                 <EditText
-                    android:id="@+id/name_editText8"
+                    android:id="@+id/comment_editText"
                     android:layout_width="297dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="28dp"

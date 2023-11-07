@@ -10,36 +10,32 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
-public class InventoryAddEditFragment extends Fragment {
+import java.util.ArrayList;
+
+public abstract class InventoryAddEditFragment extends AddEditFragment {
     private EditText itemName;
     private EditText itemValue;
     private EditText itemDescription;
+    private EditText itemMake;
+    private EditText itemModel;
+    private EditText itemSerialNumber;
+    private EditText itemComment;
     private String name;
     private Double val;
     private String desc;
     private InventoryDB itemDB;
-    private int fragment_id;
+    private String make;
+    private String model;
+    private String serialNumber;
+    private String comment;
 
     /**
      * Default constructor for the InventoryAddEditFragment
      */
     public InventoryAddEditFragment(int fragment_id){
-        this.fragment_id = fragment_id;
+        super(fragment_id);
     }
 
-    /**
-     * Called to create the view for the fragment.
-     *
-     * @param inflater           The LayoutInflater object that can be used to inflate views.
-     * @param container          The parent view that the fragment's UI should be attached to.
-     * @param savedInstanceState  A Bundle containing the saved state of the fragment.
-     * @return The view for the fragment.
-     */
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-        View fragmentLayout = inflater.inflate(fragment_id, container, false);
-        return fragmentLayout;
-    }
 
     /**
      * A method which sets up the database, listeners,
@@ -47,6 +43,7 @@ public class InventoryAddEditFragment extends Fragment {
      * @param view
      *      The view from which to find UI elements
      */
+    @Override
     public void setupFragment(View view) {
         // get database
         itemDB = new InventoryDB();
@@ -55,8 +52,11 @@ public class InventoryAddEditFragment extends Fragment {
         itemName = view.findViewById(R.id.name_editText);
         itemValue = view.findViewById(R.id.value_editText);
         itemDescription = view.findViewById(R.id.desc_editText);
+        itemMake = view.findViewById(R.id.make_editText);
+        itemModel = view.findViewById(R.id.model_editText);
+        itemComment = view.findViewById(R.id.comment_editText);
+        itemSerialNumber = view.findViewById(R.id.serial_number_editText);;
         setupBackButtonListener(view);
-
 
     }
 
@@ -85,21 +85,29 @@ public class InventoryAddEditFragment extends Fragment {
             val = Double.parseDouble(itemValue.getText().toString());
         }
         desc = itemDescription.getText().toString();
-        if (name.length() > 0 && val != null && desc.length() > 0) {
-            // allow save action
-            return Boolean.TRUE;
+        make = itemMake.getText().toString();
+        model = itemModel.getText().toString();
+        serialNumber = itemSerialNumber.getText().toString();
+        comment = itemComment.getText().toString();
+        if (name.length() == 0){
+            Toast.makeText(getActivity(), "Name Required", Toast.LENGTH_SHORT).show();
+            return Boolean.FALSE;
+        }
+        else if (val == null) {
+            Toast.makeText(getActivity(), "Estimated Value Required", Toast.LENGTH_SHORT).show();
+            return Boolean.FALSE;
         }
         else {
-            // display error message
-            Toast.makeText(getActivity(), "Missing Information", Toast.LENGTH_SHORT).show();
-            return Boolean.FALSE;
+            // allow input
+            return Boolean.TRUE;
         }
     }
     /**
      * A method which creates a new item and adds it to the database
      */
-    public void generateItem(){
-        Item new_item = new Item(name, val, desc);
+    @Override
+    public void add(){
+        Item new_item = new Item(name, new ArrayList<>(), "", val, make, model, serialNumber, desc, comment);
         itemDB.addItemToDB(new_item);
         NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
     }
@@ -110,8 +118,23 @@ public class InventoryAddEditFragment extends Fragment {
      *      The item to be replaced
      */
     public void editItem(Item item){
-        Item new_item = new Item(name, val, desc);
+        Item new_item = new Item(name, new ArrayList<>(), "", val, make, model, serialNumber, desc, comment);
         itemDB.updateItemInDB(item, new_item);
         NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
+    }
+
+    /**
+     * A method to adjust the fields to reflect the data from an item
+     * @param item
+     *           The item whose info will be used to fill fields
+     */
+    public void adjustFields(Item item){
+        itemName.setText(item.getName());
+        itemDescription.setText(item.getDescription());
+        itemComment.setText(item.getComment());
+        itemMake.setText(item.getMake());
+        itemValue.setText(item.getStringEstimatedValue());
+        itemModel.setText(item.getModel());
+        itemSerialNumber.setText(item.getSerialNumber());
     }
 }

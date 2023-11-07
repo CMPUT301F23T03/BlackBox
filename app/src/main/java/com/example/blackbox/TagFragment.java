@@ -22,6 +22,7 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.firebase.database.collection.LLRBNode;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -75,7 +76,9 @@ public class TagFragment extends Fragment {
         // initialize database
         tagDB = new TagDB();
         // DB listener
-        tagDB.getTags().addSnapshotListener(new EventListener<QuerySnapshot>() {
+        tagDB.getTags()
+                .orderBy("update_date", Query.Direction.DESCENDING)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value,
                                 @Nullable FirebaseFirestoreException e) {
@@ -90,7 +93,9 @@ public class TagFragment extends Fragment {
                     String desc = doc.getString("description");
                     String colorName = doc.getString("color_name");
                     String dbID = doc.getId();
-                    tagList.add(new Tag(name, col, colorName, desc, dbID));
+                    Tag tag = new Tag(name, col, colorName, desc, dbID);
+                    tag.setDateUpdatedWithString(doc.getString("update_date"));
+                    tagList.add(tag);
                 }
                 // Notify the adapter that the data has changed
                 tagAdapter.notifyDataSetChanged();

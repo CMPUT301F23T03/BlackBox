@@ -43,7 +43,7 @@ public class InventoryAddFragment extends InventoryAddEditFragment {
         Button small_add_button = view.findViewById(R.id.small_save_button);
         small_add_button.setOnClickListener(v -> {
             if (validateInput()) {
-                generateItem();
+                add();
             }
         });
     }

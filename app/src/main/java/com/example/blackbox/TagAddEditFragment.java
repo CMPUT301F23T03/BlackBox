@@ -16,7 +16,7 @@ import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
-public class TagAddEditFragment extends Fragment {
+public abstract class TagAddEditFragment extends AddEditFragment {
     private EditText tagName;  // itemName text box
     private EditText tagDescription;   // itemDescription text box
     private TagDB tagDB;
@@ -26,30 +26,14 @@ public class TagAddEditFragment extends Fragment {
     private String colorName;
     private Spinner spinner;
     private ColorSpinnerAdapter spinnerAdapter;
-    private int fragment_id;
 
     /**
      * Default constructor for the TagAddEditFragment.
      */
     public TagAddEditFragment(int fragment_id){
-        this.fragment_id = fragment_id;
+        super(fragment_id);
     }
-    /**
-     * Called to create the view for the fragment.
-     *
-     * @param inflater           The LayoutInflater object that can be used to inflate views.
-     * @param container          The parent view that the fragment's UI should be attached to.
-     * @param savedInstanceState  A Bundle containing the saved state of the fragment.
-     * @return The view for the fragment.
-     */
-    @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState
-    ) {
-        View fragmentLayout = inflater.inflate(fragment_id, container, false);
-        return fragmentLayout;
-    }
+
 
     /**
      * A method which sets up the database, listeners,
@@ -115,13 +99,13 @@ public class TagAddEditFragment extends Fragment {
     public Boolean validateInput(){
         name = tagName.getText().toString();
         desc = tagDescription.getText().toString();
-        if (name.length() > 0 && selectedColor != null && desc.length() > 0) {
+        if (name.length() > 0 && selectedColor != null) {
             // allow save action
             return Boolean.TRUE;
             }
         else{
             // display error message
-            Toast.makeText(getActivity(), "Missing Information", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Name Required", Toast.LENGTH_SHORT).show();
             return Boolean.FALSE;
         }
     }
@@ -129,7 +113,8 @@ public class TagAddEditFragment extends Fragment {
     /**
      * A method which creates a new tag and adds it to the database
      */
-    public void generateTag(){
+    @Override
+    public void add(){
         Tag new_tag = new Tag(name, selectedColor, colorName, desc);
         tagDB.addTagToDB(new_tag);
         NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
@@ -137,6 +122,8 @@ public class TagAddEditFragment extends Fragment {
 
     /**
      * A method to adjust the fields to reflect the data from a tag
+     * @param tag
+     *      The tag whose info will be used to fill fields
      */
     public void adjustFields(Tag tag){
         tagName.setText(tag.getName());
