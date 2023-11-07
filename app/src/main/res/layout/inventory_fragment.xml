@@ -18,8 +18,8 @@
 
         <Button
             android:id="@+id/add_button"
-            android:layout_width="318dp"
-            android:layout_height="66dp"
+            android:layout_width="295dp"
+            android:layout_height="61dp"
             android:backgroundTint="@color/primary"
             android:text="@string/add_button"
             android:textColor="@android:color/white"
@@ -44,12 +44,27 @@
             android:id="@+id/item_list"
             android:layout_width="393dp"
             android:layout_height="0dp"
-            android:layout_marginTop="180dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="170dp"
+            android:layout_marginBottom="50dp"
             app:layout_constraintBottom_toTopOf="@+id/add_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"></ListView>
+
+        <TextView
+            android:id="@+id/total_sum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="30dp"
+            android:paddingEnd="35dp"
+            android:text="Total: $1234.56"
+            android:textAlignment="textEnd"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@+id/add_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/item_list" />
 
         <Button
             android:id="@+id/sort_button"
