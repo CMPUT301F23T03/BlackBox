@@ -61,7 +61,7 @@ public class Item implements Serializable {
      * @param name        The name of the item.
      * @param estimatedValue The estimated value of the item.
      * @param description The description of the item.
-     * @param id The id of the item.
+     * @param ID The id of the item.
      */
     public Item(String name, double estimatedValue, String description, String ID) {
         this.name = name;
