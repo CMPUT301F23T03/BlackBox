@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -314,8 +315,16 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
                 boolean[] selectedTags = new boolean[tagList.size()];
                 String[] tagNameList = new String[tagList.size()];
 
-                for (int i = 0; i < tagList.size(); i++) {
-                    tagNameList[i] = tagList.get(i).getName();
+                if (tagList.size() > 0) {
+                    for (int i = 0; i < tagList.size(); i++) {
+                        tagNameList[i] = tagList.get(i).getName();
+                    }
+
+                    String[] current_itemTags = tagDropdown.getText().toString().split(", ");
+
+                    for (int i = 0; i < tagNameList.length; i++) {
+                        selectedTags[i] = Arrays.asList(current_itemTags).contains(tagNameList[i]);
+                    }
                 }
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
