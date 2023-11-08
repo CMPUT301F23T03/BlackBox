@@ -45,34 +45,13 @@ public class ScanGalleryFragment extends Fragment {
     private ImageView imageView;
     private Button choosePictureButton;
 
-    @SuppressLint("RestrictedApi")
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
             registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
                 if (uri != null) {
                     imageView.setImageURI(uri);
                     Log.d("PhotoPicker", "Selected URI: " + uri);
-                    Bitmap bitmap = null;
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    Frame frame = new Frame.Builder().setBitmap(bitmap).build();
-                    SparseArray<Barcode> barcodes = barcodeDetector.detect(frame);
-                    if(barcodes != null && barcodes.size() > 0){
-                        for (int i = 0; i < barcodes.size(); i++){
-                            Log.d(LOG_TAG, "Value: " + barcodes.valueAt(i).rawValue + "----" + barcodes.valueAt(i).displayValue);
-                            Toast.makeText(requireContext(), barcodes.valueAt(i).rawValue, Toast.LENGTH_SHORT).show();
-                        }
-                        barcodeData = barcodes.valueAt(0).displayValue;
-                        barcodeText.setText(barcodeData);
-                    }else {
-                        Log.e(LOG_TAG,"SparseArray null or empty");
-                        Toast.makeText(requireContext(), "Barcode not found", Toast.LENGTH_SHORT).show();
-                        barcodeText.setText("Barcode not found");
-                    }
-
+                    SparseArray<Barcode> barcodes = getBarcode(uri);
+                    checkBarcode(barcodes);
                 } else {
                     Log.d("PhotoPicker", "No media selected");
                 }
@@ -125,6 +104,36 @@ public class ScanGalleryFragment extends Fragment {
             ScanFragment scanFragment = new ScanFragment();
             NavigationManager.switchFragment(scanFragment, getParentFragmentManager());
         });
+    }
+
+    public SparseArray<Barcode> getBarcode(Uri uri){
+        Bitmap bitmap = null;
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        Frame frame = new Frame.Builder().setBitmap(bitmap).build();
+        SparseArray<Barcode> barcodes = barcodeDetector.detect(frame);
+
+        return barcodes;
+    }
+
+    @SuppressLint("RestrictedApi")
+    public void checkBarcode(SparseArray<Barcode> barcodes){
+        if(barcodes != null && barcodes.size() > 0){
+            for (int i = 0; i < barcodes.size(); i++){
+                Log.d(LOG_TAG, "Value: " + barcodes.valueAt(i).rawValue + "----" + barcodes.valueAt(i).displayValue);
+                Toast.makeText(requireContext(), barcodes.valueAt(i).rawValue, Toast.LENGTH_SHORT).show();
+            }
+            barcodeData = barcodes.valueAt(0).displayValue;
+            barcodeText.setText(barcodeData);
+        }else {
+            Log.e(LOG_TAG,"SparseArray null or empty");
+            Toast.makeText(requireContext(), "Barcode not found", Toast.LENGTH_SHORT).show();
+            barcodeText.setText("Barcode not found");
+        }
     }
 //    @Override
 //    public void onRequestPermissionsResult(int requestCode, String[]

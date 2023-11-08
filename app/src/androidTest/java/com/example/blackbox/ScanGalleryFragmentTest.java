@@ -1,17 +1,26 @@
+package com.example.blackbox;
+
+import static junit.framework.TestCase.assertEquals;
+
 import android.content.Context;
 import android.net.Uri;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentFactory;
+import android.util.Log;
+
+import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
-import com.example.blackbox.ScanGalleryFragment;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 @RunWith(AndroidJUnit4.class)
 public class ScanGalleryFragmentTest {
-
     private Context context;
 
     @Before
@@ -20,20 +29,46 @@ public class ScanGalleryFragmentTest {
     }
 
     @Test
-    public void testSerialNumberExtraction() {
-        // Assuming you have images in the res/drawable folder with serial numbers as names.
-        // For example, "12345.jpg", "67890.jpg", etc.
-        String[] serialNumbers = {"12345", "67890"};  // Add the names of your images here
+    public void testGetBarcode() {
+        String[] serialNumbers = {"8544705444.jpg", "6038398546.jpg"}; // Image file names
 
         for (String serialNumber : serialNumbers) {
-            // Construct the image URI for each serial number
-            int imageResId = context.getResources().getIdentifier(serialNumber, "drawable", context.getPackageName());
-            Uri imageUri = Uri.parse("android.resource://" + context.getPackageName() + "/" + imageResId);
+            // Copy the image file from assets to the device's internal storage
+            String filePath = context.getFilesDir() + File.separator + serialNumber;
+            copyImageFromAssets(serialNumber, filePath);
 
-            // Create the fragment and test barcode extraction
-            ScanGalleryFragment fragment = new ScanGalleryFragment();
-            fragment.getBarcode(imageUri); // Call the method you want to test
-            // Add assertions to check if the barcode extraction was successful
+            File imageFile = new File(filePath);
+
+            if (imageFile.exists()) {
+                // Log the filePath for debugging
+                Log.d("Test Barcode", "Image filePath: " + filePath);
+
+                // Create the fragment and test barcode extraction
+                Uri imageUri = Uri.fromFile(imageFile);
+                ScanGalleryFragment fragment = new ScanGalleryFragment();
+                assertEquals(fragment.getBarcode(imageUri), serialNumber);
+            } else {
+                // Log a message or handle the case when the file does not exist
+                Log.d("Test Barcode", "File does not exist: " + filePath);
+            }
+        }
+    }
+
+    private void copyImageFromAssets(String fileName, String destFilePath) {
+        try {
+            InputStream in = context.getAssets().open(fileName);
+            OutputStream out = new FileOutputStream(destFilePath);
+
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = in.read(buffer)) > 0) {
+                out.write(buffer, 0, length);
+            }
+
+            in.close();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
