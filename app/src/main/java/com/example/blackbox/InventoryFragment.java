@@ -1,6 +1,8 @@
 package com.example.blackbox;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,33 +12,30 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.checkerframework.checker.units.qual.A;
-
-import java.lang.reflect.Array;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import java.util.Locale;
 
 /**
  * A Fragment that displays and manages an inventory of items. It includes features to add and edit items.
@@ -120,6 +119,15 @@ public class InventoryFragment extends Fragment {
         itemViewList.setAdapter(inventoryAdapter);
         totalSumTextView = view.findViewById(R.id.total_sum);
 
+        // sort the inventory list
+        Button buttonSort = view.findViewById(R.id.sort_button);
+        buttonSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSortOptionDialogue();
+            }
+        });
+
 
         // listener for data changes in DB
         dbListener =
@@ -151,6 +159,93 @@ public class InventoryFragment extends Fragment {
                 NavigationManager.switchFragment(inventoryEditFragment, getParentFragmentManager());
             }
         });
+
+    }
+
+
+    private void showSortOptionDialogue() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        View mView = getLayoutInflater().inflate(R.layout.sort_category_spinner, null);
+
+        builder.setTitle("Sorting Options");
+        builder.setCancelable(false);
+        Spinner spinner = mView.findViewById(R.id.sort_category_spinner);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item,
+                getResources().getStringArray(R.array.sort_category));
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                boolean ascending = true;
+                String selectedCategory = spinner.getSelectedItem().toString();
+                if(!selectedCategory.equalsIgnoreCase("Default")){
+                    //handle the selected sorting category
+                    switch (selectedCategory){
+                        case "By Date":
+                            sortByDate(ascending);
+                            break;
+                        case "By Value":
+                            sortByValue(ascending);
+                            break;
+                        case "By Make":
+                            sortByMake(ascending);
+                            break;
+                        case "By Tag":
+                            sortByTag(ascending);
+                            break;
+                        default:
+                            //handle the default case
+                    }
+                }
+            }
+        });
+
+        builder.setView(mView);
+        builder.create().show();
+    }
+
+    private void sortByDate(boolean ascending) {
+        Comparator<Item> dateComp = new Comparator<Item>() {
+            @Override
+            public int compare(Item o1, Item o2) {
+                //parse the date into appropriate format
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd", Locale.getDefault());
+                try{
+                    Date date1 = dateFormat.parse(o1.getDateOfPurchase());
+                    Date date2 = dateFormat.parse(o2.getDateOfPurchase());
+                    if (date1 != null && date2 != null) {
+                        return ascending ? date1.compareTo(date2) : date2.compareTo(date1);
+                    }
+                }
+                catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return 0;
+            }
+        };
+        itemList.sort(dateComp);
+        inventoryAdapter.notifyDataSetChanged();
+    }
+
+    private void sortByValue(boolean ascending) {
+        if (ascending){
+            itemList.sort((item1, item2) -> Double.compare(item1.getEstimatedValue(), item2.getEstimatedValue()));
+        }
+        else {
+            itemList.sort((item1, item2) -> Double.compare(item2.getEstimatedValue(), item1.getEstimatedValue()));
+        }
+
+        inventoryAdapter.notifyDataSetChanged();
+    }
+
+    private void sortByMake(boolean ascending) {
+
+    }
+
+    private void sortByTag(boolean ascending) {
 
     }
 
@@ -207,7 +302,7 @@ public class InventoryFragment extends Fragment {
         else{
             Log.d("Firestore", "All tag tasks done");
             processUpdate();
-        };
+        }
     }
 
 
