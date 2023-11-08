@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="max_name_length">21</integer>
+    <integer name="max_make_model_length">30</integer>
+    <integer name="max_number_length">10</integer>
+</resources>
