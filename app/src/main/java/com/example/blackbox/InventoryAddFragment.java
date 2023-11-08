@@ -46,7 +46,6 @@ public class InventoryAddFragment extends InventoryAddEditFragment {
         small_add_button.setOnClickListener(v -> {
             if (validateInput()) {
                 add();
-                inventoryAdapter.notifyDataSetChanged();
             }
         });
     }
