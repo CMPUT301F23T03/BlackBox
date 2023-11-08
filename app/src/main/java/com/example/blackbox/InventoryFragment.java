@@ -255,7 +255,23 @@ public class InventoryFragment extends Fragment {
     }
 
     private void sortByMake(boolean ascending) {
+        Comparator<Item> makeComp = new Comparator<Item>() {
+            @Override
+            public int compare(Item o1, Item o2) {
+                String make1 = o1.getMake();
+                String make2 = o2.getMake();
 
+                // compare alphabetically
+                int result = make1.compareToIgnoreCase(make2);
+
+                if (!ascending){
+                    result = -result;
+                }
+                return result;
+            }
+        };
+        itemList.sort(makeComp);
+        inventoryAdapter.notifyDataSetChanged();
     }
 
     private void sortByTag(boolean ascending) {
