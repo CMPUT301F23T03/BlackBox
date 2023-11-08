@@ -207,7 +207,7 @@ public class InventoryFragment extends Fragment {
                             sortByMake(ascending);
                             break;
                         case "By Tag":
-                            sortByTag(ascending);
+                            sortByHighestPrecedentTag(ascending);
                             break;
                         default:
                             //handle the default case
@@ -274,8 +274,34 @@ public class InventoryFragment extends Fragment {
         inventoryAdapter.notifyDataSetChanged();
     }
 
-    private void sortByTag(boolean ascending) {
+    private void sortByHighestPrecedentTag(boolean ascending) {
+        Comparator<Item> tagComp = new Comparator<Item>() {
+            @Override
+            public int compare(Item o1, Item o2) {
+                Tag tag1 = findHighestPrecedentTag(o1);
+                Tag tag2 = findHighestPrecedentTag(o2);
 
+                int result = tag1.getName().compareToIgnoreCase(tag2.getName());
+
+                if (!ascending){
+                    result = -result;
+                }
+                return result;
+            }
+        };
+        itemList.sort(tagComp);
+        inventoryAdapter.notifyDataSetChanged();
+    }
+
+    //helper function to find the highest precedent tag in an item
+    private Tag findHighestPrecedentTag(Item item){
+        Tag highestTag = null;
+        for (Tag tag : item.getTags()){
+            if(highestTag == null || item.getName().compareToIgnoreCase(highestTag.getName()) < 0){
+                highestTag = tag;
+            }
+        }
+        return highestTag;
     }
 
     /**
