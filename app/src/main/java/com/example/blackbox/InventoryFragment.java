@@ -141,7 +141,9 @@ public class InventoryFragment extends Fragment {
                                 @Nullable FirebaseFirestoreException e) {
 
                 // update inventory
-                handleGetInventory(value, e);
+                if (value != null){
+                    handleGetInventory(value, e);
+                }
 
             }
         });
