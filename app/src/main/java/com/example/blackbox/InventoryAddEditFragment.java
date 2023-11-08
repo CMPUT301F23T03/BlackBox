@@ -259,7 +259,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
                         }
                     }
                 }
-                Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment);
+                Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment);
                 itemDB.updateItemInDB(item, new_item);
                 InventoryFragment inventoryFragment = new InventoryFragment();
                 NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());

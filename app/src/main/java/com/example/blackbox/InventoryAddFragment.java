@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ScrollView;
@@ -18,6 +19,7 @@ import androidx.fragment.app.FragmentTransaction;
  * A Fragment responsible for adding a new item to the inventory. Allows users to input the item's name, value, and description.
  */
 public class InventoryAddFragment extends InventoryAddEditFragment {
+    ArrayAdapter<Item> inventoryAdapter;
 
     /**
      * Default constructor for the InventoryAddFragment.
@@ -44,6 +46,7 @@ public class InventoryAddFragment extends InventoryAddEditFragment {
         small_add_button.setOnClickListener(v -> {
             if (validateInput()) {
                 add();
+                inventoryAdapter.notifyDataSetChanged();
             }
         });
     }
