@@ -185,7 +185,6 @@ public class InventoryFragment extends Fragment {
             List<String> tagIDs = (List<String>) doc.get("tags");
 
             Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID);
-            Log.d("Firestore", "tagID");
             if (tagIDs != null && !tagIDs.isEmpty()) {
                 for (String tagID : tagIDs) {
                     Task<DocumentSnapshot> tagTask = tagDB.getTags().document(tagID).get();
@@ -260,6 +259,6 @@ public class InventoryFragment extends Fragment {
 
     public void updateTotalSum() {
         double totalSum = calculateTotalSum(itemList);
-        totalSumTextView.setText(StringFormatter.getMonetaryString(totalSum));
+        totalSumTextView.setText("Total:" +StringFormatter.getMonetaryString(totalSum));
     }
 }
