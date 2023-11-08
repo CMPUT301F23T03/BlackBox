@@ -101,7 +101,7 @@ public class InventoryFragment extends Fragment {
     /**
      * Called when the fragment's view has been created.
      *
-     * @param view               The root view of the fragment.
+     * @param view                The root view of the fragment.
      * @param savedInstanceState  A Bundle containing the saved state of the fragment.
      */
     @Override
@@ -164,7 +164,10 @@ public class InventoryFragment extends Fragment {
 
     }
 
-
+    /**
+     * A dialogue box that shows two spinners which lets the user choose the sorting category and sorting order
+     * and calls the appropriate sort function based on the selection.
+     */
     private void showSortOptionDialogue() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         View mView = getLayoutInflater().inflate(R.layout.custom_sort_spinner, null);
@@ -216,10 +219,18 @@ public class InventoryFragment extends Fragment {
             }
         });
 
+        builder.setNegativeButton("Cancel", (dialogInterface, which) -> {
+           dialogInterface.dismiss();
+        });
+
         builder.setView(mView);
         builder.create().show();
     }
 
+    /**
+     * Sort the list items by Date in ascending or descending order.
+     * @param ascending specifies the sorting order, true = ascending, descending otherwise
+     */
     private void sortByDate(boolean ascending) {
         Comparator<Item> dateComp = new Comparator<Item>() {
             @Override
@@ -230,7 +241,7 @@ public class InventoryFragment extends Fragment {
                     Date date1 = dateFormat.parse(o1.getDateOfPurchase());
                     Date date2 = dateFormat.parse(o2.getDateOfPurchase());
                     if (date1 != null && date2 != null) {
-                        return ascending ? date1.compareTo(date2) : date2.compareTo(date1);
+                        return ascending ? date1.compareTo(date2) : date2.compareTo(date1); // check for ascending or descending
                     }
                 }
                 catch (ParseException e) {
@@ -243,6 +254,10 @@ public class InventoryFragment extends Fragment {
         inventoryAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Sort the list items by Estimated Value in ascending or descending order.
+     * @param ascending specifies the sorting order, true = ascending, descending otherwise
+     */
     private void sortByValue(boolean ascending) {
         if (ascending){
             itemList.sort((item1, item2) -> Double.compare(item1.getEstimatedValue(), item2.getEstimatedValue()));
@@ -254,6 +269,10 @@ public class InventoryFragment extends Fragment {
         inventoryAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Sort the list items by Make (alphabetically) in ascending or descending order.
+     * @param ascending specifies the sorting order, true = ascending, descending otherwise
+     */
     private void sortByMake(boolean ascending) {
         Comparator<Item> makeComp = new Comparator<Item>() {
             @Override
@@ -263,7 +282,7 @@ public class InventoryFragment extends Fragment {
 
                 // compare alphabetically
                 int result = make1.compareToIgnoreCase(make2);
-
+                // check for descending
                 if (!ascending){
                     result = -result;
                 }
@@ -274,6 +293,10 @@ public class InventoryFragment extends Fragment {
         inventoryAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Sort the list items by the Highest Precedent Tag (alphabetically) in ascending or descending order.
+     * @param ascending specifies the sorting order, true = ascending, descending otherwise
+     */
     private void sortByHighestPrecedentTag(boolean ascending) {
         Comparator<Item> tagComp = new Comparator<Item>() {
             @Override
@@ -282,7 +305,7 @@ public class InventoryFragment extends Fragment {
                 Tag tag2 = findHighestPrecedentTag(o2);
 
                 int result = tag1.getName().compareToIgnoreCase(tag2.getName());
-
+                // check for descending
                 if (!ascending){
                     result = -result;
                 }
@@ -293,7 +316,12 @@ public class InventoryFragment extends Fragment {
         inventoryAdapter.notifyDataSetChanged();
     }
 
-    //helper function to find the highest precedent tag in an item
+    /**
+     * Helper function that helps to find the highest precedent tag in an item
+     * @param item The item of which we want to find the highest precedent tag
+     * @return
+     *         The tag with highest precedent
+     */
     private Tag findHighestPrecedentTag(Item item){
         Tag highestTag = null;
         for (Tag tag : item.getTags()){
