@@ -5,4 +5,8 @@
     <string name="add_tag">Add Tag</string>
     <string name="are_you_sure_you_would_nlike_to_delete_this">Are you sure you would \nlike to delete this?</string>
     <string name="total_sum_format">Total: $%.2f</string>
+    <string name="enter_new_name">Enter new name</string>
+    <string name="color">Color</string>
+    <string name="item_name">Item Name</string>
+    <string name="select_one_or_more_tags">Select one or more tags</string>
 </resources>
