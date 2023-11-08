@@ -110,8 +110,6 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         comment = itemComment.getText().toString();
         getSelectedTags();
 
-
-
         if (name.length() == 0){
             Toast.makeText(getActivity(), "Name Required", Toast.LENGTH_SHORT).show();
             return Boolean.FALSE;
@@ -131,7 +129,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
      */
     @Override
     public void add() {
-        Item new_item = new Item(name, tags, "", val, make, model, serialNumber, desc, comment);
+        Item new_item = new Item(name, selectedTags, "", val, make, model, serialNumber, desc, comment);
         itemDB.addItemToDB(new_item);
         NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
     }
@@ -142,7 +140,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
      *      The item to be replaced
      */
     public void editItem(Item item) {
-        Item new_item = new Item(name, tags, "", val, make, model, serialNumber, desc, comment);
+        Item new_item = new Item(name, selectedTags, "", val, make, model, serialNumber, desc, comment);
         itemDB.updateItemInDB(item, new_item);
         InventoryFragment inventoryFragment = new InventoryFragment();
         NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());
@@ -257,7 +255,6 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
                         }
                     }
                 }
-                add();
             }
             @Override
             public void onError(String errorMessage) {
