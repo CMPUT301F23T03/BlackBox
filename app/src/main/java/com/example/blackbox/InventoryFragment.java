@@ -133,7 +133,6 @@ public class InventoryFragment extends Fragment {
         dbListener =
                 inventoryDB.getInventory()
                 // whenever database is update it is reordered by add date
-                // THIS MAY BREAK THINGS ONCE SORTING IS IMPLEMENTED
                 .orderBy("update_date", Query.Direction.DESCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -141,7 +140,7 @@ public class InventoryFragment extends Fragment {
                                 @Nullable FirebaseFirestoreException e) {
 
                 // update inventory
-                if (value != null){
+                if (value != null && !value.isEmpty()){
                     handleGetInventory(value, e);
                 }
 

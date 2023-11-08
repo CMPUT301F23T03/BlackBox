@@ -105,9 +105,13 @@ public class Item implements Serializable {
         this.ID = ID;
     }
 
-    // Checks if the item has tags or not
-    public boolean hasTags() {
-        return tags != null && !tags.isEmpty();
+    /**
+     * Get the number of tags that an item has
+     * @return
+     *      The number of tags
+     */
+    public Integer getNumTags() {
+        return tags.size();
     }
 
     // Getters and setters for various properties
