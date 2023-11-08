@@ -20,6 +20,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -35,6 +36,7 @@ import org.checkerframework.checker.units.qual.A;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * A Fragment that displays and manages an inventory of items. It includes features to add and edit items.
@@ -47,6 +49,7 @@ public class InventoryFragment extends Fragment {
     ListenerRegistration dbListener;
     private Context activityContext;
     InventoryDB inventoryDB;
+    TagDB tagDB;
     InventoryEditFragment inventoryEditFragment = new InventoryEditFragment();
     InventoryAddFragment inventoryAddFragment = new InventoryAddFragment();
     private TextView totalSumTextView;
@@ -108,6 +111,7 @@ public class InventoryFragment extends Fragment {
 
         // initialize database
         inventoryDB = new InventoryDB();
+        tagDB = new TagDB();
 
         // display the inventory list
         itemList = new ArrayList<>();
@@ -127,12 +131,11 @@ public class InventoryFragment extends Fragment {
             @Override
             public void onEvent(@Nullable QuerySnapshot value,
                                 @Nullable FirebaseFirestoreException e) {
+
+                // update inventory
                 handleGetInventory(value, e);
-                // Notify the adapter that the data has changed
-                inventoryAdapter.notifyDataSetChanged();
-                updateTotalSum();
-                Log.d("Firestore", activityContext.toString());
-                Log.d("Firestore", "Processed Update");
+
+
             }
         });
 
@@ -154,6 +157,8 @@ public class InventoryFragment extends Fragment {
 
     /**
      * This method handles acquiring new data from the Firestore database
+     * Uses a latch to ensure that it only returns after completing
+     * all async firestore tasks
      * @param snapshot
      *      The querySnapshot to process
      * @param e
@@ -180,59 +185,66 @@ public class InventoryFragment extends Fragment {
             List<String> tagIDs = (List<String>) doc.get("tags");
 
             Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID);
+            List<Task<DocumentSnapshot>> tagTasks = new ArrayList<>();
+            Log.d("Firestore", "tagID");
             if (tagIDs != null && !tagIDs.isEmpty()) {
-                fetchTagsForItem(item, tagIDs);
-            } else {
-                // Add the item to the list without tags
-                itemList.add(item);
+                for (String tagID : tagIDs) {
+                    Task<DocumentSnapshot> tagTask = tagDB.getTags().document(tagID).get();
+                    tagTasks.add(tagTask);
+                    Log.d("Firestore", "added task");
+                    fetchTagForItem(item, tagTask);
+                }
             }
+            itemList.add(item);
+            if (tagTasks.size() > 0){
+                Tasks.whenAll(tagTasks).addOnCompleteListener(task -> {
+                   processUpdate();
+                });
+            }
+            else{
+                processUpdate();
+            };
         }
     }
 
+
+    /**
+     * Make updates after retrieving all data from the database
+     */
+    private void processUpdate(){
+        // preform updates
+        inventoryAdapter.notifyDataSetChanged();
+        updateTotalSum();
+        Log.d("Firestore", "Processed Update");
+    }
 
     /**
      * Fetches tags associated with an item from the Firestore database and
      * populates the item's tag list.
      *
      * @param item
-     * @param tagIDs
+     *      The item to update
+     * @param task
+     *      The task to retrieve the tags from
      */
-    private void fetchTagsForItem(Item item, List<String> tagIDs) {
+    private void fetchTagForItem(Item item,  Task<DocumentSnapshot> task) {
         // Access the db instance from InventoryDB
-        FirebaseFirestore db = inventoryDB.getDb();
+        if (task.isSuccessful()) {
+            DocumentSnapshot document = task.getResult();
+            if (document.exists()) {
+                String name = document.getString("name");
+                int color = document.getLong("color").intValue();
+                String colorName = document.getString("colorName");
+                String description = document.getString("description");
+                // Create a Tag object with the retrieved data
 
-        for (String tagID : tagIDs) {
-            db.collection("tags").document(tagID).get()
-                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (task.isSuccessful()) {
-                                DocumentSnapshot document = task.getResult();
-                                if (document.exists()) {
-                                    String name = document.getString("name");
-                                    int color = document.getLong("color").intValue();
-                                    String colorName = document.getString("colorName");
-                                    String description = document.getString("description");
-                                    // Create a Tag object with the retrieved data
-
-                                    Tag tag = new Tag(name, color, colorName, description);
-                                    item.getTags().add(tag);
-
-                                    // Check if all tags have been retrieved
-                                    if (item.getTags().size() == tagIDs.size()) {
-                                        // Add the item to the list
-                                        itemList.add(item);
-                                        // Notify the adapter that the data has changed
-                                        inventoryAdapter.notifyDataSetChanged();
-                                    }
-                                } else {
-                                    // Handle the case where the document does not exist
-                                }
-                            } else {
-                                // Handle errors or exceptions
-                            }
-                        }
-                    });
+                Tag tag = new Tag(name, color, colorName, description);
+                item.getTags().add(tag);
+            } else {
+                // Handle the case where the document does not exist
+            }
+        } else {
+            // Handle errors or exceptions
         }
     }
 
