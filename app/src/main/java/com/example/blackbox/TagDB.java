@@ -5,7 +5,11 @@ import android.widget.ArrayAdapter;
 
 import androidx.annotation.Nullable;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -19,6 +23,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -111,12 +116,61 @@ public class TagDB {
      */
     public void deleteTag(Tag tag){
         if (tag.getDataBaseID() != null) {
-            tags.document(tag.getDataBaseID()).delete();
-            Log.d("Firestore", "Tag deleted Successfully");
+            InventoryDB itemDB = new InventoryDB();
+            Task getItems = itemDB.getInventory().get();
+            getItems.addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                   @Override
+                   public void onComplete(Task<QuerySnapshot> task) {
+                       if (task.isSuccessful()){
+                           Log.d("Firestore", "Items retrieved successfully");
+
+                           deleteTagFromItems(tag, task);
+                       }
+                       else {
+                           Log.d("Firestore", "Tag Deletion failed, items could not be fetched");
+                       }
+                   }
+               });
         }
         else{
             Log.d("Firestore", "Deletion failed, tag has no ID specified");
         }
+    }
+
+
+    /**
+     * Delete a specified tag from a list of items provided as a Query Snapshot
+     * @param tag
+     *      The tag to remove
+     * @param task
+     *      The QuerySnapshot to retrieve items from
+     */
+    public void deleteTagFromItems(Tag tag, Task<QuerySnapshot> task){
+        String tagID = tag.getDataBaseID();
+        List<Task<Void>> updateTasks = new ArrayList<>();
+        for (QueryDocumentSnapshot doc : task.getResult()) {
+            DocumentReference docRef = doc.getReference();
+            // Get the current tag_ids field
+            List<String> tagIDs = (List<String>) doc.get("tags");
+            Log.d("Firestore", "Removing tag from item");
+            tagIDs.remove(tagID);
+
+            // Update the document with the modified tag_ids list
+            Task updateTask = docRef.update("tags", tagIDs);
+            updateTasks.add(updateTask);
+        }
+        Tasks.whenAllComplete(updateTasks).addOnCompleteListener(new OnCompleteListener<List<Task<?>>>() {
+            @Override
+            public void onComplete(Task<List<Task<?>>> task) {
+                // All update tasks are completed
+                if (task.isSuccessful()) {
+                    // finally delete tag itself
+                    tags.document(tag.getDataBaseID()).delete();
+                } else {
+                    Log.d("Firestore", "Error updating items, could not delete tag");
+                }
+            }
+        });
     }
 
     public void getAllTags(OnGetTagsCallback callback) {
