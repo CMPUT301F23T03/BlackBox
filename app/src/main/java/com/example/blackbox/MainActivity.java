@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.inventory);
         NavigationManager.switchFragment(new InventoryFragment(), fm);
-        
+
         // set a listener to handle item selection in the BottomNavigationView
         bottomNavigationView.setOnItemSelectedListener(
                 new NavigationBarView.OnItemSelectedListener() {
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
                             NavigationManager.switchFragment(new InventoryFragment(), fm);
                         }
                         else if (id == R.id.expenses){
-                            NavigationManager.switchFragment(new ExpenseFragment(), fm);
+                            NavigationManager.switchFragment( new ExpenseFragment(), fm);
                         }
                         else if (id == R.id.scan){
                             // load scan fragment

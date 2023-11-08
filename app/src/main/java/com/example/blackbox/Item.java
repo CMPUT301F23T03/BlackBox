@@ -3,6 +3,7 @@ package com.example.blackbox;
 import android.annotation.SuppressLint;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -141,6 +142,7 @@ public class Item implements Serializable {
     public String getStringEstimatedValue(){
         return String.format("%.2f", estimatedValue);
     }
+
 
     public void setEstimatedValue(double estimatedValue) {
         this.estimatedValue = estimatedValue;

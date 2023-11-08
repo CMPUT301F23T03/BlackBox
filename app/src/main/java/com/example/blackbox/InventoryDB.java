@@ -93,6 +93,7 @@ public class InventoryDB {
         data.put("model", item.getModel());
         data.put("serial_number", item.getSerialNumber());
         data.put("comment", item.getComment());
+        data.put("purchase_date", item.getDateOfPurchase());
         item.setDateUpdated(Calendar.getInstance().getTime());
         data.put("update_date", item.getStringDateUpdated());
 
@@ -104,6 +105,21 @@ public class InventoryDB {
         data.put("tags", tagIDs);
 
         return data;
+    }
+
+    /**
+     * Delete a specified tag from the database
+     * @param item
+     *      The item to be deleted
+     */
+    public void deleteItem(Item item){
+        if (item.getID() != null) {
+            inventory.document(item.getID()).delete();
+            Log.d("Firestore", "Item deleted Successfully");
+        }
+        else{
+            Log.d("Firestore", "Deletion failed, item has no ID specified");
+        }
     }
 }
 

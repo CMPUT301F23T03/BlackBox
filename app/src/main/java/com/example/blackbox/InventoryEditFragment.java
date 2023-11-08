@@ -22,6 +22,7 @@ public class InventoryEditFragment extends InventoryAddEditFragment {
     /**
      * Default constructor for the InventoryEditFragment.
      */
+    private Item item;
     public InventoryEditFragment(){
         super(R.layout.edit_fragment);
     }
@@ -52,7 +53,7 @@ public class InventoryEditFragment extends InventoryAddEditFragment {
         super.onViewCreated(view, savedInstanceState);
 
         // get the index of item to be edited
-        Item item = (Item) getArguments().getSerializable("item");
+        item = (Item) getArguments().getSerializable("item");
 
         setupFragment(view);
         adjustFields(item);
@@ -64,5 +65,28 @@ public class InventoryEditFragment extends InventoryAddEditFragment {
                 editItem(item);
             }
         });
+
+        // setup a delete button
+        final Button deleteButton = view.findViewById(R.id.delete_item_button);
+        deleteButton.setOnClickListener(v -> {
+            showDeletePopup();
+        });
+
+    }
+    /**
+     * Display a confirmation dialog for deleting an item
+     */
+    private void showDeletePopup(){
+        DeletePopupFragment confirmationPopup = new DeletePopupFragment();
+        getParentFragmentManager().setFragmentResultListener("DELETE_RESULT_KEY", this, (requestKey, result) -> {
+            if (requestKey.equals("DELETE_RESULT_KEY")) {
+                // Handle the result here
+                boolean deleted = result.getBoolean("delete_confirmation", false);
+                if (deleted) {
+                    deleteItem(item);
+                }
+            }
+        });
+        confirmationPopup.show(getParentFragmentManager(), "DELETE_TAG");
     }
 }

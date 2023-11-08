@@ -104,14 +104,49 @@ public class TagDB {
         return data;
     }
 
+    /**
+     * Delete a specified tag from the database
+     * @param tag
+     *      The tag to be deleted
+     */
     public void deleteTag(Tag tag){
         if (tag.getDataBaseID() != null) {
             tags.document(tag.getDataBaseID()).delete();
             Log.d("Firestore", "Tag deleted Successfully");
         }
         else{
-            Log.d("Firestore", "Deletion failed, no tag to update specified");
+            Log.d("Firestore", "Deletion failed, tag has no ID specified");
         }
+    }
+
+    public void getAllTags(OnGetTagsCallback callback) {
+        tags.get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    ArrayList<Tag> tagList = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        String name = document.getString("name");
+                        String description = document.getString("description");
+                        int color = document.getLong("color").intValue();
+                        String colorName = document.getString("colorName");
+                        String dataBaseID = document.getId();
+
+                        Tag tag = new Tag(name, color, colorName, description, dataBaseID);
+                        // Set the dateUpdated field based on your data
+
+                        tagList.add(tag);
+                    }
+                    callback.onSuccess(tagList);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("TagDB", "Error retrieving tags: " + e.getMessage());
+                    callback.onError(e.getMessage());
+                });
+    }
+
+    public interface OnGetTagsCallback {
+        void onSuccess(ArrayList<Tag> tagList);
+
+        void onError(String errorMessage);
     }
 }
 

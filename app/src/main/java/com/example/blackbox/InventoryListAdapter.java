@@ -59,9 +59,17 @@ public class InventoryListAdapter extends ArrayAdapter {
 
         // Set the text for the elements of the item
         name.setText(item.getName());
-        String str_val = String.format("%.2f", item.getEstimatedValue()); // Convert double to a string with 2 decimal places
-        value.setText("$" + str_val);
-        desc.setText(item.getDescription());
+        String str_val = StringFormatter.getMonetaryString(item.getEstimatedValue()); // Convert double to a string with 2 decimal places
+        value.setText(str_val);
+
+        String strDesc = item.getDescription();
+        int maxLength = 70;
+        // Check if the description is too long and shorten if required
+        if (strDesc.length() > maxLength) {
+            strDesc = strDesc.substring(0, maxLength - 1) + "...";
+        }
+
+        desc.setText(strDesc);
 
         if (item.hasTags()) {
             tagImage.setVisibility(View.VISIBLE); // Show the tag image

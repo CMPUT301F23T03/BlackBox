@@ -20,4 +20,5 @@ public class NavigationManager {
         // Save the changes
         fragmentTransaction.commit();
     }
+
 }

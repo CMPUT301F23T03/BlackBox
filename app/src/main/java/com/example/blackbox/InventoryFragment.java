@@ -1,6 +1,8 @@
 package com.example.blackbox;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,30 +12,30 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.checkerframework.checker.units.qual.A;
-
-import java.lang.reflect.Array;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A Fragment that displays and manages an inventory of items. It includes features to add and edit items.
@@ -43,8 +45,10 @@ public class InventoryFragment extends Fragment {
     ArrayAdapter<Item> inventoryAdapter;
     ArrayList<Item> itemList;
     Button addButton;
+    ListenerRegistration dbListener;
     private Context activityContext;
     InventoryDB inventoryDB;
+    TagDB tagDB;
     InventoryEditFragment inventoryEditFragment = new InventoryEditFragment();
     InventoryAddFragment inventoryAddFragment = new InventoryAddFragment();
     private TextView totalSumTextView;
@@ -74,6 +78,7 @@ public class InventoryFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         activityContext = null;
+        dbListener.remove();
     }
 
 
@@ -90,14 +95,13 @@ public class InventoryFragment extends Fragment {
             Bundle savedInstanceState
     ) {
         View ItemFragmentLayout = inflater.inflate(R.layout.inventory_fragment, container, false);
-        totalSumTextView = ItemFragmentLayout.findViewById(R.id.total_sum);
         return ItemFragmentLayout;
     }
 
     /**
      * Called when the fragment's view has been created.
      *
-     * @param view               The root view of the fragment.
+     * @param view                The root view of the fragment.
      * @param savedInstanceState  A Bundle containing the saved state of the fragment.
      */
     @Override
@@ -106,16 +110,28 @@ public class InventoryFragment extends Fragment {
 
         // initialize database
         inventoryDB = new InventoryDB();
+        tagDB = new TagDB();
 
         // display the inventory list
         itemList = new ArrayList<>();
         itemViewList = (ListView) view.findViewById(R.id.item_list);
         inventoryAdapter = new InventoryListAdapter(activityContext, itemList);
         itemViewList.setAdapter(inventoryAdapter);
+        totalSumTextView = view.findViewById(R.id.total_sum);
+
+        // sort the inventory list
+        Button buttonSort = view.findViewById(R.id.sort_button);
+        buttonSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSortOptionDialogue();
+            }
+        });
 
 
         // listener for data changes in DB
-        inventoryDB.getInventory()
+        dbListener =
+                inventoryDB.getInventory()
                 // whenever database is update it is reordered by add date
                 // THIS MAY BREAK THINGS ONCE SORTING IS IMPLEMENTED
                 .orderBy("update_date", Query.Direction.DESCENDING)
@@ -123,38 +139,12 @@ public class InventoryFragment extends Fragment {
             @Override
             public void onEvent(@Nullable QuerySnapshot value,
                                 @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    // Handle any errors or exceptions
-                    return;
+
+                // update inventory
+                if (value != null){
+                    handleGetInventory(value, e);
                 }
-                itemList.clear();
-                for (QueryDocumentSnapshot doc : value) {
-                    String name = doc.getString("name");
-                    Double val = doc.getDouble("value");
-                    String desc = doc.getString("description");
-                    String make = doc.getString("make");
-                    String model = doc.getString("model");
-                    String serialNumber = doc.getString("serial_number");
-                    String comment = doc.getString("comment");
-                    String dbID = doc.getId();
-                    ArrayList<Tag> tags = new ArrayList<>();
-                    String dateOfPurchase = "";
 
-                    List<String> tagIDs = (List<String>) doc.get("tags");
-
-                    Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID);
-                    if (tagIDs != null && !tagIDs.isEmpty()) {
-                        fetchTagsForItem(item, tagIDs);
-                    } else {
-                        // Add the item to the list without tags
-                        itemList.add(item);
-                    }
-                }
-                // Notify the adapter that the data has changed
-                inventoryAdapter.notifyDataSetChanged();
-
-                // calculates total estimated value sum
-                updateTotalSum();
             }
         });
 
@@ -175,52 +165,259 @@ public class InventoryFragment extends Fragment {
     }
 
     /**
+     * A dialogue box that shows two spinners which lets the user choose the sorting category and sorting order
+     * and calls the appropriate sort function based on the selection.
+     */
+    private void showSortOptionDialogue() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        View mView = getLayoutInflater().inflate(R.layout.custom_sort_spinner, null);
+
+        builder.setTitle("Sorting Options");
+        builder.setCancelable(false);
+
+        Spinner category_spinner = mView.findViewById(R.id.sort_category_spinner);
+        Spinner order_spinner = mView.findViewById(R.id.sort_order_spinner);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item,
+                getResources().getStringArray(R.array.sort_category));
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        category_spinner.setAdapter(adapter);
+
+        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item,
+                getResources().getStringArray(R.array.sort_order));
+        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        order_spinner.setAdapter(adapter1);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String selectedCategory = category_spinner.getSelectedItem().toString();
+                String selectedOrder = order_spinner.getSelectedItem().toString();
+                boolean ascending = selectedOrder.equalsIgnoreCase("Ascending");
+
+                if(!selectedCategory.equalsIgnoreCase("Sorting Category") && !selectedOrder.equalsIgnoreCase("Sorting Order")){
+                    //handle the selected sorting category
+                    switch (selectedCategory){
+                        case "By Date":
+                            sortByDate(ascending);
+                            break;
+                        case "By Value":
+                            sortByValue(ascending);
+                            break;
+                        case "By Make":
+                            sortByMake(ascending);
+                            break;
+                        case "By Tag":
+                            sortByHighestPrecedentTag(ascending);
+                            break;
+                        default:
+                            //handle the default case
+                    }
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialogInterface, which) -> {
+           dialogInterface.dismiss();
+        });
+
+        builder.setView(mView);
+        builder.create().show();
+    }
+
+    /**
+     * Sort the list items by Date in ascending or descending order.
+     * @param ascending specifies the sorting order, true = ascending, descending otherwise
+     */
+    private void sortByDate(boolean ascending) {
+        Comparator<Item> dateComp = new Comparator<Item>() {
+            @Override
+            public int compare(Item o1, Item o2) {
+                //parse the date into appropriate format
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd", Locale.getDefault());
+                try{
+                    Date date1 = dateFormat.parse(o1.getDateOfPurchase());
+                    Date date2 = dateFormat.parse(o2.getDateOfPurchase());
+                    if (date1 != null && date2 != null) {
+                        return ascending ? date1.compareTo(date2) : date2.compareTo(date1); // check for ascending or descending
+                    }
+                }
+                catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return 0;
+            }
+        };
+        itemList.sort(dateComp);
+        inventoryAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Sort the list items by Estimated Value in ascending or descending order.
+     * @param ascending specifies the sorting order, true = ascending, descending otherwise
+     */
+    private void sortByValue(boolean ascending) {
+        if (ascending){
+            itemList.sort((item1, item2) -> Double.compare(item1.getEstimatedValue(), item2.getEstimatedValue()));
+        }
+        else {
+            itemList.sort((item1, item2) -> Double.compare(item2.getEstimatedValue(), item1.getEstimatedValue()));
+        }
+
+        inventoryAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Sort the list items by Make (alphabetically) in ascending or descending order.
+     * @param ascending specifies the sorting order, true = ascending, descending otherwise
+     */
+    private void sortByMake(boolean ascending) {
+        Comparator<Item> makeComp = new Comparator<Item>() {
+            @Override
+            public int compare(Item o1, Item o2) {
+                String make1 = o1.getMake();
+                String make2 = o2.getMake();
+
+                // compare alphabetically
+                int result = make1.compareToIgnoreCase(make2);
+                // check for descending
+                if (!ascending){
+                    result = -result;
+                }
+                return result;
+            }
+        };
+        itemList.sort(makeComp);
+        inventoryAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Sort the list items by the Highest Precedent Tag (alphabetically) in ascending or descending order.
+     * @param ascending specifies the sorting order, true = ascending, descending otherwise
+     */
+    private void sortByHighestPrecedentTag(boolean ascending) {
+        Comparator<Item> tagComp = new Comparator<Item>() {
+            @Override
+            public int compare(Item o1, Item o2) {
+                Tag tag1 = findHighestPrecedentTag(o1);
+                Tag tag2 = findHighestPrecedentTag(o2);
+
+                int result = tag1.getName().compareToIgnoreCase(tag2.getName());
+                // check for descending
+                if (!ascending){
+                    result = -result;
+                }
+                return result;
+            }
+        };
+        itemList.sort(tagComp);
+        inventoryAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Helper function that helps to find the highest precedent tag in an item
+     * @param item The item of which we want to find the highest precedent tag
+     * @return
+     *         The tag with highest precedent
+     */
+    private Tag findHighestPrecedentTag(Item item){
+        Tag highestTag = null;
+        for (Tag tag : item.getTags()){
+            if(highestTag == null || item.getName().compareToIgnoreCase(highestTag.getName()) < 0){
+                highestTag = tag;
+            }
+        }
+        return highestTag;
+    }
+
+    /**
+     * This method handles acquiring new data from the Firestore database
+     * Uses a latch to ensure that it only returns after completing
+     * all async firestore tasks
+     * @param snapshot
+     *      The querySnapshot to process
+     * @param e
+     *      A possible Firestore exception
+     */
+    private void handleGetInventory(QuerySnapshot snapshot, FirebaseFirestoreException e){
+        if (e != null) {
+            // Handle any errors or exceptions
+            return;
+        }
+        itemList.clear();
+        List<Task<DocumentSnapshot>> tagTasks = new ArrayList<>();
+        for (QueryDocumentSnapshot doc : snapshot) {
+            String name = doc.getString("name");
+            Double val = doc.getDouble("value");
+            String desc = doc.getString("description");
+            String make = doc.getString("make");
+            String model = doc.getString("model");
+            String serialNumber = doc.getString("serial_number");
+            String comment = doc.getString("comment");
+            String dateOfPurchase = doc.getString("purchase_date");
+            String dbID = doc.getId();
+            ArrayList<Tag> tags = new ArrayList<>();
+
+            List<String> tagIDs = (List<String>) doc.get("tags");
+
+            Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID);
+            if (tagIDs != null && !tagIDs.isEmpty()) {
+                for (String tagID : tagIDs) {
+                    Task<DocumentSnapshot> tagTask = tagDB.getTags().document(tagID).get();
+                    tagTasks.add(tagTask);
+                    Log.d("Firestore", "added task");
+                    tagTask.addOnSuccessListener(tagSnapshot -> {
+                        fetchTagForItem(item, tagSnapshot);
+                    });
+                }
+            }
+            itemList.add(item);
+
+        }
+        if (tagTasks.size() > 0){
+            Tasks.whenAll(tagTasks).addOnCompleteListener(task -> {
+                Log.d("Firestore", "All tag tasks done");
+                processUpdate();
+            });
+        }
+        else{
+            Log.d("Firestore", "All tag tasks done");
+            processUpdate();
+        }
+    }
+
+
+    /**
+     * Make updates after retrieving all data from the database
+     */
+    private void processUpdate(){
+        // preform updates
+        inventoryAdapter.notifyDataSetChanged();
+        updateTotalSum();
+        Log.d("Firestore", "Processed Update");
+    }
+
+    /**
      * Fetches tags associated with an item from the Firestore database and
      * populates the item's tag list.
      *
      * @param item
-     * @param tagIDs
+     *      The item to update
+     * @param document
+     *      The document to retrieve the tag
      */
-    private void fetchTagsForItem(Item item, List<String> tagIDs) {
+    private void fetchTagForItem(Item item,  DocumentSnapshot document) {
         // Access the db instance from InventoryDB
-        FirebaseFirestore db = inventoryDB.getDb();
+            String name = document.getString("name");
+            int color = document.getLong("color").intValue();
+            String colorName = document.getString("colorName");
+            String description = document.getString("description");
+            // Create a Tag object with the retrieved data
 
-        for (String tagID : tagIDs) {
-            db.collection("tags").document(tagID).get()
-                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                            if (task.isSuccessful()) {
-                                DocumentSnapshot document = task.getResult();
-                                if (document.exists()) {
-                                    String name = document.getString("name");
-                                    int color = document.getLong("color").intValue();
-                                    String colorName = document.getString("colorName");
-                                    String description = document.getString("description");
-                                    // Create a Tag object with the retrieved data
-
-                                    Tag tag = new Tag(name, color, colorName, description);
-                                    item.getTags().add(tag);
-
-                                    // Check if all tags have been retrieved
-                                    if (item.getTags().size() == tagIDs.size()) {
-                                        // Add the item to the list
-                                        itemList.add(item);
-                                        // Notify the adapter that the data has changed
-                                        inventoryAdapter.notifyDataSetChanged();
-
-                                        // calculates total estimated value sum
-                                        updateTotalSum();
-                                    }
-                                } else {
-                                    // Handle the case where the document does not exist
-                                }
-                            } else {
-                                // Handle errors or exceptions
-                            }
-                        }
-                    });
-        }
+            Tag tag = new Tag(name, color, colorName, description);
+            item.getTags().add(tag);
     }
 
     private double calculateTotalSum(ArrayList<Item> items) {
@@ -233,6 +430,6 @@ public class InventoryFragment extends Fragment {
 
     public void updateTotalSum() {
         double totalSum = calculateTotalSum(itemList);
-        totalSumTextView.setText(getString(R.string.total_sum_format, totalSum));
+        totalSumTextView.setText("Total:" +StringFormatter.getMonetaryString(totalSum));
     }
 }
