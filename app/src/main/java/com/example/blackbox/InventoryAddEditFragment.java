@@ -192,9 +192,6 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         comment = itemComment.getText().toString();
         date = dateButton.getText().toString();
 
-        getSelectedTags();
-
-
 
         if (name.length() == 0){
             Toast.makeText(getActivity(), "Name Required", Toast.LENGTH_SHORT).show();
@@ -214,9 +211,33 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
      */
     @Override
     public void add(){
-        Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment);
-        itemDB.addItemToDB(new_item);
-        NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
+
+        TagDB tagDB = new TagDB();
+
+
+        String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
+        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
+
+            @Override
+            public void onSuccess(ArrayList<Tag> tagList) {
+
+                for (String selectedTagName : selectedTagNames) {
+                    for (Tag tag : tagList) {
+                        if (tag.getName().equals(selectedTagName)){
+                            selectedTags.add(tag);
+                        }
+                    }
+                }
+                Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment);
+                itemDB.addItemToDB(new_item);
+                NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
+            }
+            @Override
+            public void onError(String errorMessage) {
+                // Handle the error, e.g., display an error message
+                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
+            }
+        });
     }
 
     /**
