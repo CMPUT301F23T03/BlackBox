@@ -80,6 +80,7 @@
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
+                    android:maxLength="21"
                     android:hint="Item Name"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt" />
@@ -117,7 +118,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Select one or more tags"
+                    android:text="@string/select_one_or_more_tags"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -215,16 +216,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/desc_editText" />
 
-                <Spinner
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/date_editText"
                     android:layout_width="297dp"
-                    android:layout_height="47dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="8dp"
+                    android:textSize="16sp"
+                    android:hint="Select a date"
+                    android:gravity="left|center_vertical"
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
-                    android:spinnerMode="dropdown"
+                    android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/date_prompt"
                     tools:ignore="TouchTargetSizeCheck" />
@@ -238,8 +242,9 @@
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
+                    android:maxLength="10"
                     android:hint="Value"
-                    android:inputType="number"
+                    android:inputType="numberDecimal"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt4" />
 
@@ -252,6 +257,7 @@
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
+                    android:maxLength="30"
                     android:hint="Make"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt5" />
@@ -266,6 +272,7 @@
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
                     android:hint="Model"
+                    android:maxLength="30"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt6" />
 

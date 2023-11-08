@@ -96,7 +96,8 @@
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
-                    android:hint="Item Name"
+                    android:hint="@string/item_name"
+                    android:maxLength="21"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt" />
 
@@ -232,16 +233,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/desc_editText" />
 
-                <Spinner
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/date_editText"
                     android:layout_width="297dp"
-                    android:layout_height="47dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="8dp"
+                    android:textSize="16sp"
+                    android:hint="Select a date"
+                    android:gravity="left|center_vertical"
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
-                    android:spinnerMode="dropdown"
+                    android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/date_prompt"
                     tools:ignore="TouchTargetSizeCheck" />
@@ -256,13 +260,15 @@
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
                     android:hint="Value"
-                    android:inputType="number"
+                    android:maxLength="10"
+                    android:inputType="numberDecimal"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt4" />
 
                 <EditText
                     android:id="@+id/make_editText"
                     android:layout_width="297dp"
+                    android:maxLength="30"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="8dp"
@@ -282,6 +288,7 @@
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
+                    android:maxLength="30"
                     android:hint="Model"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt6" />

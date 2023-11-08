@@ -1,5 +1,7 @@
 package com.example.blackbox;
 
+import android.app.DatePickerDialog;
+import android.content.Context;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -9,14 +11,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 public abstract class InventoryAddEditFragment extends AddEditFragment {
     private EditText itemName;
@@ -34,6 +41,11 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     private String model;
     private String serialNumber;
     private String comment;
+    private Button dateButton;
+    private final String dateFormat = "%d-%02d-%02d";
+
+    private String date;
+    private Context activityContext;
     private ArrayList<Tag> tags;
     private TextView tagDropdown;
     ArrayList<Tag> selectedTags = new ArrayList<>();
@@ -45,6 +57,17 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         super(fragment_id);
     }
 
+
+    /**
+     * Called when the fragment is attached to an activity.
+     *
+     * @param context The context of the activity to which the fragment is attached.
+     */
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        activityContext = context;
+    }
 
     /**
      * A method which sets up the database, listeners,
@@ -77,6 +100,65 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
 
         setupBackButtonListener(view);
 
+        // setup a date picker listener
+        setupDatePickerListener(view);
+
+
+    }
+
+
+    /**
+     * A method which sets up a listener to track whether the date field is pressed
+     * @param view
+     *      The view from which to find UI elements
+     */
+    public void setupDatePickerListener(View view){
+        dateButton = view.findViewById(R.id.date_editText);
+        Calendar calendar = Calendar.getInstance();
+        int currentYear = calendar.get(Calendar.YEAR);
+        int currentMonth = calendar.get(Calendar.MONTH);
+        int currentDay = calendar.get(Calendar.DAY_OF_MONTH);
+        String currentDate = String.format(dateFormat, currentYear, currentMonth + 1, currentDay);
+        dateButton.setText(currentDate);
+        dateButton.setOnClickListener(v -> {
+            getDatePicker();
+        });
+    }
+
+
+    /**
+     * Gets information required from dateFiled in order to display the DatePicker
+     */
+    private void getDatePicker(){
+        String dateString = dateButton.getText().toString();
+        String[] dateParts = dateString.split("-");
+        int year = Integer.parseInt(dateParts[0]);
+        int month = Integer.parseInt(dateParts[1]) - 1;
+        int day = Integer.parseInt(dateParts[2]);
+        showDatePicker(year, month, day);
+    }
+
+    /**
+     * Displays a date picker
+     * @param year
+     *      The initial year to display
+     * @param month
+     *      The initial month to display
+     * @param dayOfMonth
+     *      The initial day to display
+     */
+    private void showDatePicker(int year, int month, int dayOfMonth) {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(activityContext, new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                // This callback is called when the user selects a date.
+                // You can update the EditText with the selected date.
+                String selectedDate = String.format(dateFormat, year, month + 1, dayOfMonth); // Note: month is 0-based.
+                dateButton.setText(selectedDate);
+            }
+        }, year, month, dayOfMonth); // Initial date (year, month, day). Month is 0-based.
+
+        datePickerDialog.show();
     }
 
     /**
@@ -108,7 +190,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         model = itemModel.getText().toString();
         serialNumber = itemSerialNumber.getText().toString();
         comment = itemComment.getText().toString();
-        getSelectedTags();
+        date = dateButton.getText().toString();
 
         if (name.length() == 0){
             Toast.makeText(getActivity(), "Name Required", Toast.LENGTH_SHORT).show();
@@ -123,15 +205,38 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
             return Boolean.TRUE;
         }
     }
-
     /**
      * A method which creates a new item and adds it to the database
      */
     @Override
-    public void add() {
-        Item new_item = new Item(name, selectedTags, "", val, make, model, serialNumber, desc, comment);
-        itemDB.addItemToDB(new_item);
-        NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
+    public void add(){
+
+        TagDB tagDB = new TagDB();
+
+
+        String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
+        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
+
+            @Override
+            public void onSuccess(ArrayList<Tag> tagList) {
+
+                for (String selectedTagName : selectedTagNames) {
+                    for (Tag tag : tagList) {
+                        if (tag.getName().equals(selectedTagName)){
+                            selectedTags.add(tag);
+                        }
+                    }
+                }
+                Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment);
+                itemDB.addItemToDB(new_item);
+                NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
+            }
+            @Override
+            public void onError(String errorMessage) {
+                // Handle the error, e.g., display an error message
+                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
+            }
+        });
     }
 
     /**
@@ -139,8 +244,8 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
      * @param item
      *      The item to be replaced
      */
-    public void editItem(Item item) {
-        Item new_item = new Item(name, selectedTags, "", val, make, model, serialNumber, desc, comment);
+    public void editItem(Item item){
+        Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment);
         itemDB.updateItemInDB(item, new_item);
         InventoryFragment inventoryFragment = new InventoryFragment();
         NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());
@@ -169,6 +274,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         itemValue.setText(item.getStringEstimatedValue());
         itemModel.setText(item.getModel());
         itemSerialNumber.setText(item.getSerialNumber());
+        dateButton.setText(item.getDateOfPurchase());
         tags = item.getTags();
         ArrayList<String> selectedTagNames = new ArrayList<>();
         for (Tag tag : tags) {
