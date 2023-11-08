@@ -135,7 +135,6 @@ public class InventoryFragment extends Fragment {
                 // update inventory
                 handleGetInventory(value, e);
 
-
             }
         });
 
@@ -170,6 +169,7 @@ public class InventoryFragment extends Fragment {
             return;
         }
         itemList.clear();
+        List<Task<DocumentSnapshot>> tagTasks = new ArrayList<>();
         for (QueryDocumentSnapshot doc : snapshot) {
             String name = doc.getString("name");
             Double val = doc.getDouble("value");
@@ -185,7 +185,6 @@ public class InventoryFragment extends Fragment {
             List<String> tagIDs = (List<String>) doc.get("tags");
 
             Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID);
-            List<Task<DocumentSnapshot>> tagTasks = new ArrayList<>();
             Log.d("Firestore", "tagID");
             if (tagIDs != null && !tagIDs.isEmpty()) {
                 for (String tagID : tagIDs) {
@@ -196,15 +195,18 @@ public class InventoryFragment extends Fragment {
                 }
             }
             itemList.add(item);
-            if (tagTasks.size() > 0){
-                Tasks.whenAll(tagTasks).addOnCompleteListener(task -> {
-                   processUpdate();
-                });
-            }
-            else{
-                processUpdate();
-            };
+
         }
+        if (tagTasks.size() > 0){
+            Tasks.whenAll(tagTasks).addOnCompleteListener(task -> {
+                Log.d("Firestore", "All tag tasks done");
+                processUpdate();
+            });
+        }
+        else{
+            Log.d("Firestore", "All tag tasks done");
+            processUpdate();
+        };
     }
 
 
