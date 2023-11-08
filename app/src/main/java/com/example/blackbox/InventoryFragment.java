@@ -127,33 +127,7 @@ public class InventoryFragment extends Fragment {
             @Override
             public void onEvent(@Nullable QuerySnapshot value,
                                 @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    // Handle any errors or exceptions
-                    return;
-                }
-                itemList.clear();
-                for (QueryDocumentSnapshot doc : value) {
-                    String name = doc.getString("name");
-                    Double val = doc.getDouble("value");
-                    String desc = doc.getString("description");
-                    String make = doc.getString("make");
-                    String model = doc.getString("model");
-                    String serialNumber = doc.getString("serial_number");
-                    String comment = doc.getString("comment");
-                    String dbID = doc.getId();
-                    ArrayList<Tag> tags = new ArrayList<>();
-                    String dateOfPurchase = "";
-
-                    List<String> tagIDs = (List<String>) doc.get("tags");
-
-                    Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID);
-                    if (tagIDs != null && !tagIDs.isEmpty()) {
-                        fetchTagsForItem(item, tagIDs);
-                    } else {
-                        // Add the item to the list without tags
-                        itemList.add(item);
-                    }
-                }
+                handleGetInventory(value, e);
                 // Notify the adapter that the data has changed
                 inventoryAdapter.notifyDataSetChanged();
                 updateTotalSum();
@@ -177,6 +151,44 @@ public class InventoryFragment extends Fragment {
         });
 
     }
+
+    /**
+     * This method handles acquiring new data from the Firestore database
+     * @param snapshot
+     *      The querySnapshot to process
+     * @param e
+     *      A possible Firestore exception
+     */
+    private void handleGetInventory(QuerySnapshot snapshot, FirebaseFirestoreException e){
+        if (e != null) {
+            // Handle any errors or exceptions
+            return;
+        }
+        itemList.clear();
+        for (QueryDocumentSnapshot doc : snapshot) {
+            String name = doc.getString("name");
+            Double val = doc.getDouble("value");
+            String desc = doc.getString("description");
+            String make = doc.getString("make");
+            String model = doc.getString("model");
+            String serialNumber = doc.getString("serial_number");
+            String comment = doc.getString("comment");
+            String dateOfPurchase = doc.getString("purchase_date");
+            String dbID = doc.getId();
+            ArrayList<Tag> tags = new ArrayList<>();
+
+            List<String> tagIDs = (List<String>) doc.get("tags");
+
+            Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID);
+            if (tagIDs != null && !tagIDs.isEmpty()) {
+                fetchTagsForItem(item, tagIDs);
+            } else {
+                // Add the item to the list without tags
+                itemList.add(item);
+            }
+        }
+    }
+
 
     /**
      * Fetches tags associated with an item from the Firestore database and

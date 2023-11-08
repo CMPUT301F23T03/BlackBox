@@ -93,6 +93,7 @@ public class InventoryDB {
         data.put("model", item.getModel());
         data.put("serial_number", item.getSerialNumber());
         data.put("comment", item.getComment());
+        data.put("purchase_date", item.getDateOfPurchase());
         item.setDateUpdated(Calendar.getInstance().getTime());
         data.put("update_date", item.getStringDateUpdated());
 
