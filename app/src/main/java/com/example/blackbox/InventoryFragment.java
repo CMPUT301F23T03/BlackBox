@@ -190,7 +190,9 @@ public class InventoryFragment extends Fragment {
                     Task<DocumentSnapshot> tagTask = tagDB.getTags().document(tagID).get();
                     tagTasks.add(tagTask);
                     Log.d("Firestore", "added task");
-                    fetchTagForItem(item, tagTask);
+                    tagTask.addOnSuccessListener(tagSnapshot -> {
+                        fetchTagForItem(item, tagSnapshot);
+                    });
                 }
             }
             itemList.add(item);
@@ -225,28 +227,19 @@ public class InventoryFragment extends Fragment {
      *
      * @param item
      *      The item to update
-     * @param task
-     *      The task to retrieve the tags from
+     * @param document
+     *      The document to retrieve the tag
      */
-    private void fetchTagForItem(Item item,  Task<DocumentSnapshot> task) {
+    private void fetchTagForItem(Item item,  DocumentSnapshot document) {
         // Access the db instance from InventoryDB
-        if (task.isSuccessful()) {
-            DocumentSnapshot document = task.getResult();
-            if (document.exists()) {
-                String name = document.getString("name");
-                int color = document.getLong("color").intValue();
-                String colorName = document.getString("colorName");
-                String description = document.getString("description");
-                // Create a Tag object with the retrieved data
+            String name = document.getString("name");
+            int color = document.getLong("color").intValue();
+            String colorName = document.getString("colorName");
+            String description = document.getString("description");
+            // Create a Tag object with the retrieved data
 
-                Tag tag = new Tag(name, color, colorName, description);
-                item.getTags().add(tag);
-            } else {
-                // Handle the case where the document does not exist
-            }
-        } else {
-            // Handle errors or exceptions
-        }
+            Tag tag = new Tag(name, color, colorName, description);
+            item.getTags().add(tag);
     }
 
     private double calculateTotalSum(ArrayList<Item> items) {
