@@ -1,12 +1,17 @@
 package com.example.blackbox;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.MultiAutoCompleteTextView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -29,6 +34,8 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     private String model;
     private String serialNumber;
     private String comment;
+
+    private TextView tagDropdown;
 
     /**
      * Default constructor for the InventoryAddEditFragment
@@ -57,6 +64,16 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         itemModel = view.findViewById(R.id.model_editText);
         itemComment = view.findViewById(R.id.comment_editText);
         itemSerialNumber = view.findViewById(R.id.serial_number_editText);;
+
+        tagDropdown = view.findViewById(R.id.tag_dropdown);
+        tagDropdown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showTagSelectionDialog();
+            }
+        });
+
+
         setupBackButtonListener(view);
 
     }
@@ -151,5 +168,54 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         itemSerialNumber.setText(item.getSerialNumber());
     }
 
+    private void showTagSelectionDialog() {
+        TagDB tagDB = new TagDB();
+        tagDB.getAllTagNames(new TagDB.OnGetTagNamesCallback() {
+            @Override
+            public void onSuccess(ArrayList<String> tagNames) {
+                boolean[] selectedTags = new boolean[tagNames.size()];
+                String[] tagArray = tagNames.toArray(new String[0]);
 
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setTitle("Select Tags");
+                builder.setCancelable(false);
+
+                builder.setMultiChoiceItems(tagArray, selectedTags, (dialogInterface, index, isChecked) -> {
+                    // Update the selectedTags array when a tag is selected or deselected
+                    selectedTags[index] = isChecked;
+                });
+
+                builder.setPositiveButton("OK", (dialogInterface, which) -> {
+                    ArrayList<String> selectedTagList = new ArrayList<>();
+                    for (int i = 0; i < selectedTags.length; i++) {
+                        if (selectedTags[i]) {
+                            selectedTagList.add(tagArray[i]);
+                        }
+                    }
+
+                    // Process the selected tags (e.g., update your TextView with the selected tags)
+                    tagDropdown.setText(TextUtils.join(", ", selectedTagList));
+                });
+
+                builder.setNegativeButton("Cancel", (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                });
+
+                builder.setNeutralButton("Clear All", (dialogInterface, which) -> {
+                    for (int i = 0; i < selectedTags.length; i++) {
+                        selectedTags[i] = false;
+                    }
+                    tagDropdown.setText("");
+                });
+
+                builder.show();
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                // Handle the error, e.g., display an error message
+                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
+            }
+        });
+    }
 }

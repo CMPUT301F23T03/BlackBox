@@ -118,5 +118,29 @@ public class TagDB {
             Log.d("Firestore", "Deletion failed, tag has no ID specified");
         }
     }
+
+    public void getAllTagNames(OnGetTagNamesCallback callback) {
+        tags.get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    ArrayList<String> tagNames = new ArrayList<>();
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        String tagName = document.getString("name");
+                        if (tagName != null) {
+                            tagNames.add(tagName);
+                        }
+                    }
+                    callback.onSuccess(tagNames);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("TagDB", "Error retrieving tag names: " + e.getMessage());
+                    callback.onError(e.getMessage());
+                });
+    }
+
+    public interface OnGetTagNamesCallback {
+        void onSuccess(ArrayList<String> tagList);
+
+        void onError(String errorMessage);
+    }
 }
 
