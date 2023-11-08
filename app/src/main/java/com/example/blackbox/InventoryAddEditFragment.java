@@ -213,7 +213,6 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
 
         TagDB tagDB = new TagDB();
 
-
         String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
         tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
 
@@ -245,10 +244,33 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
      *      The item to be replaced
      */
     public void editItem(Item item){
-        Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment);
-        itemDB.updateItemInDB(item, new_item);
-        InventoryFragment inventoryFragment = new InventoryFragment();
-        NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());
+        TagDB tagDB = new TagDB();
+
+        String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
+        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
+
+            @Override
+            public void onSuccess(ArrayList<Tag> tagList) {
+
+                for (String selectedTagName : selectedTagNames) {
+                    for (Tag tag : tagList) {
+                        if (tag.getName().equals(selectedTagName)){
+                            selectedTags.add(tag);
+                        }
+                    }
+                }
+                Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment);
+                itemDB.updateItemInDB(item, new_item);
+                InventoryFragment inventoryFragment = new InventoryFragment();
+                NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());
+
+            }
+            @Override
+            public void onError(String errorMessage) {
+                // Handle the error, e.g., display an error message
+                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
+            }
+        });
     }
 
     /**
@@ -344,29 +366,4 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         });
     }
 
-    private void getSelectedTags() {
-        TagDB tagDB = new TagDB();
-
-
-        String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
-        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
-
-            @Override
-            public void onSuccess(ArrayList<Tag> tagList) {
-
-                for (String selectedTagName : selectedTagNames) {
-                    for (Tag tag : tagList) {
-                        if (tag.getName().equals(selectedTagName)){
-                            selectedTags.add(tag);
-                        }
-                    }
-                }
-            }
-            @Override
-            public void onError(String errorMessage) {
-                // Handle the error, e.g., display an error message
-                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
-            }
-        });
-    }
 }
