@@ -34,8 +34,9 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     private String model;
     private String serialNumber;
     private String comment;
-
+    private ArrayList<Tag> tags;
     private TextView tagDropdown;
+    ArrayList<Tag> selectedTags = new ArrayList<>();
 
     /**
      * Default constructor for the InventoryAddEditFragment
@@ -107,6 +108,10 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         model = itemModel.getText().toString();
         serialNumber = itemSerialNumber.getText().toString();
         comment = itemComment.getText().toString();
+        getSelectedTags();
+
+
+
         if (name.length() == 0){
             Toast.makeText(getActivity(), "Name Required", Toast.LENGTH_SHORT).show();
             return Boolean.FALSE;
@@ -120,12 +125,13 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
             return Boolean.TRUE;
         }
     }
+
     /**
      * A method which creates a new item and adds it to the database
      */
     @Override
-    public void add(){
-        Item new_item = new Item(name, new ArrayList<>(), "", val, make, model, serialNumber, desc, comment);
+    public void add() {
+        Item new_item = new Item(name, tags, "", val, make, model, serialNumber, desc, comment);
         itemDB.addItemToDB(new_item);
         NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
     }
@@ -135,11 +141,10 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
      * @param item
      *      The item to be replaced
      */
-    public void editItem(Item item){
-        Item new_item = new Item(name, new ArrayList<>(), "", val, make, model, serialNumber, desc, comment);
+    public void editItem(Item item) {
+        Item new_item = new Item(name, tags, "", val, make, model, serialNumber, desc, comment);
         itemDB.updateItemInDB(item, new_item);
         InventoryFragment inventoryFragment = new InventoryFragment();
-        Log.d("CONTEXT_IS", inventoryFragment.toString());
         NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());
     }
 
@@ -166,35 +171,52 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         itemValue.setText(item.getStringEstimatedValue());
         itemModel.setText(item.getModel());
         itemSerialNumber.setText(item.getSerialNumber());
+        tags = item.getTags();
+        ArrayList<String> selectedTagNames = new ArrayList<>();
+        for (Tag tag : tags) {
+            selectedTagNames.add(tag.getName());
+        }
+
+        tagDropdown.setText(TextUtils.join(", ", selectedTagNames));
     }
 
     private void showTagSelectionDialog() {
         TagDB tagDB = new TagDB();
-        tagDB.getAllTagNames(new TagDB.OnGetTagNamesCallback() {
+        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
             @Override
-            public void onSuccess(ArrayList<String> tagNames) {
-                boolean[] selectedTags = new boolean[tagNames.size()];
-                String[] tagArray = tagNames.toArray(new String[0]);
+            public void onSuccess(ArrayList<Tag> tagList) {
+                boolean[] selectedTags = new boolean[tagList.size()];
+                String[] tagNameList = new String[tagList.size()];
+
+                for (int i = 0; i < tagList.size(); i++) {
+                    tagNameList[i] = tagList.get(i).getName();
+                }
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                 builder.setTitle("Select Tags");
                 builder.setCancelable(false);
 
-                builder.setMultiChoiceItems(tagArray, selectedTags, (dialogInterface, index, isChecked) -> {
+                builder.setMultiChoiceItems(tagNameList, selectedTags, (dialogInterface, index, isChecked) -> {
                     // Update the selectedTags array when a tag is selected or deselected
                     selectedTags[index] = isChecked;
                 });
 
                 builder.setPositiveButton("OK", (dialogInterface, which) -> {
-                    ArrayList<String> selectedTagList = new ArrayList<>();
+                    ArrayList<Tag> tags = new ArrayList<>();
                     for (int i = 0; i < selectedTags.length; i++) {
                         if (selectedTags[i]) {
-                            selectedTagList.add(tagArray[i]);
+                            tags.add(tagList.get(i));
                         }
                     }
 
-                    // Process the selected tags (e.g., update your TextView with the selected tags)
-                    tagDropdown.setText(TextUtils.join(", ", selectedTagList));
+                    // Update the UI to display the selected tags
+                    ArrayList<String> selectedTagNames = new ArrayList<>();
+                    for (Tag tag : tags) {
+                        selectedTagNames.add(tag.getName());
+                    }
+
+                    tagDropdown.setText(TextUtils.join(", ", selectedTagNames));
+                    dialogInterface.dismiss();
                 });
 
                 builder.setNegativeButton("Cancel", (dialogInterface, which) -> {
@@ -210,7 +232,33 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
 
                 builder.show();
             }
+            @Override
+            public void onError(String errorMessage) {
+                // Handle the error, e.g., display an error message
+                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
+            }
+        });
+    }
 
+    private void getSelectedTags() {
+        TagDB tagDB = new TagDB();
+
+
+        String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
+        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
+
+            @Override
+            public void onSuccess(ArrayList<Tag> tagList) {
+
+                for (String selectedTagName : selectedTagNames) {
+                    for (Tag tag : tagList) {
+                        if (tag.getName().equals(selectedTagName)){
+                            selectedTags.add(tag);
+                        }
+                    }
+                }
+                add();
+            }
             @Override
             public void onError(String errorMessage) {
                 // Handle the error, e.g., display an error message

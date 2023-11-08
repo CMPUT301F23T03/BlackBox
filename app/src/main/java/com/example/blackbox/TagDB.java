@@ -119,26 +119,32 @@ public class TagDB {
         }
     }
 
-    public void getAllTagNames(OnGetTagNamesCallback callback) {
+    public void getAllTags(OnGetTagsCallback callback) {
         tags.get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    ArrayList<String> tagNames = new ArrayList<>();
+                    ArrayList<Tag> tagList = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        String tagName = document.getString("name");
-                        if (tagName != null) {
-                            tagNames.add(tagName);
-                        }
+                        String name = document.getString("name");
+                        String description = document.getString("description");
+                        int color = document.getLong("color").intValue();
+                        String colorName = document.getString("colorName");
+                        String dataBaseID = document.getId();
+
+                        Tag tag = new Tag(name, color, colorName, description, dataBaseID);
+                        // Set the dateUpdated field based on your data
+
+                        tagList.add(tag);
                     }
-                    callback.onSuccess(tagNames);
+                    callback.onSuccess(tagList);
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("TagDB", "Error retrieving tag names: " + e.getMessage());
+                    Log.e("TagDB", "Error retrieving tags: " + e.getMessage());
                     callback.onError(e.getMessage());
                 });
     }
 
-    public interface OnGetTagNamesCallback {
-        void onSuccess(ArrayList<String> tagList);
+    public interface OnGetTagsCallback {
+        void onSuccess(ArrayList<Tag> tagList);
 
         void onError(String errorMessage);
     }
