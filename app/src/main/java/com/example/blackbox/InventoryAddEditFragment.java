@@ -2,7 +2,10 @@ package com.example.blackbox;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.MultiAutoCompleteTextView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -41,6 +46,9 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
 
     private String date;
     private Context activityContext;
+    private ArrayList<Tag> tags;
+    private TextView tagDropdown;
+    ArrayList<Tag> selectedTags = new ArrayList<>();
 
     /**
      * Default constructor for the InventoryAddEditFragment
@@ -79,9 +87,17 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         itemMake = view.findViewById(R.id.make_editText);
         itemModel = view.findViewById(R.id.model_editText);
         itemComment = view.findViewById(R.id.comment_editText);
-        itemSerialNumber = view.findViewById(R.id.serial_number_editText);
+        itemSerialNumber = view.findViewById(R.id.serial_number_editText);;
 
-        // setup a back button listener
+        tagDropdown = view.findViewById(R.id.tag_dropdown);
+        tagDropdown.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showTagSelectionDialog();
+            }
+        });
+
+
         setupBackButtonListener(view);
 
         // setup a date picker listener
@@ -176,6 +192,10 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         comment = itemComment.getText().toString();
         date = dateButton.getText().toString();
 
+        getSelectedTags();
+
+
+
         if (name.length() == 0){
             Toast.makeText(getActivity(), "Name Required", Toast.LENGTH_SHORT).show();
             return Boolean.FALSE;
@@ -194,7 +214,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
      */
     @Override
     public void add(){
-        Item new_item = new Item(name, new ArrayList<>(), date, val, make, model, serialNumber, desc, comment);
+        Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment);
         itemDB.addItemToDB(new_item);
         NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
     }
@@ -205,10 +225,9 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
      *      The item to be replaced
      */
     public void editItem(Item item){
-        Item new_item = new Item(name, new ArrayList<>(), date, val, make, model, serialNumber, desc, comment);
+        Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment);
         itemDB.updateItemInDB(item, new_item);
         InventoryFragment inventoryFragment = new InventoryFragment();
-        Log.d("CONTEXT_IS", inventoryFragment.toString());
         NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());
     }
 
@@ -236,7 +255,99 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         itemModel.setText(item.getModel());
         itemSerialNumber.setText(item.getSerialNumber());
         dateButton.setText(item.getDateOfPurchase());
+        tags = item.getTags();
+        ArrayList<String> selectedTagNames = new ArrayList<>();
+        for (Tag tag : tags) {
+            selectedTagNames.add(tag.getName());
+        }
+
+        tagDropdown.setText(TextUtils.join(", ", selectedTagNames));
     }
 
+    private void showTagSelectionDialog() {
+        TagDB tagDB = new TagDB();
+        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
+            @Override
+            public void onSuccess(ArrayList<Tag> tagList) {
+                boolean[] selectedTags = new boolean[tagList.size()];
+                String[] tagNameList = new String[tagList.size()];
 
+                for (int i = 0; i < tagList.size(); i++) {
+                    tagNameList[i] = tagList.get(i).getName();
+                }
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setTitle("Select Tags");
+                builder.setCancelable(false);
+
+                builder.setMultiChoiceItems(tagNameList, selectedTags, (dialogInterface, index, isChecked) -> {
+                    // Update the selectedTags array when a tag is selected or deselected
+                    selectedTags[index] = isChecked;
+                });
+
+                builder.setPositiveButton("OK", (dialogInterface, which) -> {
+                    ArrayList<Tag> tags = new ArrayList<>();
+                    for (int i = 0; i < selectedTags.length; i++) {
+                        if (selectedTags[i]) {
+                            tags.add(tagList.get(i));
+                        }
+                    }
+
+                    // Update the UI to display the selected tags
+                    ArrayList<String> selectedTagNames = new ArrayList<>();
+                    for (Tag tag : tags) {
+                        selectedTagNames.add(tag.getName());
+                    }
+
+                    tagDropdown.setText(TextUtils.join(", ", selectedTagNames));
+                    dialogInterface.dismiss();
+                });
+
+                builder.setNegativeButton("Cancel", (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                });
+
+                builder.setNeutralButton("Clear All", (dialogInterface, which) -> {
+                    for (int i = 0; i < selectedTags.length; i++) {
+                        selectedTags[i] = false;
+                    }
+                    tagDropdown.setText("");
+                });
+
+                builder.show();
+            }
+            @Override
+            public void onError(String errorMessage) {
+                // Handle the error, e.g., display an error message
+                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
+            }
+        });
+    }
+
+    private void getSelectedTags() {
+        TagDB tagDB = new TagDB();
+
+
+        String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
+        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
+
+            @Override
+            public void onSuccess(ArrayList<Tag> tagList) {
+
+                for (String selectedTagName : selectedTagNames) {
+                    for (Tag tag : tagList) {
+                        if (tag.getName().equals(selectedTagName)){
+                            selectedTags.add(tag);
+                        }
+                    }
+                }
+                add();
+            }
+            @Override
+            public void onError(String errorMessage) {
+                // Handle the error, e.g., display an error message
+                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
+            }
+        });
+    }
 }
