@@ -22,6 +22,7 @@ import androidx.fragment.app.Fragment;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -192,7 +193,6 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         comment = itemComment.getText().toString();
         date = dateButton.getText().toString();
 
-
         if (name.length() == 0){
             Toast.makeText(getActivity(), "Name Required", Toast.LENGTH_SHORT).show();
             return Boolean.FALSE;
@@ -213,7 +213,6 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     public void add(){
 
         TagDB tagDB = new TagDB();
-
 
         String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
         tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
@@ -246,10 +245,33 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
      *      The item to be replaced
      */
     public void editItem(Item item){
-        Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment);
-        itemDB.updateItemInDB(item, new_item);
-        InventoryFragment inventoryFragment = new InventoryFragment();
-        NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());
+        TagDB tagDB = new TagDB();
+
+        String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
+        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
+
+            @Override
+            public void onSuccess(ArrayList<Tag> tagList) {
+
+                for (String selectedTagName : selectedTagNames) {
+                    for (Tag tag : tagList) {
+                        if (tag.getName().equals(selectedTagName)){
+                            selectedTags.add(tag);
+                        }
+                    }
+                }
+                Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment);
+                itemDB.updateItemInDB(item, new_item);
+                InventoryFragment inventoryFragment = new InventoryFragment();
+                NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());
+
+            }
+            @Override
+            public void onError(String errorMessage) {
+                // Handle the error, e.g., display an error message
+                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
+            }
+        });
     }
 
     /**
@@ -293,8 +315,16 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
                 boolean[] selectedTags = new boolean[tagList.size()];
                 String[] tagNameList = new String[tagList.size()];
 
-                for (int i = 0; i < tagList.size(); i++) {
-                    tagNameList[i] = tagList.get(i).getName();
+                if (tagList.size() > 0) {
+                    for (int i = 0; i < tagList.size(); i++) {
+                        tagNameList[i] = tagList.get(i).getName();
+                    }
+
+                    String[] current_itemTags = tagDropdown.getText().toString().split(", ");
+
+                    for (int i = 0; i < tagNameList.length; i++) {
+                        selectedTags[i] = Arrays.asList(current_itemTags).contains(tagNameList[i]);
+                    }
                 }
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
@@ -345,30 +375,4 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         });
     }
 
-    private void getSelectedTags() {
-        TagDB tagDB = new TagDB();
-
-
-        String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
-        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
-
-            @Override
-            public void onSuccess(ArrayList<Tag> tagList) {
-
-                for (String selectedTagName : selectedTagNames) {
-                    for (Tag tag : tagList) {
-                        if (tag.getName().equals(selectedTagName)){
-                            selectedTags.add(tag);
-                        }
-                    }
-                }
-                add();
-            }
-            @Override
-            public void onError(String errorMessage) {
-                // Handle the error, e.g., display an error message
-                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
-            }
-        });
-    }
 }
