@@ -8,6 +8,9 @@ import static androidx.core.content.PackageManagerCompat.LOG_TAG;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.content.pm.PackageManager;
@@ -44,6 +47,8 @@ public class ScanGalleryFragment extends Fragment {
     private String barcodeData;
     private ImageView imageView;
     private Button choosePictureButton;
+    private Context context;
+    private Activity testActivity;
 
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
             registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
@@ -59,13 +64,15 @@ public class ScanGalleryFragment extends Fragment {
     // Define a constant for the request code
     private static final int REQUEST_GALLERY_PERMISSION = 200;
 
+    public ScanGalleryFragment(MainActivity activity) {
+        this.testActivity = activity;
+    }
+    public ScanGalleryFragment() {}
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.gallery_scan_fragment, container, false);
         imageView = view.findViewById(R.id.image_view);
-        barcodeDetector = new BarcodeDetector.Builder(requireContext())
-                .setBarcodeFormats(Barcode.ALL_FORMATS)
-                .build();
         barcodeText = view.findViewById(R.id.barcode_text);
 
         choosePictureButton = view.findViewById(R.id.choose_button);
@@ -89,8 +96,6 @@ public class ScanGalleryFragment extends Fragment {
             EasyPermissions.requestPermissions(this,"Please grant permission",
                    REQUEST_GALLERY_PERMISSION, perms);
             Toast.makeText(requireContext(), "Please grant permission to access the gallery", Toast.LENGTH_SHORT).show();
-            pickMedia.launch(new PickVisualMediaRequest());
-
         }
     }
 
@@ -109,12 +114,20 @@ public class ScanGalleryFragment extends Fragment {
     public SparseArray<Barcode> getBarcode(Uri uri){
         Bitmap bitmap = null;
         try {
-            bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+            if (getActivity() != null){
+                bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+            } else {
+                bitmap = MediaStore.Images.Media.getBitmap(testActivity.getContentResolver(), uri);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         Frame frame = new Frame.Builder().setBitmap(bitmap).build();
+        barcodeDetector = new BarcodeDetector.Builder(requireContext())
+                .setBarcodeFormats(Barcode.ALL_FORMATS)
+                .build();
+
         SparseArray<Barcode> barcodes = barcodeDetector.detect(frame);
 
         return barcodes;
@@ -135,6 +148,20 @@ public class ScanGalleryFragment extends Fragment {
             barcodeText.setText("Barcode not found");
         }
     }
+
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.context = context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
+    public Context getContext() {
+        return this.context;
+    }
+
+
 //    @Override
 //    public void onRequestPermissionsResult(int requestCode, String[]
 //            permissions, int[] grantResults) {
