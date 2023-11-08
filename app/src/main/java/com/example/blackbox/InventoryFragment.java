@@ -173,9 +173,9 @@ public class InventoryFragment extends Fragment {
             String model = doc.getString("model");
             String serialNumber = doc.getString("serial_number");
             String comment = doc.getString("comment");
+            String dateOfPurchase = doc.getString("purchase_date");
             String dbID = doc.getId();
             ArrayList<Tag> tags = new ArrayList<>();
-            String dateOfPurchase = "";
 
             List<String> tagIDs = (List<String>) doc.get("tags");
 
