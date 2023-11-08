@@ -38,21 +38,36 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
+/**
+ * This is a test class for the `ScanGalleryFragment` in an Android application. It uses the Espresso
+ * testing framework and AndroidJUnit4 for UI testing and barcode extraction testing. The purpose of
+ * this test is to ensure that the `ScanGalleryFragment` correctly extracts barcodes from images.
+ *
+ * The test involves:
+ * - Copying an image file from the assets to the device's internal storage.
+ * - Checking if the image file exists.
+ * - Extracting barcodes from the image.
+ * - Comparing the extracted barcode with the expected barcode.
+ * - Cleaning up by deleting the copied image files after testing is done.
+ *
+ * This class is annotated with `@RunWith(AndroidJUnit4.class` to indicate that it's an Android JUnit
+ * test. It uses `ActivityScenarioRule` to launch the `MainActivity` activity before running the test.
+ */
 @RunWith(AndroidJUnit4.class)
 public class ScanGalleryFragmentTest {
     private Context context;
-    private MainActivity mainActivity;
     private ScanGalleryFragment fragment;
 
     @Rule
     public ActivityScenarioRule<MainActivity> activityScenarioRule =
             new ActivityScenarioRule<>(MainActivity.class);
 
+    /**
+     * Set up the test by initializing the `ScanGalleryFragment` and obtaining the context.
+     */
     @Before
     public void setUp() {
         activityScenarioRule.getScenario().onActivity(activity -> {
-            mainActivity = activity;
             fragment = new ScanGalleryFragment(activity);
             fragment.setContext(activity);
         });
@@ -60,6 +75,9 @@ public class ScanGalleryFragmentTest {
 
     }
 
+    /**
+     * Test barcode extraction from images in the `ScanGalleryFragment`.
+     */
     @Test
     public void testGetBarcode() {
         onView(withId(R.id.contentFragment))
@@ -90,6 +108,9 @@ public class ScanGalleryFragmentTest {
         }
     }
 
+    /**
+     * Clean up by deleting the copied image files after testing is done.
+     */
     @After
     public void cleanup() {
         // Delete the copied image files when the test is done
@@ -109,6 +130,12 @@ public class ScanGalleryFragmentTest {
         }
     }
 
+    /**
+     * Copies an image from the assets folder to a specified destination file path.
+     *
+     * @param fileName     The name of the image file in the assets folder.
+     * @param destFilePath The destination file path to which the image will be copied.
+     */
     private void copyImageFromAssets(String fileName, String destFilePath) {
         try {
             InputStream in = context.getAssets().open(fileName);

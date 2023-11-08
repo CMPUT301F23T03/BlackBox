@@ -64,6 +64,10 @@ public class ScanGalleryFragment extends Fragment {
     // Define a constant for the request code
     private static final int REQUEST_GALLERY_PERMISSION = 200;
 
+    /**
+     * Constructor used for testing
+     * @param activity
+     */
     public ScanGalleryFragment(MainActivity activity) {
         this.testActivity = activity;
     }
@@ -83,6 +87,15 @@ public class ScanGalleryFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Opens the device's gallery for selecting images. This function checks
+     * for permission to access media and requests permission if it's not granted. After permission is
+     * granted, it launches a media picker to allow the user to select visual media.
+     *
+     * If the required permission is already granted, the media picker is launched directly.
+     * If the permission is not granted, a request for permission is initiated, and a toast message
+     * is displayed to prompt the user to grant permission.
+     */
     private void openGallery() {
         if (ContextCompat.checkSelfPermission(requireContext(), READ_MEDIA_IMAGES_PERMISSION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -110,16 +123,26 @@ public class ScanGalleryFragment extends Fragment {
             NavigationManager.switchFragment(scanFragment, getParentFragmentManager());
         });
     }
-
+    /**
+     * Extracts barcodes from an image specified by a given URI. The function retrieves the image from
+     * the device's content resolver and then uses a barcode detector to identify and extract barcodes
+     * present in the image.
+     *
+     * @param uri The URI of the image from which barcodes are to be extracted.
+     * @return A SparseArray of Barcode objects representing the detected barcodes.
+     * @throws RuntimeException if an error occurs during the image retrieval or barcode detection.
+     */
     public SparseArray<Barcode> getBarcode(Uri uri){
         Bitmap bitmap = null;
         try {
             if (getActivity() != null){
                 bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
             } else {
+                // Use testActivity's content resolver if getActivity() is null (for testing purposes).
                 bitmap = MediaStore.Images.Media.getBitmap(testActivity.getContentResolver(), uri);
             }
         } catch (IOException e) {
+            // If an IOException occurs during image retrieval, throw a RuntimeException.
             throw new RuntimeException(e);
         }
 
@@ -133,6 +156,11 @@ public class ScanGalleryFragment extends Fragment {
         return barcodes;
     }
 
+    /**
+     * Checks and processes a SparseArray of Barcode objects to display barcode information.
+     *
+     * @param barcodes A SparseArray containing detected Barcode objects.
+     */
     @SuppressLint("RestrictedApi")
     public void checkBarcode(SparseArray<Barcode> barcodes){
         if(barcodes != null && barcodes.size() > 0){
