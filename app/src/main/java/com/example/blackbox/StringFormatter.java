@@ -16,7 +16,7 @@ public class StringFormatter {
      */
     public static String getMonetaryString(Double value){
         // Define the desired format
-        DecimalFormat decimalFormat = new DecimalFormat("#,###.00");
+        DecimalFormat decimalFormat = new DecimalFormat("#,##0.00");
         String formattedStr = "$" + decimalFormat.format(value);
 
         return formattedStr;

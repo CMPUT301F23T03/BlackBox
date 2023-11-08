@@ -1,6 +1,9 @@
 package com.example.blackbox;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,6 +59,8 @@ public class InventoryListAdapter extends ArrayAdapter {
         TextView value = view.findViewById(R.id.value);
         TextView desc = view.findViewById(R.id.desc);
         ImageView tagImage = view.findViewById(R.id.tag_image);
+        ImageView tagImage2 = view.findViewById(R.id.tag_image2);
+
 
         // Set the text for the elements of the item
         name.setText(item.getName());
@@ -71,10 +76,28 @@ public class InventoryListAdapter extends ArrayAdapter {
 
         desc.setText(strDesc);
 
-        if (item.hasTags()) {
-            tagImage.setVisibility(View.VISIBLE); // Show the tag image
-        } else {
-            tagImage.setVisibility(View.GONE); // Hide the tag image
+        if (item.getNumTags() == 0 ){
+            // Hide the tag images
+            tagImage.setVisibility(View.GONE);
+            tagImage2.setVisibility(View.GONE);
+            Log.d("SetColor", "Not Tags " + item.getName());
+
+        }
+        else if (item.getNumTags() == 1) {
+            // hide one tag image
+            tagImage.setVisibility(View.VISIBLE);
+            tagImage2.setVisibility(View.GONE);
+            Log.d("SetColor", "One Tag " + item.getName());
+            tagImage.setBackgroundTintList(ColorStateList.valueOf(item.getTags().get(0).getColor()));
+        }
+        else{
+            // show both tag images
+            tagImage.setVisibility(View.VISIBLE);
+            tagImage2.setVisibility(View.VISIBLE);
+            // this has to be set otherwise it will default to something weird sometimes
+            tagImage.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
+            tagImage2.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
+
         }
 
         return view;
