@@ -10,10 +10,15 @@
     <string name="item_name">Item Name</string>
     <string name="select_one_or_more_tags">Select one or more tags</string>
     <string-array name="sort_category">
-        <item>Default</item>
+        <item>Sorting Category</item>
         <item>By Date</item>
         <item>By Value</item>
         <item>By Make</item>
         <item>By Tag</item>
+    </string-array>
+    <string-array name="sort_order">
+        <item>Sorting Order</item>
+        <item>Ascending</item>
+        <item>Descending</item>
     </string-array>
 </resources>

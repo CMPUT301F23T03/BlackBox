@@ -167,23 +167,34 @@ public class InventoryFragment extends Fragment {
 
     private void showSortOptionDialogue() {
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        View mView = getLayoutInflater().inflate(R.layout.sort_category_spinner, null);
+        View mView = getLayoutInflater().inflate(R.layout.custom_sort_spinner, null);
 
         builder.setTitle("Sorting Options");
         builder.setCancelable(false);
-        Spinner spinner = mView.findViewById(R.id.sort_category_spinner);
+
+        Spinner category_spinner = mView.findViewById(R.id.sort_category_spinner);
+        Spinner order_spinner = mView.findViewById(R.id.sort_order_spinner);
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_spinner_item,
                 getResources().getStringArray(R.array.sort_category));
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        category_spinner.setAdapter(adapter);
+
+        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item,
+                getResources().getStringArray(R.array.sort_order));
+        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        order_spinner.setAdapter(adapter1);
 
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                boolean ascending = true;
-                String selectedCategory = spinner.getSelectedItem().toString();
-                if(!selectedCategory.equalsIgnoreCase("Default")){
+                String selectedCategory = category_spinner.getSelectedItem().toString();
+                String selectedOrder = order_spinner.getSelectedItem().toString();
+                boolean ascending = selectedOrder.equalsIgnoreCase("Ascending");
+
+                if(!selectedCategory.equalsIgnoreCase("Sorting Category") && !selectedOrder.equalsIgnoreCase("Sorting Order")){
                     //handle the selected sorting category
                     switch (selectedCategory){
                         case "By Date":
