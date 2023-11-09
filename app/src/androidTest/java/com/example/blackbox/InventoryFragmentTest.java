@@ -386,6 +386,9 @@ public class InventoryFragmentTest {
         )).check(matches(isDisplayed()));
     }
 
+    /**
+     * This tests if the total sum is displayed correctly
+     */
     @Test
     public void testTotalEstimatedValue() {
         setup();
