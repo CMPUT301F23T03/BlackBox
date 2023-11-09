@@ -10,6 +10,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -24,6 +25,7 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Handles interactions with the Firestore database for managing inventory items.
@@ -130,6 +132,26 @@ public class InventoryDB {
         else{
             Log.d("Firestore", "Deletion failed, item has no ID specified");
         }
+    }
+
+    /**
+     * Clears all items in the 'inventory' collection in the Firestore database.
+     */
+    public void clearInventory() {
+        inventory.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        document.getReference().delete();
+                    }
+                    Log.d("Firestore", "Inventory cleared Successfully");
+
+                } else {
+                    Log.d("Firestore", "Failed to clear inventory", task.getException());
+                }
+            }
+        });
     }
 }
 

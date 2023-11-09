@@ -24,7 +24,6 @@ public class InventoryListAdapter extends ArrayAdapter {
 
     private ArrayList<Item> items;
     private Context context;
-    private SparseBooleanArray selectedItems;
 
     /**
      * Constructor for the InventoryListAdapter.
@@ -36,7 +35,6 @@ public class InventoryListAdapter extends ArrayAdapter {
         super(context, 0, items); // Call the constructor of the base class
         this.items = items;
         this.context = context;
-        this.selectedItems = new SparseBooleanArray();
     }
 
     /**

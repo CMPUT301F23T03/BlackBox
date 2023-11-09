@@ -58,7 +58,7 @@ public class InventoryFragment extends Fragment {
     private TextView totalSumTextView;
     // Add a member variable to store the total sum
     private double totalSum = 0.0;
-    private SparseBooleanArray selectedItems;
+    private ArrayList<Item> selectedItemsList = new ArrayList<>();
     private boolean isLongClick = false;
 
     /**
@@ -125,8 +125,6 @@ public class InventoryFragment extends Fragment {
         itemViewList.setAdapter(inventoryAdapter);
         totalSumTextView = view.findViewById(R.id.total_sum);
 
-        selectedItems = new SparseBooleanArray();
-
         // sort the inventory list
         Button buttonSort = view.findViewById(R.id.sort_button);
         buttonSort.setOnClickListener(new View.OnClickListener() {
@@ -150,6 +148,10 @@ public class InventoryFragment extends Fragment {
                 // update inventory
                 if (value != null && !value.isEmpty()){
                     handleGetInventory(value, e);
+                }
+                else{
+                    itemList.clear();
+                    processUpdate();
                 }
 
             }
@@ -179,33 +181,79 @@ public class InventoryFragment extends Fragment {
         itemViewList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                // Show a toast to indicate long click
-                Toast.makeText(requireContext(), "Multiselection Enabled", Toast.LENGTH_SHORT).show();
+                if (!isLongClick) {
+                    // Show a toast to indicate long click
+                    Toast.makeText(requireContext(), "Multiselection Enabled", Toast.LENGTH_SHORT).show();
 
-                isLongClick = true;
+                    isLongClick = true;
 
-                // Toggle selection
-                toggleSelection(i);
+                    // Toggle selection
+                    toggleSelection(i);
 
-                // Hide the add button during long click
-                addButton.setVisibility(View.GONE);
+                    // Hide the add button during long click
+                    addButton.setVisibility(View.GONE);
 
-                // Make the delete and cancel button visible
-                deleteButton.setVisibility(View.VISIBLE);
-                cancelButton.setVisibility(View.VISIBLE);
+                    // Make the delete and cancel button visible
+                    deleteButton.setVisibility(View.VISIBLE);
+                    cancelButton.setVisibility(View.VISIBLE);
 
+                }
                 return true; // Return true to indicate that the long click event is consumed
             }
         });
 
+        // CANCEL button on click listener
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                for(Item selectedItem: selectedItemsList){
+                    selectedItem.setSelected(Boolean.FALSE);
+                }
+
                 // Clear the selection and update UI
-                selectedItems.clear();
+                selectedItemsList.clear();
 
                 // Update the view to reflect the change in selection
                 inventoryAdapter.notifyDataSetChanged();
+
+                // Hide the delete and cancel button
+                deleteButton.setVisibility(View.GONE);
+                cancelButton.setVisibility(View.GONE);
+
+                // Show the add button
+                addButton.setVisibility(View.VISIBLE);
+
+                // Reset long click flag
+                isLongClick = false;
+            }
+        });
+
+        // delete selected items on button click
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // If the selectedItemsList size is the same as the itemList size, clear the entire list
+                if (selectedItemsList.size() == itemList.size()) {
+                    // Clear the entire DB
+                    inventoryDB.clearInventory();
+
+                    // Clear the entire list - not required, database changing automatically does this (actually makes it look worse)
+//                    itemList.clear();
+
+                } else {
+                    // Iterate through the selected items and delete them
+                    for (Item selectedItem : selectedItemsList) {
+                        // Delete item from Firestore or perform any other deletion logic
+                        inventoryDB.deleteItem(selectedItem);
+                        // Remove the item from the list
+                        itemList.remove(selectedItem);
+                    }
+                }
+                // Update the view to reflect the change in selection
+                inventoryAdapter.notifyDataSetChanged();
+
+                // Clear the selection and update UI
+                selectedItemsList.clear();
 
                 // Hide the delete and cancel button
                 deleteButton.setVisibility(View.GONE);
@@ -226,6 +274,14 @@ public class InventoryFragment extends Fragment {
         // Toggle the selection state of the item
         Item selectedItem = itemList.get(position);
         selectedItem.setSelected(!selectedItem.isSelected());
+
+        if (selectedItemsList.contains(selectedItem)) {
+            // Item is already selected, remove it
+            selectedItemsList.remove(selectedItem);
+        } else {
+            // Item is not selected, add it
+            selectedItemsList.add(selectedItem);
+        }
 
         // Update the view to reflect the change in selection
         inventoryAdapter.notifyDataSetChanged();
