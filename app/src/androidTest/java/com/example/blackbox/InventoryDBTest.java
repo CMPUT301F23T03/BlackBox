@@ -159,4 +159,10 @@ public class InventoryDBTest {
         }
         clearInventoryDB(inventoryDB);
     }
+
+    /**
+     *
+     */
+    public static void checkItemTags(){
+    }
 }
