@@ -386,4 +386,23 @@ public class InventoryFragmentTest {
         )).check(matches(isDisplayed()));
     }
 
+    @Test
+    public void testTotalEstimatedValue() {
+        setup();
+
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
+
+        double testing_sum = estimatedValue + estimatedValue2;
+        String expectedTotalSum = String.format("Total: "+StringFormatter.getMonetaryString(testing_sum));
+
+        // Check if the total estimated value is displayed correctly
+        onView(withId(R.id.total_sum)).check(matches(withText(expectedTotalSum)));
+
+    }
+
 }
