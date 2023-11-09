@@ -26,6 +26,12 @@ import java.util.concurrent.CountDownLatch;
 
 public class TagDBTest {
     private final Tag basicTag = new Tag("Name", 1, "Color", "Description");
+
+    /**
+     * This method synchronously deletes all tags from a specified collection
+     * @param tags
+     *      The database manager to delete with
+     */
     public static void clearTagDB(TagDB tags) {
         CollectionReference tagRef = tags.getTags();
         Task<QuerySnapshot> querySnapshotTask = tagRef.get();
