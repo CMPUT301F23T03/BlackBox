@@ -103,7 +103,6 @@ public class TagFunctionalityTest {
         // click on addItem
         onView(withId(R.id.add_tag_button)).perform(click());
         // fill information
-
         onView(withId(R.id.name_editText)).perform(ViewActions.typeText(tagName));
         onView(withId(R.id.desc_editText)).perform(ViewActions.typeText(description));
         // add item
@@ -121,6 +120,7 @@ public class TagFunctionalityTest {
         onView(withText(tagName2)).check(matches(isDisplayed()));
         onView(withText(description2)).check(matches(isDisplayed()));
     }
+
     /**
      * This test checks if a tag can be deleted
      */

@@ -41,6 +41,16 @@ public class InventoryDB {
     }
 
     /**
+     * Initializes the Firestore database with a provided colletion name
+     * Used for testing
+     * @param collection_name name of the collection to be created
+     */
+    public InventoryDB(String collection_name) {
+        db = FirebaseFirestore.getInstance();
+        inventory = db.collection(collection_name);
+    }
+
+    /**
      * Returns the instance of the Firestore database
      *
      * @return db
