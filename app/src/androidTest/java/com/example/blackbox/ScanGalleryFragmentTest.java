@@ -153,4 +153,6 @@ public class ScanGalleryFragmentTest {
             e.printStackTrace();
         }
     }
+
+
 }
