@@ -15,6 +15,7 @@ package com.example.blackbox;
         import static org.hamcrest.CoreMatchers.containsString;
         import static org.hamcrest.CoreMatchers.instanceOf;
         import static org.hamcrest.CoreMatchers.is;
+        import static org.hamcrest.CoreMatchers.not;
 
         import android.util.Log;
         import android.widget.Switch;
@@ -406,6 +407,116 @@ public class InventoryFragmentTest {
         // Check if the total estimated value is displayed correctly
         onView(withId(R.id.total_sum)).check(matches(withText(expectedTotalSum)));
 
+    }
+
+    @Test
+    public void testTagImageViewVisibility() {
+        // start with a fresh database
+        setup();
+
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
+
+        // Setup for 2 tags
+        onView(withText(name2)).perform(click());
+
+        onView(withId((R.id.delete_item_button))).perform(click());
+        onView(withText("CONFIRM")).perform(click());
+
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
+
+        // Check if the first tag ImageView is visible
+        onView(withId(R.id.tag_image)).check(matches(isDisplayed()));
+
+        // Check if the second tag ImageView is visible
+        onView(withId(R.id.tag_image2)).check(matches(isDisplayed()));
+
+        // Setting up the next case 1 tag
+        onView(withText(name)).perform(click());
+
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
+
+        onView(withId(R.id.tag_dropdown)).perform(click());
+
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
+
+        // Remove one of the tags
+        onView(withText("Tag2")).perform(click());
+
+        // Close the dropdown.
+        onView(withText("OK")).perform(click());
+
+        // Save the updated item.
+        onView(withId(R.id.small_save_button)).perform(click());
+
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
+
+        // Case for 1 tag
+        onView(withId(R.id.tag_image)).check(matches(isDisplayed()));
+        onView(withId(R.id.tag_image2)).check(matches(not(isDisplayed())));
+
+        // Setting up the last case 0 tags
+        onView(withText(name)).perform(click());
+
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
+
+        onView(withId(R.id.tag_dropdown)).perform(click());
+
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
+
+        // Remove one of the tags
+        onView(withText("Tag1")).perform(click());
+
+        // Close the dropdown.
+        onView(withText("OK")).perform(click());
+
+        // Save the updated item.
+        onView(withId(R.id.small_save_button)).perform(click());
+
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
+
+        // Case for 0 tags
+        onView(withId(R.id.tag_image)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.tag_image2)).check(matches(not(isDisplayed())));
     }
 
 }
