@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
 
 public abstract class InventoryAddEditFragment extends AddEditFragment {
@@ -314,6 +315,16 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
             public void onSuccess(ArrayList<Tag> tagList) {
                 boolean[] selectedTags = new boolean[tagList.size()];
                 String[] tagNameList = new String[tagList.size()];
+
+                Comparator<Tag> tagComp = new Comparator<Tag>() {
+                    @Override
+                    public int compare(Tag tag1, Tag tag2) {
+                        int result = tag1.getName().compareToIgnoreCase(tag2.getName());
+                        return result;
+                    }
+                };
+                tagList.sort(tagComp);
+
 
                 if (tagList.size() > 0) {
                     for (int i = 0; i < tagList.size(); i++) {

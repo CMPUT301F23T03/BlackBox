@@ -1,6 +1,8 @@
 package com.example.blackbox;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,33 +12,30 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.checkerframework.checker.units.qual.A;
-
-import java.lang.reflect.Array;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import java.util.Locale;
 
 /**
  * A Fragment that displays and manages an inventory of items. It includes features to add and edit items.
@@ -102,7 +101,7 @@ public class InventoryFragment extends Fragment {
     /**
      * Called when the fragment's view has been created.
      *
-     * @param view               The root view of the fragment.
+     * @param view                The root view of the fragment.
      * @param savedInstanceState  A Bundle containing the saved state of the fragment.
      */
     @Override
@@ -120,12 +119,20 @@ public class InventoryFragment extends Fragment {
         itemViewList.setAdapter(inventoryAdapter);
         totalSumTextView = view.findViewById(R.id.total_sum);
 
+        // sort the inventory list
+        Button buttonSort = view.findViewById(R.id.sort_button);
+        buttonSort.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSortOptionDialogue();
+            }
+        });
+
 
         // listener for data changes in DB
         dbListener =
                 inventoryDB.getInventory()
                 // whenever database is update it is reordered by add date
-                // THIS MAY BREAK THINGS ONCE SORTING IS IMPLEMENTED
                 .orderBy("update_date", Query.Direction.DESCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -133,7 +140,7 @@ public class InventoryFragment extends Fragment {
                                 @Nullable FirebaseFirestoreException e) {
 
                 // update inventory
-                if (value != null){
+                if (value != null && !value.isEmpty()){
                     handleGetInventory(value, e);
                 }
 
@@ -154,6 +161,174 @@ public class InventoryFragment extends Fragment {
             }
         });
 
+    }
+
+    /**
+     * A dialogue box that shows two spinners which lets the user choose the sorting category and sorting order
+     * and calls the appropriate sort function based on the selection.
+     */
+    private void showSortOptionDialogue() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        View mView = getLayoutInflater().inflate(R.layout.custom_sort_spinner, null);
+
+        builder.setTitle("Sorting Options");
+        builder.setCancelable(false);
+
+        Spinner category_spinner = mView.findViewById(R.id.sort_category_spinner);
+        Spinner order_spinner = mView.findViewById(R.id.sort_order_spinner);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item,
+                getResources().getStringArray(R.array.sort_category));
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        category_spinner.setAdapter(adapter);
+
+        ArrayAdapter<String> adapter1 = new ArrayAdapter<>(requireContext(),
+                android.R.layout.simple_spinner_item,
+                getResources().getStringArray(R.array.sort_order));
+        adapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        order_spinner.setAdapter(adapter1);
+
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String selectedCategory = category_spinner.getSelectedItem().toString();
+                String selectedOrder = order_spinner.getSelectedItem().toString();
+                boolean ascending = selectedOrder.equalsIgnoreCase("Ascending");
+
+                if(!selectedCategory.equalsIgnoreCase("Sorting Category") && !selectedOrder.equalsIgnoreCase("Sorting Order")){
+                    //handle the selected sorting category
+                    switch (selectedCategory){
+                        case "By Date":
+                            sortByDate(ascending);
+                            break;
+                        case "By Value":
+                            sortByValue(ascending);
+                            break;
+                        case "By Make":
+                            sortByMake(ascending);
+                            break;
+                        case "By Tag":
+                            sortByHighestPrecedentTag(ascending);
+                            break;
+                        default:
+                            //handle the default case
+                    }
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancel", (dialogInterface, which) -> {
+           dialogInterface.dismiss();
+        });
+
+        builder.setView(mView);
+        builder.create().show();
+    }
+
+    /**
+     * Sort the list items by Date in ascending or descending order.
+     * @param ascending specifies the sorting order, true = ascending, descending otherwise
+     */
+    private void sortByDate(boolean ascending) {
+        Comparator<Item> dateComp = new Comparator<Item>() {
+            @Override
+            public int compare(Item o1, Item o2) {
+                //parse the date into appropriate format
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd", Locale.getDefault());
+                try{
+                    Date date1 = dateFormat.parse(o1.getDateOfPurchase());
+                    Date date2 = dateFormat.parse(o2.getDateOfPurchase());
+                    if (date1 != null && date2 != null) {
+                        return ascending ? date1.compareTo(date2) : date2.compareTo(date1); // check for ascending or descending
+                    }
+                }
+                catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                return 0;
+            }
+        };
+        itemList.sort(dateComp);
+        inventoryAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Sort the list items by Estimated Value in ascending or descending order.
+     * @param ascending specifies the sorting order, true = ascending, descending otherwise
+     */
+    private void sortByValue(boolean ascending) {
+        if (ascending){
+            itemList.sort((item1, item2) -> Double.compare(item1.getEstimatedValue(), item2.getEstimatedValue()));
+        }
+        else {
+            itemList.sort((item1, item2) -> Double.compare(item2.getEstimatedValue(), item1.getEstimatedValue()));
+        }
+
+        inventoryAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Sort the list items by Make (alphabetically) in ascending or descending order.
+     * @param ascending specifies the sorting order, true = ascending, descending otherwise
+     */
+    private void sortByMake(boolean ascending) {
+        Comparator<Item> makeComp = new Comparator<Item>() {
+            @Override
+            public int compare(Item o1, Item o2) {
+                String make1 = o1.getMake();
+                String make2 = o2.getMake();
+
+                // compare alphabetically
+                int result = make1.compareToIgnoreCase(make2);
+                // check for descending
+                if (!ascending){
+                    result = -result;
+                }
+                return result;
+            }
+        };
+        itemList.sort(makeComp);
+        inventoryAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Sort the list items by the Highest Precedent Tag (alphabetically) in ascending or descending order.
+     * @param ascending specifies the sorting order, true = ascending, descending otherwise
+     */
+    private void sortByHighestPrecedentTag(boolean ascending) {
+        Comparator<Item> tagComp = new Comparator<Item>() {
+            @Override
+            public int compare(Item o1, Item o2) {
+                Tag tag1 = findHighestPrecedentTag(o1);
+                Tag tag2 = findHighestPrecedentTag(o2);
+
+                int result = tag1.getName().compareToIgnoreCase(tag2.getName());
+                // check for descending
+                if (!ascending){
+                    result = -result;
+                }
+                return result;
+            }
+        };
+        itemList.sort(tagComp);
+        inventoryAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Helper function that helps to find the highest precedent tag in an item
+     * @param item The item of which we want to find the highest precedent tag
+     * @return
+     *         The tag with highest precedent
+     */
+    private Tag findHighestPrecedentTag(Item item){
+        Tag highestTag = null;
+        for (Tag tag : item.getTags()){
+            if(highestTag == null || item.getName().compareToIgnoreCase(highestTag.getName()) < 0){
+                highestTag = tag;
+            }
+        }
+        return highestTag;
     }
 
     /**
@@ -209,7 +384,7 @@ public class InventoryFragment extends Fragment {
         else{
             Log.d("Firestore", "All tag tasks done");
             processUpdate();
-        };
+        }
     }
 
 

@@ -15,6 +15,8 @@ import android.util.Log;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import android.util.Log;
+
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
@@ -29,6 +31,9 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Date;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 

@@ -8,6 +8,9 @@ import static androidx.core.content.PackageManagerCompat.LOG_TAG;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.content.pm.PackageManager;
@@ -44,35 +47,16 @@ public class ScanGalleryFragment extends Fragment {
     private String barcodeData;
     private ImageView imageView;
     private Button choosePictureButton;
+    private Context context;
+    private Activity testActivity;
 
-    @SuppressLint("RestrictedApi")
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
             registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
                 if (uri != null) {
                     imageView.setImageURI(uri);
                     Log.d("PhotoPicker", "Selected URI: " + uri);
-                    Bitmap bitmap = null;
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-
-                    Frame frame = new Frame.Builder().setBitmap(bitmap).build();
-                    SparseArray<Barcode> barcodes = barcodeDetector.detect(frame);
-                    if(barcodes != null && barcodes.size() > 0){
-                        for (int i = 0; i < barcodes.size(); i++){
-                            Log.d(LOG_TAG, "Value: " + barcodes.valueAt(i).rawValue + "----" + barcodes.valueAt(i).displayValue);
-                            Toast.makeText(requireContext(), barcodes.valueAt(i).rawValue, Toast.LENGTH_SHORT).show();
-                        }
-                        barcodeData = barcodes.valueAt(0).displayValue;
-                        barcodeText.setText(barcodeData);
-                    }else {
-                        Log.e(LOG_TAG,"SparseArray null or empty");
-                        Toast.makeText(requireContext(), "Barcode not found", Toast.LENGTH_SHORT).show();
-                        barcodeText.setText("Barcode not found");
-                    }
-
+                    SparseArray<Barcode> barcodes = getBarcode(uri);
+                    checkBarcode(barcodes);
                 } else {
                     Log.d("PhotoPicker", "No media selected");
                 }
@@ -80,13 +64,19 @@ public class ScanGalleryFragment extends Fragment {
     // Define a constant for the request code
     private static final int REQUEST_GALLERY_PERMISSION = 200;
 
+    /**
+     * Constructor used for testing
+     * @param activity
+     */
+    public ScanGalleryFragment(MainActivity activity) {
+        this.testActivity = activity;
+    }
+    public ScanGalleryFragment() {}
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.gallery_scan_fragment, container, false);
         imageView = view.findViewById(R.id.image_view);
-        barcodeDetector = new BarcodeDetector.Builder(requireContext())
-                .setBarcodeFormats(Barcode.ALL_FORMATS)
-                .build();
         barcodeText = view.findViewById(R.id.barcode_text);
 
         choosePictureButton = view.findViewById(R.id.choose_button);
@@ -97,6 +87,15 @@ public class ScanGalleryFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Opens the device's gallery for selecting images. This function checks
+     * for permission to access media and requests permission if it's not granted. After permission is
+     * granted, it launches a media picker to allow the user to select visual media.
+     *
+     * If the required permission is already granted, the media picker is launched directly.
+     * If the permission is not granted, a request for permission is initiated, and a toast message
+     * is displayed to prompt the user to grant permission.
+     */
     private void openGallery() {
         if (ContextCompat.checkSelfPermission(requireContext(), READ_MEDIA_IMAGES_PERMISSION)
                 == PackageManager.PERMISSION_GRANTED) {
@@ -110,8 +109,6 @@ public class ScanGalleryFragment extends Fragment {
             EasyPermissions.requestPermissions(this,"Please grant permission",
                    REQUEST_GALLERY_PERMISSION, perms);
             Toast.makeText(requireContext(), "Please grant permission to access the gallery", Toast.LENGTH_SHORT).show();
-            pickMedia.launch(new PickVisualMediaRequest());
-
         }
     }
 
@@ -126,6 +123,73 @@ public class ScanGalleryFragment extends Fragment {
             NavigationManager.switchFragment(scanFragment, getParentFragmentManager());
         });
     }
+    /**
+     * Extracts barcodes from an image specified by a given URI. The function retrieves the image from
+     * the device's content resolver and then uses a barcode detector to identify and extract barcodes
+     * present in the image.
+     *
+     * @param uri The URI of the image from which barcodes are to be extracted.
+     * @return A SparseArray of Barcode objects representing the detected barcodes.
+     * @throws RuntimeException if an error occurs during the image retrieval or barcode detection.
+     */
+    public SparseArray<Barcode> getBarcode(Uri uri){
+        Bitmap bitmap = null;
+        try {
+            if (getActivity() != null){
+                bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+            } else {
+                // Use testActivity's content resolver if getActivity() is null (for testing purposes).
+                bitmap = MediaStore.Images.Media.getBitmap(testActivity.getContentResolver(), uri);
+            }
+        } catch (IOException e) {
+            // If an IOException occurs during image retrieval, throw a RuntimeException.
+            throw new RuntimeException(e);
+        }
+
+        Frame frame = new Frame.Builder().setBitmap(bitmap).build();
+        barcodeDetector = new BarcodeDetector.Builder(requireContext())
+                .setBarcodeFormats(Barcode.ALL_FORMATS)
+                .build();
+
+        SparseArray<Barcode> barcodes = barcodeDetector.detect(frame);
+
+        return barcodes;
+    }
+
+    /**
+     * Checks and processes a SparseArray of Barcode objects to display barcode information.
+     *
+     * @param barcodes A SparseArray containing detected Barcode objects.
+     */
+    @SuppressLint("RestrictedApi")
+    public void checkBarcode(SparseArray<Barcode> barcodes){
+        if(barcodes != null && barcodes.size() > 0){
+            for (int i = 0; i < barcodes.size(); i++){
+                Log.d(LOG_TAG, "Value: " + barcodes.valueAt(i).rawValue + "----" + barcodes.valueAt(i).displayValue);
+                Toast.makeText(requireContext(), barcodes.valueAt(i).rawValue, Toast.LENGTH_SHORT).show();
+            }
+            barcodeData = barcodes.valueAt(0).displayValue;
+            barcodeText.setText(barcodeData);
+        }else {
+            Log.e(LOG_TAG,"SparseArray null or empty");
+            Toast.makeText(requireContext(), "Barcode not found", Toast.LENGTH_SHORT).show();
+            barcodeText.setText("Barcode not found");
+        }
+    }
+
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.context = context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
+    }
+    public Context getContext() {
+        return this.context;
+    }
+
+
 //    @Override
 //    public void onRequestPermissionsResult(int requestCode, String[]
 //            permissions, int[] grantResults) {
