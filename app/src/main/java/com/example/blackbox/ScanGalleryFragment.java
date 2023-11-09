@@ -158,7 +158,7 @@ public class ScanGalleryFragment extends Fragment {
     private SparseArray<Barcode> detectBarcodes(Bitmap bitmap) {
         Frame frame = new Frame.Builder().setBitmap(bitmap).build();
         BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(requireContext())
-                .setBarcodeFormats(Barcode.ALL_FORMATS)
+                .setBarcodeFormats(Barcode.CODE_128 | Barcode.EAN_13)
                 .build();
 
         return barcodeDetector.detect(frame);
