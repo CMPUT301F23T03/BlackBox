@@ -149,6 +149,10 @@ public class InventoryFragment extends Fragment {
                 if (value != null && !value.isEmpty()){
                     handleGetInventory(value, e);
                 }
+                else{
+                    itemList.clear();
+                    processUpdate();
+                }
 
             }
         });
