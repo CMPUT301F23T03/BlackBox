@@ -1,27 +1,21 @@
 package com.example.blackbox;
 
-import static androidx.core.content.PackageManagerCompat.LOG_TAG;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static junit.framework.TestCase.assertEquals;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.fail;
 
-import android.content.ContentResolver;
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.net.Uri;
 import android.util.Log;
 import android.util.SparseArray;
-import android.widget.Toast;
 
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.google.android.gms.vision.barcode.Barcode;
 
@@ -36,8 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+
 /**
  * This is a test class for the `ScanGalleryFragment` in an Android application. It uses the Espresso
  * testing framework and AndroidJUnit4 for UI testing and barcode extraction testing. The purpose of
@@ -57,6 +50,7 @@ import java.util.stream.IntStream;
 public class ScanGalleryFragmentTest {
     private Context context;
     private ScanGalleryFragment fragment;
+    private String[] serialNumbers;
 
     @Rule
     public ActivityScenarioRule<MainActivity> activityScenarioRule =
@@ -79,18 +73,23 @@ public class ScanGalleryFragmentTest {
      * Test barcode extraction from images in the `ScanGalleryFragment`.
      */
     @Test
-    public void testGetBarcode() {
+    public void testGetBarcode() throws IOException {
         onView(withId(R.id.contentFragment))
                 .check(matches(isDisplayed()));
-        String[] serialNumbers = {"063350702109.jpg"};
+        AssetManager assetManager = context.getAssets();
+        String subdirectory = "scanTest";
+        try {
+            serialNumbers = assetManager.list(subdirectory);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         for (String serialNumber : serialNumbers) {
             // Copy the image file from assets to the device's internal storage
             String filePath = context.getFilesDir() + File.separator + serialNumber;
-            copyImageFromAssets(serialNumber, filePath);
+            copyImageFromAssets(subdirectory, serialNumber, filePath);
 
             File imageFile = new File(filePath);
-
             if (imageFile.exists()) {
                 // Log the filePath for debugging
                 Log.d("Test Barcode", "Image filePath: " + filePath);
@@ -103,7 +102,7 @@ public class ScanGalleryFragmentTest {
                 assertEquals(serialNumber, stringBarcode +".jpg");
             } else {
                 // Log a message or handle the case when the file does not exist
-                Log.d("Test Barcode", "File does not exist: " + filePath);
+                fail("Image file does not exist: " + filePath);
             }
         }
     }
@@ -114,7 +113,6 @@ public class ScanGalleryFragmentTest {
     @After
     public void cleanup() {
         // Delete the copied image files when the test is done
-        String[] serialNumbers = {"063350702109.jpg"};
 
         for (String serialNumber : serialNumbers) {
             String filePath = context.getFilesDir() + File.separator + serialNumber;
@@ -133,12 +131,13 @@ public class ScanGalleryFragmentTest {
     /**
      * Copies an image from the assets folder to a specified destination file path.
      *
-     * @param fileName     The name of the image file in the assets folder.
+     * @param subdirectory The name of the test image folder inside assets
+     * @param fileName     The name of the image file in the subdirectory folder.
      * @param destFilePath The destination file path to which the image will be copied.
      */
-    private void copyImageFromAssets(String fileName, String destFilePath) {
+    private void copyImageFromAssets(String subdirectory, String fileName, String destFilePath) {
         try {
-            InputStream in = context.getAssets().open(fileName);
+            InputStream in = context.getAssets().open(subdirectory+ "/" + fileName);
             OutputStream out = new FileOutputStream(destFilePath);
 
             byte[] buffer = new byte[1024];

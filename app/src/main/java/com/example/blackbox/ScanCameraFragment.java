@@ -92,13 +92,13 @@ public class ScanCameraFragment extends Fragment {
             public void surfaceCreated(SurfaceHolder holder) {
                 try {
                     // Check camera permission and start the camera source if granted.
-                    if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                        cameraSource.start(surfaceView.getHolder());
-                    } else {
+                    if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                         // Request camera permission if not granted.
                         ActivityCompat.requestPermissions(requireActivity(), new
                                 String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
                     }
+                    cameraSource.start(surfaceView.getHolder());
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
