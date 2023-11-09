@@ -181,21 +181,23 @@ public class InventoryFragment extends Fragment {
         itemViewList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                // Show a toast to indicate long click
-                Toast.makeText(requireContext(), "Multiselection Enabled", Toast.LENGTH_SHORT).show();
+                if (!isLongClick) {
+                    // Show a toast to indicate long click
+                    Toast.makeText(requireContext(), "Multiselection Enabled", Toast.LENGTH_SHORT).show();
 
-                isLongClick = true;
+                    isLongClick = true;
 
-                // Toggle selection
-                toggleSelection(i);
+                    // Toggle selection
+                    toggleSelection(i);
 
-                // Hide the add button during long click
-                addButton.setVisibility(View.GONE);
+                    // Hide the add button during long click
+                    addButton.setVisibility(View.GONE);
 
-                // Make the delete and cancel button visible
-                deleteButton.setVisibility(View.VISIBLE);
-                cancelButton.setVisibility(View.VISIBLE);
+                    // Make the delete and cancel button visible
+                    deleteButton.setVisibility(View.VISIBLE);
+                    cancelButton.setVisibility(View.VISIBLE);
 
+                }
                 return true; // Return true to indicate that the long click event is consumed
             }
         });
@@ -204,6 +206,10 @@ public class InventoryFragment extends Fragment {
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                for(Item selectedItem: selectedItemsList){
+                    selectedItem.setSelected(Boolean.FALSE);
+                }
+
                 // Clear the selection and update UI
                 selectedItemsList.clear();
 
@@ -231,8 +237,8 @@ public class InventoryFragment extends Fragment {
                     // Clear the entire DB
                     inventoryDB.clearInventory();
 
-                    // Clear the entire list
-                    itemList.clear();
+                    // Clear the entire list - not required, database changing automatically does this (actually makes it look worse)
+//                    itemList.clear();
 
                 } else {
                     // Iterate through the selected items and delete them
