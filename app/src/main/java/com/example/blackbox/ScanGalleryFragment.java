@@ -157,9 +157,9 @@ public class ScanGalleryFragment extends Fragment {
     }
 
     /**
-     * Checks and processes a SparseArray of Barcode objects to display barcode information.
+     * Check and process detected barcodes from a SparseArray of Barcode objects.
      *
-     * @param barcodes A SparseArray containing detected Barcode objects.
+     * @param barcodes A SparseArray of Barcode objects representing detected barcodes.
      */
     @SuppressLint("RestrictedApi")
     public void checkBarcode(SparseArray<Barcode> barcodes){
