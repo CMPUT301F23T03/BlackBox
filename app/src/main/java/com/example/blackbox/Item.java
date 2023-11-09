@@ -23,6 +23,7 @@ public class Item implements Serializable {
     private String description;
     private String comment;
     private Date dateUpdated;
+    private boolean isSelected;
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -222,4 +223,13 @@ public class Item implements Serializable {
             e.printStackTrace();
         }
     }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
 }
