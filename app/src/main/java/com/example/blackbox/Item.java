@@ -192,6 +192,10 @@ public class Item implements Serializable {
         return ID;
     }
 
+    public void setID(String ID) {
+        this.ID = ID;
+    }
+
     public Date getDateUpdated() {
         return dateUpdated;
     }
