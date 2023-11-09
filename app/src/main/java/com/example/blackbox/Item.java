@@ -23,6 +23,7 @@ public class Item implements Serializable {
     private String description;
     private String comment;
     private Date dateUpdated;
+    private boolean isSelected;
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -105,9 +106,13 @@ public class Item implements Serializable {
         this.ID = ID;
     }
 
-    // Checks if the item has tags or not
-    public boolean hasTags() {
-        return tags != null && !tags.isEmpty();
+    /**
+     * Get the number of tags that an item has
+     * @return
+     *      The number of tags
+     */
+    public Integer getNumTags() {
+        return tags.size();
     }
 
     // Getters and setters for various properties
@@ -192,6 +197,10 @@ public class Item implements Serializable {
         return ID;
     }
 
+    public void setID(String ID) {
+        this.ID = ID;
+    }
+
     public Date getDateUpdated() {
         return dateUpdated;
     }
@@ -214,4 +223,13 @@ public class Item implements Serializable {
             e.printStackTrace();
         }
     }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
 }

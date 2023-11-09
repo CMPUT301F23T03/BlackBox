@@ -2,14 +2,12 @@ package com.example.blackbox;
 
 
 import static android.Manifest.permission.READ_MEDIA_IMAGES;
-import static android.Manifest.permission.READ_MEDIA_VIDEO;
 
 import static androidx.core.content.PackageManagerCompat.LOG_TAG;
 
-import android.Manifest;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -28,7 +26,6 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -105,7 +102,7 @@ public class ScanGalleryFragment extends Fragment {
             // Request storage permission if not granted.
 //             ActivityCompat.requestPermissions(requireActivity(), new
 //                     String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO}, REQUEST_GALLERY_PERMISSION);
-            String[] perms = {READ_MEDIA_IMAGES, READ_MEDIA_VIDEO};
+            String[] perms = {READ_MEDIA_IMAGES};
             EasyPermissions.requestPermissions(this,"Please grant permission",
                    REQUEST_GALLERY_PERMISSION, perms);
             Toast.makeText(requireContext(), "Please grant permission to access the gallery", Toast.LENGTH_SHORT).show();
@@ -124,18 +121,17 @@ public class ScanGalleryFragment extends Fragment {
         });
     }
     /**
-     * Extracts barcodes from an image specified by a given URI. The function retrieves the image from
-     * the device's content resolver and then uses a barcode detector to identify and extract barcodes
-     * present in the image.
+     * Retrieves barcodes from an image specified by the provided Uri. The method rotates the image
+     * 3 times and returns the set of barcodes from the rotation that yields the most detected barcodes.
      *
-     * @param uri The URI of the image from which barcodes are to be extracted.
+     * @param uri The Uri of the image.
      * @return A SparseArray of Barcode objects representing the detected barcodes.
-     * @throws RuntimeException if an error occurs during the image retrieval or barcode detection.
+     * @throws RuntimeException If an IOException occurs during image retrieval.
      */
-    public SparseArray<Barcode> getBarcode(Uri uri){
+    public SparseArray<Barcode> getBarcode(Uri uri) {
         Bitmap bitmap = null;
         try {
-            if (getActivity() != null){
+            if (getActivity() != null) {
                 bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
             } else {
                 // Use testActivity's content resolver if getActivity() is null (for testing purposes).
@@ -146,18 +142,31 @@ public class ScanGalleryFragment extends Fragment {
             throw new RuntimeException(e);
         }
 
-        Frame frame = new Frame.Builder().setBitmap(bitmap).build();
-        barcodeDetector = new BarcodeDetector.Builder(requireContext())
-                .setBarcodeFormats(Barcode.ALL_FORMATS)
-                .build();
-
-        SparseArray<Barcode> barcodes = barcodeDetector.detect(frame);
+        // Perform barcode detection on the original image
+        SparseArray<Barcode> barcodes = detectBarcodes(bitmap);
 
         return barcodes;
     }
 
     /**
      * Check and process detected barcodes from a SparseArray of Barcode objects.
+     * Performs barcode detection on the given Bitmap.
+     *
+     * @param bitmap The Bitmap on which barcode detection will be performed.
+     * @return A SparseArray of Barcode objects representing the detected barcodes.
+     */
+    private SparseArray<Barcode> detectBarcodes(Bitmap bitmap) {
+        Frame frame = new Frame.Builder().setBitmap(bitmap).build();
+        BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(requireContext())
+                .setBarcodeFormats(Barcode.ALL_FORMATS)
+                .build();
+
+        return barcodeDetector.detect(frame);
+    }
+
+
+    /**
+     * Checks and processes a SparseArray of Barcode objects to display barcode information.
      *
      * @param barcodes A SparseArray of Barcode objects representing detected barcodes.
      */
