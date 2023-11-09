@@ -56,4 +56,10 @@ public class InventoryDBTest {
         InventoryDB items = new InventoryDB();
         clearInventoryDB(items);
     }
+
+    /**
+     *
+     */
+    public static void checkItemTags(){
+    }
 }
