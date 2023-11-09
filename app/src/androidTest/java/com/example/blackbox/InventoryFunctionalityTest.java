@@ -568,7 +568,7 @@ public class InventoryFunctionalityTest {
 
         // Testing for deletion of all items with multi-select
         // Perform a click on the long-clickable item
-        Espresso.onView(ViewMatchers.withId(R.id.item_list)).perform(ViewActions.longClick());
+        Espresso.onView(withText(name)).perform(ViewActions.longClick());
 
         // Perform clicks on other items to simulate selection
         onView(withText(name2)).perform(click());
