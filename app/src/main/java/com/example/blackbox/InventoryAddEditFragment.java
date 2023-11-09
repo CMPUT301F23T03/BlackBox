@@ -291,21 +291,41 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
      *           The item whose info will be used to fill fields
      */
     public void adjustFields(Item item){
-        itemName.setText(item.getName());
-        itemDescription.setText(item.getDescription());
-        itemComment.setText(item.getComment());
-        itemMake.setText(item.getMake());
-        itemValue.setText(item.getStringEstimatedValue());
-        itemModel.setText(item.getModel());
-        itemSerialNumber.setText(item.getSerialNumber());
-        dateButton.setText(item.getDateOfPurchase());
-        tags = item.getTags();
-        ArrayList<String> selectedTagNames = new ArrayList<>();
-        for (Tag tag : tags) {
-            selectedTagNames.add(tag.getName());
+        if (item.getName() != null) {
+            itemName.setText(item.getName());
         }
-
-        tagDropdown.setText(TextUtils.join(", ", selectedTagNames));
+        if (item.getDescription() != null){
+            itemDescription.setText(item.getDescription());
+        }
+        if (item.getComment() != null){
+            itemComment.setText(item.getComment());
+        }
+        if (item.getMake() != null){
+            itemMake.setText(item.getMake());
+        }
+        if (item.getEstimatedValue() != null){
+            itemValue.setText(item.getStringEstimatedValue());
+        }
+        if (item.getModel() != null){
+            itemModel.setText(item.getModel());
+        }
+        if (item.getSerialNumber() != null){
+            itemSerialNumber.setText(item.getSerialNumber());
+        }
+        if (item.getDateOfPurchase() != null){
+            dateButton.setText(item.getDateOfPurchase());
+        }
+        ArrayList<Tag> selectedTags = null;
+        if (item.getTags() != null){
+             selectedTags = item.getTags();
+        }
+        if (selectedTags != null){
+            ArrayList<String> selectedTagNames = new ArrayList<>();
+            for (Tag tag : selectedTags) {
+                selectedTagNames.add(tag.getName());
+            }
+            tagDropdown.setText(TextUtils.join(", ", selectedTagNames));
+        }
     }
 
     private void showTagSelectionDialog() {

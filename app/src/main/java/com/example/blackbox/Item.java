@@ -16,7 +16,7 @@ public class Item implements Serializable {
     private String ID;
     private ArrayList<Tag> tags;
     private String dateOfPurchase;  // this can be a Date object
-    private double estimatedValue;
+    private Double estimatedValue;
     private String make;
     private String model;
     private String serialNumber;
@@ -40,7 +40,7 @@ public class Item implements Serializable {
      * @param  description the description of the item
      * @param  comment the comment on the item
      */
-    public Item(String name, ArrayList<Tag> tags, String dateOfPurchase, double estimatedValue, String make, String model, String serialNumber, String description, String comment) {
+    public Item(String name, ArrayList<Tag> tags, String dateOfPurchase, Double estimatedValue, String make, String model, String serialNumber, String description, String comment) {
         this.name = name;
         this.tags = tags;
         this.dateOfPurchase = dateOfPurchase;
@@ -66,7 +66,7 @@ public class Item implements Serializable {
      * @param  comment the comment on the item
      * @param  ID the id of the item in the database
      */
-    public Item(String name, ArrayList<Tag> tags, String dateOfPurchase, double estimatedValue, String make, String model, String serialNumber, String description, String comment, String ID) {
+    public Item(String name, ArrayList<Tag> tags, String dateOfPurchase, Double estimatedValue, String make, String model, String serialNumber, String description, String comment, String ID) {
         this.name = name;
         this.tags = tags;
         this.dateOfPurchase = dateOfPurchase;
@@ -86,7 +86,7 @@ public class Item implements Serializable {
      * @param estimatedValue The estimated value of the item.
      * @param description The description of the item.
      */
-    public Item(String name, double estimatedValue, String description) {
+    public Item(String name, Double estimatedValue, String description) {
         this.name = name;
         this.estimatedValue = estimatedValue;
         this.description = description;
@@ -99,7 +99,7 @@ public class Item implements Serializable {
      * @param description The description of the item.
      * @param ID The id of the item.
      */
-    public Item(String name, double estimatedValue, String description, String ID) {
+    public Item(String name, Double estimatedValue, String description, String ID) {
         this.name = name;
         this.estimatedValue = estimatedValue;
         this.description = description;
@@ -140,7 +140,7 @@ public class Item implements Serializable {
         this.dateOfPurchase = dateOfPurchase;
     }
 
-    public double getEstimatedValue() {
+    public Double getEstimatedValue() {
         return estimatedValue;
     }
 

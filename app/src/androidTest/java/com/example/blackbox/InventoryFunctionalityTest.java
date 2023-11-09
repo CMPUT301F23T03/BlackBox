@@ -22,7 +22,6 @@ package com.example.blackbox;
         import android.graphics.drawable.ColorDrawable;
         import android.graphics.drawable.Drawable;
         import android.util.Log;
-        import android.view.View;
         import android.widget.Switch;
 
         import androidx.test.espresso.Espresso;
@@ -50,7 +49,7 @@ package com.example.blackbox;
         import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
-public class InventoryFragmentTest {
+public class InventoryFunctionalityTest {
     final private String name = "Item";
     final private String name2 = "Item2";
     final private ArrayList<Tag> tags = new ArrayList<>();
@@ -569,7 +568,7 @@ public class InventoryFragmentTest {
 
         // Testing for deletion of all items with multi-select
         // Perform a click on the long-clickable item
-        Espresso.onView(ViewMatchers.withId(R.id.item_list)).perform(ViewActions.longClick());
+        Espresso.onView(withText(name)).perform(ViewActions.longClick());
 
         // Perform clicks on other items to simulate selection
         onView(withText(name2)).perform(click());
