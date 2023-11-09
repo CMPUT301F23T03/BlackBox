@@ -110,7 +110,7 @@ public class InventoryDBTest {
      * Test editing an item
      */
     @Test
-    public void testEdit(){
+    public void testEditItem(){
         InventoryDB inventoryDB = new InventoryDB("test database");
         tag_list.add(basicTag);
         Item basicItem = new Item("Name",  tag_list, "2023-08-11", 120, "12", "12", "12321", "Hi", "no");

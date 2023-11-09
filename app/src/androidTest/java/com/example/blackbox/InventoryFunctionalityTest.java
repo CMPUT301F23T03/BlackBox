@@ -5,7 +5,6 @@ package com.example.blackbox;
         import static androidx.test.espresso.action.ViewActions.click;
         import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
         import static androidx.test.espresso.assertion.ViewAssertions.matches;
-        import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
         import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
         import static androidx.test.espresso.matcher.ViewMatchers.withId;
         import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
@@ -18,28 +17,19 @@ package com.example.blackbox;
         import static org.hamcrest.CoreMatchers.not;
 
         import android.util.Log;
-        import android.widget.Switch;
 
         import androidx.test.espresso.action.ViewActions;
         import androidx.test.ext.junit.rules.ActivityScenarioRule;
         import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-        import org.checkerframework.checker.units.qual.A;
-        import org.hamcrest.Description;
-        import org.hamcrest.Matcher;
-        import org.hamcrest.TypeSafeMatcher;
         import org.junit.Rule;
         import org.junit.Test;
         import org.junit.runner.RunWith;
 
         import java.util.ArrayList;
-        import java.util.Arrays;
-        import java.util.Collections;
-        import java.util.Date;
-        import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
-public class InventoryFragmentTest {
+public class InventoryFunctionalityTest {
     final private String name = "Item";
     final private String name2 = "Item2";
     final private ArrayList<Tag> tags = new ArrayList<>();
