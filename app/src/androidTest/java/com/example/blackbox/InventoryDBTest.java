@@ -92,7 +92,7 @@ public class InventoryDBTest {
     public void testAddItem(){
         InventoryDB inventoryDB = new InventoryDB("test database");
         tag_list.add(basicTag);
-        Item basicItem = new Item("Name",  tag_list, "2023-08-11", 120, "12", "12", "12321", "Hi", "no");
+        Item basicItem = new Item("Name",  tag_list, "2023-08-11", Double.valueOf(120), "12", "12", "12321", "Hi", "no");
         inventoryDB.addItemToDB(basicItem);
         CollectionReference inventory = inventoryDB.getInventory();
         Query query = inventory.whereEqualTo("name", basicItem.getName());
@@ -113,7 +113,7 @@ public class InventoryDBTest {
     public void testEditItem(){
         InventoryDB inventoryDB = new InventoryDB("test database");
         tag_list.add(basicTag);
-        Item basicItem = new Item("Name",  tag_list, "2023-08-11", 120, "12", "12", "12321", "Hi", "no");
+        Item basicItem = new Item("Name",  tag_list, "2023-08-11", Double.valueOf(120), "12", "12", "12321", "Hi", "no");
         inventoryDB.addItemToDB(basicItem);
         CollectionReference inventory = inventoryDB.getInventory();
         Query query = inventory.whereEqualTo("name", basicItem.getName());
@@ -128,7 +128,7 @@ public class InventoryDBTest {
             }
             if (itemID != null) {
                 basicItem.setID(itemID);
-                Item newItem = new Item("Name2",  tag_list, "2023-08-11", 120, "12", "12", "12321", "Hi", "no");
+                Item newItem = new Item("Name2",  tag_list, "2023-08-11", Double.valueOf(120), "12", "12", "12321", "Hi", "no");
                 inventoryDB.updateItemInDB(basicItem, newItem);
                 Query query2 = inventory.whereEqualTo("name", basicItem.getName());
                 Task<QuerySnapshot> task2 = query2.get();

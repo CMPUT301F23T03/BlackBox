@@ -175,10 +175,12 @@ public class ScanGalleryFragment extends Fragment {
         if(barcodes != null && barcodes.size() > 0){
             for (int i = 0; i < barcodes.size(); i++){
                 Log.d(LOG_TAG, "Value: " + barcodes.valueAt(i).rawValue + "----" + barcodes.valueAt(i).displayValue);
-                Toast.makeText(requireContext(), barcodes.valueAt(i).rawValue, Toast.LENGTH_SHORT).show();
             }
             barcodeData = barcodes.valueAt(0).displayValue;
             barcodeText.setText(barcodeData);
+            Item newItem = new Item(null, null, null, null, null, null, barcodes.valueAt(0).displayValue, null, null);
+            InventoryAddFragment invFrag = InventoryAddFragment.newInstance(newItem);
+            NavigationManager.switchFragment(invFrag, getParentFragmentManager());
         }else {
             Log.e(LOG_TAG,"SparseArray null or empty");
             Toast.makeText(requireContext(), "Barcode not found", Toast.LENGTH_SHORT).show();
