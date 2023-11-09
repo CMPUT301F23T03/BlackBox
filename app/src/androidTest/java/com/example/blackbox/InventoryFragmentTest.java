@@ -7,6 +7,7 @@ package com.example.blackbox;
         import static androidx.test.espresso.assertion.ViewAssertions.matches;
         import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
         import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+        import static androidx.test.espresso.matcher.ViewMatchers.withChild;
         import static androidx.test.espresso.matcher.ViewMatchers.withId;
         import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
         import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -17,16 +18,26 @@ package com.example.blackbox;
         import static org.hamcrest.CoreMatchers.is;
         import static org.hamcrest.CoreMatchers.not;
 
+        import android.graphics.Color;
+        import android.graphics.drawable.ColorDrawable;
+        import android.graphics.drawable.Drawable;
         import android.util.Log;
+        import android.view.View;
         import android.widget.Switch;
 
+        import androidx.test.espresso.Espresso;
+        import androidx.test.espresso.ViewAssertion;
         import androidx.test.espresso.action.ViewActions;
+        import androidx.test.espresso.assertion.ViewAssertions;
+        import androidx.test.espresso.matcher.BoundedMatcher;
+        import androidx.test.espresso.matcher.ViewMatchers;
         import androidx.test.ext.junit.rules.ActivityScenarioRule;
         import androidx.test.ext.junit.runners.AndroidJUnit4;
 
         import org.checkerframework.checker.units.qual.A;
         import org.hamcrest.Description;
         import org.hamcrest.Matcher;
+        import org.hamcrest.Matchers;
         import org.hamcrest.TypeSafeMatcher;
         import org.junit.Rule;
         import org.junit.Test;
@@ -519,4 +530,121 @@ public class InventoryFragmentTest {
         onView(withId(R.id.tag_image2)).check(matches(not(isDisplayed())));
     }
 
+    /**
+     * Creates items for testing, assuming in inventory fragment
+     * @param itemName
+     */
+    public void createItemSetup(String itemName) {
+        // Click on the "Add" button to add a new item
+        onView(withId(R.id.add_button)).perform(click());
+
+        // Fill in the item information.
+        onView(withId(R.id.name_editText)).perform(ViewActions.typeText(itemName));
+        onView(withId(R.id.value_editText)).perform(ViewActions.replaceText(String.valueOf(estimatedValue2)));
+
+        // Add the item.
+        onView(withId(R.id.small_save_button)).perform(click());
+
+        try {
+            Thread.sleep(maxDelay/2);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
+    }
+
+    /**
+     * Test for deleting multiple items
+     */
+    @Test
+    public void testDeleteSelectedItems() {
+        setup();
+
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
+
+        // Testing for deletion of all items with multi-select
+        // Perform a click on the long-clickable item
+        Espresso.onView(ViewMatchers.withId(R.id.item_list)).perform(ViewActions.longClick());
+
+        // Perform clicks on other items to simulate selection
+        onView(withText(name2)).perform(click());
+
+        // Click the delete button
+        Espresso.onView(ViewMatchers.withId(R.id.inventory_delete_button)).perform(ViewActions.click());
+
+        // Check if the items are deleted
+        onView(withText(name)).check(doesNotExist());
+        onView(withText(name2)).check(doesNotExist());
+
+        // Testing for deletion of one item in the list with several other items
+        createItemSetup("item1");
+        createItemSetup("item2");
+        createItemSetup("item3");
+        createItemSetup("item4");
+
+        // Clicking on long clickable item
+        Espresso.onView(withText("item4")).perform(ViewActions.longClick());
+
+        // Clicks delete button
+        Espresso.onView(ViewMatchers.withId(R.id.inventory_delete_button)).perform(ViewActions.click());
+
+        // Checks if item is deleted
+        onView(withText("item4")).check(doesNotExist());
+        onView(withText("item1")).check(matches(isDisplayed()));
+        onView(withText("item2")).check(matches(isDisplayed()));
+        onView(withText("item3")).check(matches(isDisplayed()));
+
+        // Clicking on long clickable item
+        Espresso.onView(withText("item3")).perform(ViewActions.longClick());
+
+        // Perform clicks on other items to simulate selection
+        onView(withText("item2")).perform(click());
+
+        // Clicks delete button
+        Espresso.onView(ViewMatchers.withId(R.id.inventory_delete_button)).perform(ViewActions.click());
+
+        // Checks if item is deleted
+        onView(withText("item3")).check(doesNotExist());
+        onView(withText("item2")).check(doesNotExist());
+        onView(withText("item1")).check(matches(isDisplayed()));
+    }
+
+    /**
+     * Testing Selection of items and Canceling
+     */
+    @Test
+    public void testSelectItemsAndCancel() {
+        clearDBs();
+
+        // Setting up the items
+        createItemSetup("item1");
+        createItemSetup("item2");
+        createItemSetup("item3");
+
+        // Perform a click on the first item to enable multi-selection
+        Espresso.onView(withText("item1")).perform(ViewActions.longClick());
+
+        // Perform clicks on other items to simulate selection
+        onView(withText("item2")).perform(click());
+        onView(withText("item3")).perform(click());
+
+        // TODO: do an assertion to check all items are selected
+
+        // Deselect an itme
+        onView(withText("item3")).perform(click());
+
+        // TODO: do an assertion checking item3 is deslected while other items are selected
+
+        // Click the cancel button
+        Espresso.onView(ViewMatchers.withId(R.id.inventory_cancel_button)).perform(ViewActions.click());
+
+        // TODO:
+        // Check if selection is cleared after clicking cancel
+
+    }
 }
