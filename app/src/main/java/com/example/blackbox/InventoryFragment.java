@@ -429,6 +429,6 @@ public class InventoryFragment extends Fragment {
 
     public void updateTotalSum() {
         double totalSum = calculateTotalSum(itemList);
-        totalSumTextView.setText("Total:" +StringFormatter.getMonetaryString(totalSum));
+        totalSumTextView.setText("Total: " +StringFormatter.getMonetaryString(totalSum));
     }
 }
