@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,6 +47,8 @@ public class InventoryFragment extends Fragment {
     ArrayAdapter<Item> inventoryAdapter;
     ArrayList<Item> itemList;
     Button addButton;
+    Button deleteButton;
+    Button cancelButton;
     ListenerRegistration dbListener;
     private Context activityContext;
     InventoryDB inventoryDB;
@@ -54,6 +58,8 @@ public class InventoryFragment extends Fragment {
     private TextView totalSumTextView;
     // Add a member variable to store the total sum
     private double totalSum = 0.0;
+    private SparseBooleanArray selectedItems;
+    private boolean isLongClick = false;
 
     /**
      * Default constructor for the InventoryFragment.
@@ -119,6 +125,8 @@ public class InventoryFragment extends Fragment {
         itemViewList.setAdapter(inventoryAdapter);
         totalSumTextView = view.findViewById(R.id.total_sum);
 
+        selectedItems = new SparseBooleanArray();
+
         // sort the inventory list
         Button buttonSort = view.findViewById(R.id.sort_button);
         buttonSort.setOnClickListener(new View.OnClickListener() {
@@ -156,11 +164,71 @@ public class InventoryFragment extends Fragment {
         // edit item - display edit fragment
         itemViewList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                inventoryEditFragment = InventoryEditFragment.newInstance(itemList.get(i));
-                NavigationManager.switchFragment(inventoryEditFragment, getParentFragmentManager());
+                if (!isLongClick) {
+                    // Regular click
+                    inventoryEditFragment = InventoryEditFragment.newInstance(itemList.get(i));
+                    NavigationManager.switchFragment(inventoryEditFragment, getParentFragmentManager());
+                } else {
+                    toggleSelection(i);
+                }
             }
         });
 
+        deleteButton = view.findViewById(R.id.inventory_delete_button);
+        cancelButton = view.findViewById(R.id.inventory_cancel_button);
+        itemViewList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                // Show a toast to indicate long click
+                Toast.makeText(requireContext(), "Multiselection Enabled", Toast.LENGTH_SHORT).show();
+
+                isLongClick = true;
+
+                // Toggle selection
+                toggleSelection(i);
+
+                // Hide the add button during long click
+                addButton.setVisibility(View.GONE);
+
+                // Make the delete and cancel button visible
+                deleteButton.setVisibility(View.VISIBLE);
+                cancelButton.setVisibility(View.VISIBLE);
+
+                return true; // Return true to indicate that the long click event is consumed
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Clear the selection and update UI
+                selectedItems.clear();
+
+                // Update the view to reflect the change in selection
+                inventoryAdapter.notifyDataSetChanged();
+
+                // Hide the delete and cancel button
+                deleteButton.setVisibility(View.GONE);
+                cancelButton.setVisibility(View.GONE);
+
+                // Show the add button
+                addButton.setVisibility(View.VISIBLE);
+
+                // Reset long click flag
+                isLongClick = false;
+            }
+        });
+
+    }
+
+    // Helper method to toggle item selection
+    private void toggleSelection(int position) {
+        // Toggle the selection state of the item
+        Item selectedItem = itemList.get(position);
+        selectedItem.setSelected(!selectedItem.isSelected());
+
+        // Update the view to reflect the change in selection
+        inventoryAdapter.notifyDataSetChanged();
     }
 
     /**

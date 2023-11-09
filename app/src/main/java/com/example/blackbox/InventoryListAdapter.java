@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 
@@ -22,6 +24,7 @@ public class InventoryListAdapter extends ArrayAdapter {
 
     private ArrayList<Item> items;
     private Context context;
+    private SparseBooleanArray selectedItems;
 
     /**
      * Constructor for the InventoryListAdapter.
@@ -33,6 +36,7 @@ public class InventoryListAdapter extends ArrayAdapter {
         super(context, 0, items); // Call the constructor of the base class
         this.items = items;
         this.context = context;
+        this.selectedItems = new SparseBooleanArray();
     }
 
     /**
@@ -99,6 +103,15 @@ public class InventoryListAdapter extends ArrayAdapter {
             tagImage2.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
 
         }
+
+        //TODO
+        // NOTE THIS IS JUST FOR TESTING IMPLEMENTATION WILL BE CHANGED IN THE FUTURE
+        // Set the background color baxsed on item selection
+        int backgroundColor = item.isSelected() ?
+                ContextCompat.getColor(context, android.R.color.holo_blue_light) :
+                Color.TRANSPARENT;
+        Log.d("BackgroundColor", "Item: " + item.getName() + ", isSelected: " + item.isSelected() + ", Color: " + backgroundColor);
+        view.findViewById(R.id.inventory_list_item).setBackgroundColor(backgroundColor);
 
         return view;
     }
