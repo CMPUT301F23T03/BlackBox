@@ -39,6 +39,7 @@ public class InventoryFragment extends Fragment {
     ArrayAdapter<Item> inventoryAdapter;
     ArrayList<Item> itemList;
     Button addButton;
+    Button filterButton;
     private Context activityContext;
     InventoryDB inventoryDB;
     InventoryEditFragment inventoryEditFragment = new InventoryEditFragment();
@@ -125,6 +126,11 @@ public class InventoryFragment extends Fragment {
                 // Notify the adapter that the data has changed
                 inventoryAdapter.notifyDataSetChanged();
             }
+        });
+
+        filterButton = (Button) view.findViewById(R.id.filter_button);
+        filterButton.setOnClickListener((args)->{
+
         });
 
         // add an item - display add fragment
