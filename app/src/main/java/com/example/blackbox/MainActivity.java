@@ -78,17 +78,28 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
     }
-
+    /**
+     * Override method called when the app requests permissions at runtime,
+     * and the user responds to the permission request.
+     *
+     * @param requestCode   The request code passed to requestPermissions().
+     * @param permissions   The requested permissions. This array can contain one or more permissions.
+     * @param grantResults  The grant results for the corresponding permissions in the permissions array.
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        // Call the super method to ensure proper handling of permission results.
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        // Forward the result to the fragment
-        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.contentFragment); // Replace with your actual fragment container ID
+        // Forward the permission result to the associated fragment.
+        // Replace R.id.contentFragment with the actual ID of your fragment container.
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.contentFragment);
         if (fragment != null) {
+            // If the fragment is found, delegate the permission result handling to the fragment.
             fragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
+
 
 
 }
