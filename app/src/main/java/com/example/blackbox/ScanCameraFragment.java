@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -93,18 +94,7 @@ public class ScanCameraFragment extends Fragment {
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                try {
-                    // Check camera permission and start the camera source if granted.
-                    if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                        // Request camera permission if not granted.
-                        ActivityCompat.requestPermissions(requireActivity(), new
-                                String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
-                    }
-                    cameraSource.start(surfaceView.getHolder());
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                startCameraSource();
             }
 
             @Override
@@ -159,6 +149,28 @@ public class ScanCameraFragment extends Fragment {
         });
     }
 
+    /**
+     * Start the camera source for capturing images or video.
+     * This method is typically called when the camera permission is granted.
+     */
+    private void startCameraSource() {
+        try {
+            // Check if the camera permission is granted.
+            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                // Camera permission is granted, start the camera source.
+                cameraSource.start(surfaceView.getHolder());
+            } else {
+                // Camera permission is not granted, request it from the user.
+                ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+            }
+        } catch (IOException e) {
+            // Handle an exception if there's an issue starting the camera source.
+            e.printStackTrace();
+        }
+    }
+
+
+
 
     /**
      * Called when the fragment is paused.
@@ -183,4 +195,33 @@ public class ScanCameraFragment extends Fragment {
         }
         initializeDetectorsAndSources();
     }
+
+
+    /**
+     * Override method called when the app requests permissions at runtime,
+     * and the user responds to the permission request.
+     *
+     * @param requestCode   The request code passed to requestPermissions().
+     * @param permissions   The requested permissions. This array can contain one or more permissions.
+     * @param grantResults  The grant results for the corresponding permissions in the permissions array.
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        // Call the super method to ensure proper handling of permission results.
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // Check if the permission request code matches the camera permission request code.
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            // Check if the camera permission is granted.
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Camera permission granted, proceed to start the camera source.
+                startCameraSource();
+            } else {
+                // Camera permission denied, handle accordingly (e.g., show a message to the user).
+                Toast.makeText(requireContext(), "Camera permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+
 }
