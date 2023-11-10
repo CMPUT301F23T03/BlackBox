@@ -132,6 +132,7 @@ public class InventoryFragment extends Fragment {
             }
         });
 
+        //make filter go up
         filterButton = (Button) view.findViewById(R.id.filter_button);
         filterButton.setOnClickListener((args)->{
             filteredItemsList = FilterDialog.showFilter(getActivity(),R.layout.filters
