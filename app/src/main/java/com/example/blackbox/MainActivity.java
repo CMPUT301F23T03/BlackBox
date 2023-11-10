@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import android.view.MenuItem;
 
 /**
- * The main activity of the application, responsible for handling the user interface and navigation.
+ * The main activity of the application, responsible for handling the user interface and navigation between main fragments.
  */
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;

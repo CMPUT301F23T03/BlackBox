@@ -36,10 +36,13 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 import java.io.IOException;
 
 import pub.devrel.easypermissions.EasyPermissions;
+
 /**
- * This class represents a Fragment for scanning barcodes using the device's gallery.
- * It returns the serial number of the barcode from the picture chosen by the user.
+ * Fragments of this class are responsible for allowing the user to select a barcode
+ * image and automatically filling information from that image into an InventoryAddFragment
+ * if the image is valid
  */
+
 public class ScanGalleryFragment extends Fragment {
     private static final String READ_MEDIA_IMAGES_PERMISSION = READ_MEDIA_IMAGES;
     private BarcodeDetector barcodeDetector;

@@ -23,18 +23,11 @@ public class ScanFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        view = inflater.inflate(R.layout.scan_fragment, container, false);
+        view =  inflater.inflate(R.layout.scan_fragment, container, false);
 
         // Camera button
         final Button cameraButton = view.findViewById(R.id.button_camera);
         cameraButton.setOnClickListener(new View.OnClickListener() {
-            /**
-             * Called when the camera button is clicked. Switches to the `ScanCameraFragment`
-             * for live barcode scanning using the device camera.
-             *
-             * @param v The view that was clicked.
-             */
             public void onClick(View v) {
                 NavigationManager.switchFragment(new ScanCameraFragment(), getParentFragmentManager());
             }
@@ -43,12 +36,6 @@ public class ScanFragment extends Fragment {
         // Gallery button
         final Button galleryButton = view.findViewById(R.id.button_gallery);
         galleryButton.setOnClickListener(new View.OnClickListener() {
-            /**
-             * Called when the gallery button is clicked. Switches to the `ScanGalleryFragment`
-             * for browsing and selecting barcode images from the device gallery.
-             *
-             * @param v The view that was clicked.
-             */
             public void onClick(View v) {
                 NavigationManager.switchFragment(new ScanGalleryFragment(), getParentFragmentManager());
             }

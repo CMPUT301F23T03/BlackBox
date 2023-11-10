@@ -9,6 +9,7 @@ import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.fail;
 
 import android.content.Context;
+import android.content.res.AssetManager;
 import android.net.Uri;
 import android.util.Log;
 import android.util.SparseArray;
@@ -46,7 +47,7 @@ import java.io.OutputStream;
  * test. It uses `ActivityScenarioRule` to launch the `MainActivity` activity before running the test.
  */
 @RunWith(AndroidJUnit4.class)
-public class BarcodeDetectionTest {
+public class ScanGalleryFragmentTest {
     private Context context;
     private ScanGalleryFragment fragment;
     private String[] subdirectories = {"scanTest", "scanTestInvalid"};

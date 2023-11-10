@@ -7,12 +7,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-/**
- * The `Item` class represents an inventory item, storing information such as name, tags, date of purchase,
- * estimated value, make, model, serial number, description, comment, ID, and date of the last update.
- * It also includes methods for retrieving and setting various properties of the item.
- * Instances of this class can be created using different constructors to accommodate various use cases.
- */
+
 public class Item implements Serializable {
 
     // initialize data members
@@ -125,6 +120,8 @@ public class Item implements Serializable {
         return name;
     }
 
+
+
     public void setName(String name) {
         this.name = name;
     }
@@ -235,6 +232,21 @@ public class Item implements Serializable {
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+    }
+
+    /**
+     * Returns the tag with the highest alphabetical president associated with the item
+     * @return
+     *         The tag with highest precedent
+     */
+    public Tag getHighestPrecedentTag(){
+        Tag highestTag = null;
+        for (Tag tag : tags){
+            if(highestTag == null || tag.getName().compareToIgnoreCase(highestTag.getName()) < 0){
+                highestTag = tag;
+            }
+        }
+        return highestTag;
     }
 
 }

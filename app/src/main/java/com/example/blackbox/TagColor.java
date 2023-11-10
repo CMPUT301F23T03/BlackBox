@@ -2,7 +2,8 @@ package com.example.blackbox;
 
 
 /**
- * This class represents a color object
+ * This class represents an object which is displayed by a ColorSpinnerAdapter
+ * specifically these represent colors that can be chosen for tags
  */
 public class TagColor {
     private String name;
