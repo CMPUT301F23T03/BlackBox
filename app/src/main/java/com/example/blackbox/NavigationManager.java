@@ -3,10 +3,10 @@ package com.example.blackbox;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
 /**
- * A control class which allows for navigation
- * related actions to be executed
+ * The `NavigationManager` class provides a utility method for swapping out the currently displayed fragment
+ * with a new one. The `switchFragment` method takes a `Fragment` and a `FragmentManager` as parameters,
+ * allowing the transaction to be processed and the new fragment to be displayed.
  */
 public class NavigationManager {
     /**

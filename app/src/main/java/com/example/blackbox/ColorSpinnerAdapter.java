@@ -12,10 +12,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-
 /**
- * This class defines a custom adapter to display color options
- * which a user can select for a tag
+ * The `ColorSpinnerAdapter` class is a custom ArrayAdapter used to populate a Spinner with
+ * TagColor objects, representing colors. It provides methods to manage and retrieve color data,
+ * and customizes the appearance of the dropdown and selected item views.
  */
 public class ColorSpinnerAdapter extends ArrayAdapter<TagColor> {
     private Context context;

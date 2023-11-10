@@ -6,11 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
-
-
 /**
- * This abstract class provides a base layout for how fragments
- * which allow the user to add or edit data should function
+ * Abstract class `AddEditFragment` serves as a base class for fragments involved in adding or editing elements.
+ * It defines common behavior for these fragments, including the creation of the fragment's view,
+ * setup of major elements, addition of an element, validation of user input, and setup of a back button listener.
  */
 public abstract class AddEditFragment extends Fragment {
     private int fragment_id;
@@ -44,7 +43,7 @@ public abstract class AddEditFragment extends Fragment {
     public abstract void setupFragment(View view);
 
     /**
-     * This is a method which will be responsible for adding an element to a database
+     * This is a method which will be responsible for adding an element
      * whatever that may entail in the specific instance
      */
     public abstract void add();

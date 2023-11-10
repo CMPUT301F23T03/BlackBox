@@ -13,11 +13,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 /**
- * This class represents a view where a user can choose to scan a barcode with their camera
- * or choose to select a barcode from images on their phone
+ * The `ScanFragment` class represents a fragment for initiating barcode scanning operations.
+ * It provides buttons to access the device camera for live barcode scanning and to browse
+ * the device gallery for barcode images.
  */
-public class ScanFragment extends Fragment{
-    View view;
+public class ScanFragment extends Fragment {
+    private View view;  // The fragment's view
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
