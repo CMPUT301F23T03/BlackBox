@@ -246,9 +246,11 @@ public class Item implements Serializable {
      */
     public Tag getHighestPrecedentTag(){
         Tag highestTag = null;
-        for (Tag tag : tags){
-            if(highestTag == null || tag.getName().compareToIgnoreCase(highestTag.getName()) < 0){
-                highestTag = tag;
+        if (tags != null) {
+            for (Tag tag : tags) {
+                if (highestTag == null || tag.getName().compareToIgnoreCase(highestTag.getName()) < 0) {
+                    highestTag = tag;
+                }
             }
         }
         return highestTag;
