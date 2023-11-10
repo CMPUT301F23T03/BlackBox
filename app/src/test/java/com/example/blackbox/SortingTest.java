@@ -50,7 +50,6 @@ public class SortingTest {
     }
     @Test
     public void testSortByValue(){
-        generateExampleItemList();
         itemList.sortByValue(Boolean.TRUE);
         assertEquals(pencil, itemList.get(0));
         assertEquals(TV, itemList.get(1));
@@ -64,6 +63,22 @@ public class SortingTest {
         assertEquals(pc, itemList.get(2));
         assertEquals(laptop, itemList.get(1));
         assertEquals(car, itemList.get(0));
+    }
+
+    @Test
+    public void testSortByTag(){
+        // create assert statements here
+        // Note: some items may be allowed in more than one position
+    }
+
+    @Test
+    public void testSortByMake(){
+        // test here
+    }
+
+    @Test
+    public void testSortByDate(){
+        // test here
     }
 
 }
