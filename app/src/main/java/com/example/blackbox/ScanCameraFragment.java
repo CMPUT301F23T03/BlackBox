@@ -15,6 +15,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -93,18 +94,7 @@ public class ScanCameraFragment extends Fragment {
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-                try {
-                    // Check camera permission and start the camera source if granted.
-                    if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                        // Request camera permission if not granted.
-                        ActivityCompat.requestPermissions(requireActivity(), new
-                                String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
-                    }
-                    cameraSource.start(surfaceView.getHolder());
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                startCameraSource();
             }
 
             @Override
@@ -159,6 +149,21 @@ public class ScanCameraFragment extends Fragment {
         });
     }
 
+    private void startCameraSource() {
+        try {
+            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                // Permission is granted, start the camera source.
+                cameraSource.start(surfaceView.getHolder());
+            } else {
+                // Request camera permission if not granted.
+                ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 
     /**
      * Called when the fragment is paused.
@@ -183,4 +188,23 @@ public class ScanCameraFragment extends Fragment {
         }
         initializeDetectorsAndSources();
     }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Camera permission granted, start the camera source.
+                startCameraSource();
+                Toast.makeText(requireContext(), "Camera", Toast.LENGTH_SHORT).show();
+
+            } else {
+                // Camera permission denied, handle accordingly (e.g., show a message to the user).
+                Toast.makeText(requireContext(), "Camera permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 }
