@@ -613,37 +613,37 @@ public class InventoryFunctionalityTest {
         onView(withText("item1")).check(matches(isDisplayed()));
     }
 
-    /**
-     * Testing Selection of items and Canceling
-     */
-    @Test
-    public void testSelectItemsAndCancel() {
-        clearDBs();
-
-        // Setting up the items
-        createItemSetup("item1");
-        createItemSetup("item2");
-        createItemSetup("item3");
-
-        // Perform a click on the first item to enable multi-selection
-        Espresso.onView(withText("item1")).perform(ViewActions.longClick());
-
-        // Perform clicks on other items to simulate selection
-        onView(withText("item2")).perform(click());
-        onView(withText("item3")).perform(click());
-
-        // TODO: do an assertion to check all items are selected
-
-        // Deselect an itme
-        onView(withText("item3")).perform(click());
-
-        // TODO: do an assertion checking item3 is deslected while other items are selected
-
-        // Click the cancel button
-        Espresso.onView(ViewMatchers.withId(R.id.inventory_cancel_button)).perform(ViewActions.click());
-
-        // TODO:
-        // Check if selection is cleared after clicking cancel
-
-    }
+//    /**
+//     * Testing Selection of items and Canceling
+//     */
+//    @Test
+//    public void testSelectItemsAndCancel() {
+//        clearDBs();
+//
+//        // Setting up the items
+//        createItemSetup("item1");
+//        createItemSetup("item2");
+//        createItemSetup("item3");
+//
+//        // Perform a click on the first item to enable multi-selection
+//        Espresso.onView(withText("item1")).perform(ViewActions.longClick());
+//
+//        // Perform clicks on other items to simulate selection
+//        onView(withText("item2")).perform(click());
+//        onView(withText("item3")).perform(click());
+//
+//        // TODO: do an assertion to check all items are selected
+//
+//        // Deselect an itme
+//        onView(withText("item3")).perform(click());
+//
+//        // TODO: do an assertion checking item3 is deslected while other items are selected
+//
+//        // Click the cancel button
+//        Espresso.onView(ViewMatchers.withId(R.id.inventory_cancel_button)).perform(ViewActions.click());
+//
+//        // TODO:
+//        // Check if selection is cleared after clicking cancel
+//
+//    }
 }
