@@ -23,6 +23,7 @@ import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+import com.google.protobuf.Internal;
 
 import java.io.IOException;
 
@@ -39,6 +40,8 @@ public class ScanCameraFragment extends Fragment {
     private ToneGenerator toneGen1;
     private TextView barcodeText;
     private String barcodeData;
+
+    private Boolean barcodeFound = Boolean.FALSE;
 
     /**
      * Inflates the layout for the barcode scanning fragment and initializes necessary components.
@@ -77,7 +80,7 @@ public class ScanCameraFragment extends Fragment {
     private void initializeDetectorsAndSources() {
         // Initialize a barcode detector with all barcode formats.
         barcodeDetector = new BarcodeDetector.Builder(requireContext())
-                .setBarcodeFormats(Barcode.ALL_FORMATS)
+                .setBarcodeFormats(Barcode.CODE_128 | Barcode.EAN_13)
                 .build();
 
         // Initialize a camera source using the barcode detector and configure it.
@@ -126,24 +129,31 @@ public class ScanCameraFragment extends Fragment {
             @Override
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 final SparseArray<Barcode> barcodes = detections.getDetectedItems();
-                if (barcodes.size() != 0) {
-                    barcodeText.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (barcodes.valueAt(0).email != null) {
-                                // If a barcode contains an email address, display it and play a tone.
-                                barcodeText.removeCallbacks(null);
-                                barcodeData = barcodes.valueAt(0).email.address;
-                                barcodeText.setText(barcodeData);
-                                toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
-                            } else {
-                                // Display the barcode's content and play a tone.
-                                barcodeData = barcodes.valueAt(0).displayValue;
-                                barcodeText.setText(barcodeData);
-                                toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
+                if (barcodeFound == Boolean.FALSE) {
+                    if (barcodes.size() != 0) {
+                        barcodeFound = Boolean.TRUE;
+
+                        barcodeText.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if (barcodes.valueAt(0).email != null) {
+                                    // If a barcode contains an email address, display it and play a tone.
+                                    barcodeText.removeCallbacks(null);
+                                    barcodeData = barcodes.valueAt(0).email.address;
+//                                    barcodeText.setText(barcodeData);
+                                    toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
+                                } else {
+                                    // Display the barcode's content and play a tone.
+                                    barcodeData = barcodes.valueAt(0).displayValue;
+//                                    barcodeText.setText(barcodeData);
+                                    toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
+                                }
+                                Item newItem = new Item(null, null, null, null, null, null, barcodes.valueAt(0).displayValue, null, null);
+                                InventoryAddFragment invFrag = InventoryAddFragment.newInstance(newItem);
+                                NavigationManager.switchFragment(invFrag, getParentFragmentManager());
                             }
-                        }
-                    });
+                        });
+                    }
                 }
             }
         });

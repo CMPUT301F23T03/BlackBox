@@ -50,7 +50,7 @@ import java.io.OutputStream;
 public class ScanGalleryFragmentTest {
     private Context context;
     private ScanGalleryFragment fragment;
-    private String[] serialNumbers;
+    private String[] subdirectories = {"scanTest", "scanTestInvalid"};
 
     @Rule
     public ActivityScenarioRule<MainActivity> activityScenarioRule =
@@ -76,33 +76,42 @@ public class ScanGalleryFragmentTest {
     public void testGetBarcode() throws IOException {
         onView(withId(R.id.contentFragment))
                 .check(matches(isDisplayed()));
-        AssetManager assetManager = context.getAssets();
-        String subdirectory = "scanTest";
-        try {
-            serialNumbers = assetManager.list(subdirectory);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
 
-        for (String serialNumber : serialNumbers) {
-            // Copy the image file from assets to the device's internal storage
-            String filePath = context.getFilesDir() + File.separator + serialNumber;
-            copyImageFromAssets(subdirectory, serialNumber, filePath);
+        // Iterate over each subdirectory
+        for (String subdirectory : subdirectories) {
+            String[] serialNumbers = context.getAssets().list(subdirectory);
+            for (String serialNumber : serialNumbers) {
+                // Copy the image file from assets to the device's internal storage
+                String filePath = context.getFilesDir() + File.separator + serialNumber;
+                copyImageFromAssets(subdirectory, serialNumber, filePath);
 
-            File imageFile = new File(filePath);
-            if (imageFile.exists()) {
-                // Log the filePath for debugging
-                Log.d("Test Barcode", "Image filePath: " + filePath);
+                File imageFile = new File(filePath);
+                if (imageFile.exists()) {
+                    // Log the filePath for debugging
+                    Log.d("Test Barcode", "Image filePath: " + filePath);
 
-                // Create the fragment and test barcode extraction
-                Uri imageUri = Uri.fromFile(imageFile);
-                SparseArray<Barcode> expectedBarcode =  fragment.getBarcode(imageUri);
-                String stringBarcode = expectedBarcode.valueAt(0).displayValue;
+                    // Create the fragment and test barcode extraction
+                    Uri imageUri = Uri.fromFile(imageFile);
+                    SparseArray<Barcode> expectedBarcode =  fragment.getBarcode(imageUri);
+                    String stringBarcode;
+                    try {
+                        stringBarcode = expectedBarcode.valueAt(0).displayValue;
+                    } catch (Exception e) {
+                        // invalid pictures
+                        stringBarcode = "";
+                    }
 
-                assertEquals(serialNumber, stringBarcode +".jpg");
-            } else {
-                // Log a message or handle the case when the file does not exist
-                fail("Image file does not exist: " + filePath);
+                    if (!subdirectory.contains("Invalid")) {
+                        // Check invalid pictures
+                        assertEquals(serialNumber, stringBarcode +".jpg");
+                    } else {
+                        // Check valid pictures
+                        assertEquals("", stringBarcode);
+                    }
+                } else {
+                    // Log a message or handle the case when the file does not exist
+                    fail("Image file does not exist: " + filePath);
+                }
             }
         }
     }
@@ -113,16 +122,23 @@ public class ScanGalleryFragmentTest {
     @After
     public void cleanup() {
         // Delete the copied image files when the test is done
+        for (String subdirectory : subdirectories) {
+            String[] serialNumbers = {};
+            try {
+                serialNumbers = context.getAssets().list(subdirectory);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            for (String serialNumber : serialNumbers) {
+                String filePath = context.getFilesDir() + File.separator + serialNumber;
+                File imageFile = new File(filePath);
 
-        for (String serialNumber : serialNumbers) {
-            String filePath = context.getFilesDir() + File.separator + serialNumber;
-            File imageFile = new File(filePath);
-
-            if (imageFile.exists()) {
-                if (imageFile.delete()) {
-                    Log.d("Test Cleanup", "Deleted file: " + filePath);
-                } else {
-                    Log.d("Test Cleanup", "Failed to delete file: " + filePath);
+                if (imageFile.exists()) {
+                    if (imageFile.delete()) {
+                        Log.d("Test Cleanup", "Deleted file: " + filePath);
+                    } else {
+                        Log.d("Test Cleanup", "Failed to delete file: " + filePath);
+                    }
                 }
             }
         }

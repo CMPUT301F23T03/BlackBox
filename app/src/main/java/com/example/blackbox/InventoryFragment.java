@@ -45,7 +45,7 @@ import java.util.Locale;
 public class InventoryFragment extends Fragment {
     ListView itemViewList;
     ArrayAdapter<Item> inventoryAdapter;
-    ArrayList<Item> itemList;
+    ItemList itemList;
     Button addButton;
     Button deleteButton;
     Button cancelButton;
@@ -119,7 +119,7 @@ public class InventoryFragment extends Fragment {
         tagDB = new TagDB();
 
         // display the inventory list
-        itemList = new ArrayList<>();
+        itemList = new ItemList();
         itemViewList = (ListView) view.findViewById(R.id.item_list);
         inventoryAdapter = new InventoryListAdapter(activityContext, itemList);
         itemViewList.setAdapter(inventoryAdapter);
@@ -324,6 +324,7 @@ public class InventoryFragment extends Fragment {
                     //handle the selected sorting category
                     switch (selectedCategory){
                         case "By Date":
+                            // itemList.sortByDate(ascending);
                             sortByDate(ascending);
                             break;
                         case "By Value":
