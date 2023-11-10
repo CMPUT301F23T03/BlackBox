@@ -9,7 +9,6 @@ import static junit.framework.TestCase.assertEquals;
 import static org.junit.Assert.fail;
 
 import android.content.Context;
-import android.content.res.AssetManager;
 import android.net.Uri;
 import android.util.Log;
 import android.util.SparseArray;
