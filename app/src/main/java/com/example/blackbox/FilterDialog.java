@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.fragment.app.FragmentActivity;
 
@@ -16,8 +17,8 @@ public abstract class FilterDialog {
     public static void showFilter(FragmentActivity activity, int layoutId, int cancelId, int acceptId){
         System.out.println(activity);
         View view = activity.getLayoutInflater().inflate(layoutId,null);
-        Button accept = view.findViewById(acceptId);
-        Button cancel = view.findViewById(cancelId);
+        TextView accept = view.findViewById(acceptId);
+        TextView cancel = view.findViewById(cancelId);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(view);
         final AlertDialog dialog = builder.create();
