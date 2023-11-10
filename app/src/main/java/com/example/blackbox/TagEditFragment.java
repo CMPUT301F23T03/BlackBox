@@ -29,7 +29,7 @@ public class TagEditFragment extends TagAddEditFragment{
      * @param tag The index of Tag object to be associated with the fragment.
      * @return A new instance of TagEditFragment.
      */
-    static TagEditFragment newInstance(Tag tag) {
+    public static TagEditFragment newInstance(Tag tag) {
         Bundle args = new Bundle();
         args.putSerializable("tagToEdit", tag);    // serialize Item object
         TagEditFragment fragment = new TagEditFragment();
