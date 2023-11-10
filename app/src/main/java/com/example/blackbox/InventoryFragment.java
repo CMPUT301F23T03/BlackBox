@@ -47,7 +47,11 @@ public class InventoryFragment extends Fragment {
     ListView itemViewList;
     ArrayAdapter<Item> inventoryAdapter;
     ItemList itemList;
+
+
+    ArrayList<Item> filteredItemsList;
     Button addButton;
+    Button filterButton;
     Button deleteButton;
     Button cancelButton;
     ListenerRegistration dbListener;
@@ -121,6 +125,7 @@ public class InventoryFragment extends Fragment {
 
         // display the inventory list
         itemList = new ItemList();
+        filteredItemsList = new ArrayList<>();
         itemViewList = (ListView) view.findViewById(R.id.item_list);
         inventoryAdapter = new InventoryListAdapter(activityContext, itemList);
         itemViewList.setAdapter(inventoryAdapter);
@@ -151,11 +156,21 @@ public class InventoryFragment extends Fragment {
                     handleGetInventory(value, e);
                 }
                 else{
+                    filteredItemsList.clear();
+
                     itemList.clear();
                     processUpdate();
                 }
 
             }
+        });
+
+        //make filter go up
+        filterButton = (Button) view.findViewById(R.id.filter_button);
+        filterButton.setOnClickListener((args)->{
+            filteredItemsList = FilterDialog.showFilter(getActivity(),R.layout.filters
+                    ,itemList);
+            inventoryAdapter.notifyDataSetChanged();
         });
 
         // add an item - display add fragment
