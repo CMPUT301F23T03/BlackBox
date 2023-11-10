@@ -6,6 +6,7 @@ import androidx.test.espresso.assertion.ViewAssertions;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.rule.GrantPermissionRule;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 //import androidx.test.uiautomator.UiDevice;
@@ -16,12 +17,18 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
+/**
+ * Espresso UI test for the ScanFragment functionality.
+ */
 @RunWith(AndroidJUnit4.class)
 public class ScanFragmentTest {
 
     @Rule
     public ActivityScenarioRule<MainActivity> activityScenarioRule = new ActivityScenarioRule<>(MainActivity.class);
+    @Rule
+    public GrantPermissionRule permissionRule = GrantPermissionRule.grant(
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.READ_MEDIA_IMAGES);
 
     @Test
     public void testScanFragment() {
