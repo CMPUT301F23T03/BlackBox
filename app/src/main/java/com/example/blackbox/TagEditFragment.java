@@ -10,6 +10,9 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+/**
+ * A fragment responsible for editing tags
+ */
 public class TagEditFragment extends TagAddEditFragment{
     private Tag tag;
 

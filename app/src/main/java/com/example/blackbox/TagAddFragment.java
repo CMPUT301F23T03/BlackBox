@@ -20,6 +20,9 @@ import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
+/**
+ * A fragment responsible for adding tags
+ */
 public class TagAddFragment extends TagAddEditFragment {
 
 

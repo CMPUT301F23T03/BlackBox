@@ -7,7 +7,12 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
+/**
+ * The `Item` class represents an inventory item, storing information such as name, tags, date of purchase,
+ * estimated value, make, model, serial number, description, comment, ID, and date of the last update.
+ * It also includes methods for retrieving and setting various properties of the item.
+ * Instances of this class can be created using different constructors to accommodate various use cases.
+ */
 public class Item implements Serializable {
 
     // initialize data members
