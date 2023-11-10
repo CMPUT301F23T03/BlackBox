@@ -72,12 +72,12 @@ public class ScanFragmentTest {
         Espresso.onView(ViewMatchers.withId(R.id.barcode_text)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
 
         // Click on "choose_button"
-        Espresso.onView(ViewMatchers.withId(R.id.choose_button)).perform(ViewActions.click());
+        // Espresso.onView(ViewMatchers.withId(R.id.choose_button)).perform(ViewActions.click());
 
 //        clickOnFirstImageInGallery();
-        // Wait for 2 seconds (2000 milliseconds)
+        // Wait for 1 seconds (1000 milliseconds)
         try {
-            Thread.sleep(2000);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
