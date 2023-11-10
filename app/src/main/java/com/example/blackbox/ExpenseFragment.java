@@ -8,6 +8,9 @@ import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 
+/**
+ * Planned class which will display some summary info
+ */
 public class ExpenseFragment extends Fragment{
     View view;
     @Override

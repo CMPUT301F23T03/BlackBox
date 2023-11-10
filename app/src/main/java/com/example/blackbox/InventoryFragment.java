@@ -41,6 +41,7 @@ import java.util.Locale;
 
 /**
  * A Fragment that displays and manages an inventory of items. It includes features to add and edit items.
+ * This is the main fragment which the user will see when first starting the app.
  */
 public class InventoryFragment extends Fragment {
     ListView itemViewList;
@@ -237,9 +238,6 @@ public class InventoryFragment extends Fragment {
                     // Clear the entire DB
                     inventoryDB.clearInventory();
 
-                    // Clear the entire list - not required, database changing automatically does this (actually makes it look worse)
-//                    itemList.clear();
-
                 } else {
                     // Iterate through the selected items and delete them
                     for (Item selectedItem : selectedItemsList) {
@@ -269,7 +267,11 @@ public class InventoryFragment extends Fragment {
 
     }
 
-    // Helper method to toggle item selection
+    /**
+     * Helper method to toggle whether an item in the list of items is currently selected
+     * @param position
+     *      The position of the item in the list
+     */
     private void toggleSelection(int position) {
         // Toggle the selection state of the item
         Item selectedItem = itemList.get(position);
@@ -324,22 +326,23 @@ public class InventoryFragment extends Fragment {
                     //handle the selected sorting category
                     switch (selectedCategory){
                         case "By Date":
-                            // itemList.sortByDate(ascending);
-                            sortByDate(ascending);
+                            itemList.sortByDate(ascending);
                             break;
                         case "By Value":
-                            sortByValue(ascending);
+                            itemList.sortByValue(ascending);
                             break;
                         case "By Make":
-                            sortByMake(ascending);
+                            itemList.sortByMake(ascending);
                             break;
                         case "By Tag":
-                            sortByHighestPrecedentTag(ascending);
+                            itemList.sortByHighestPrecedentTag(ascending);
                             break;
                         default:
                             //handle the default case
                     }
+                    inventoryAdapter.notifyDataSetChanged();
                 }
+
             }
         });
 
@@ -351,114 +354,12 @@ public class InventoryFragment extends Fragment {
         builder.create().show();
     }
 
-    /**
-     * Sort the list items by Date in ascending or descending order.
-     * @param ascending specifies the sorting order, true = ascending, descending otherwise
-     */
-    private void sortByDate(boolean ascending) {
-        Comparator<Item> dateComp = new Comparator<Item>() {
-            @Override
-            public int compare(Item o1, Item o2) {
-                //parse the date into appropriate format
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd", Locale.getDefault());
-                try{
-                    Date date1 = dateFormat.parse(o1.getDateOfPurchase());
-                    Date date2 = dateFormat.parse(o2.getDateOfPurchase());
-                    if (date1 != null && date2 != null) {
-                        return ascending ? date1.compareTo(date2) : date2.compareTo(date1); // check for ascending or descending
-                    }
-                }
-                catch (ParseException e) {
-                    e.printStackTrace();
-                }
-                return 0;
-            }
-        };
-        itemList.sort(dateComp);
-        inventoryAdapter.notifyDataSetChanged();
-    }
 
-    /**
-     * Sort the list items by Estimated Value in ascending or descending order.
-     * @param ascending specifies the sorting order, true = ascending, descending otherwise
-     */
-    private void sortByValue(boolean ascending) {
-        if (ascending){
-            itemList.sort((item1, item2) -> Double.compare(item1.getEstimatedValue(), item2.getEstimatedValue()));
-        }
-        else {
-            itemList.sort((item1, item2) -> Double.compare(item2.getEstimatedValue(), item1.getEstimatedValue()));
-        }
 
-        inventoryAdapter.notifyDataSetChanged();
-    }
-
-    /**
-     * Sort the list items by Make (alphabetically) in ascending or descending order.
-     * @param ascending specifies the sorting order, true = ascending, descending otherwise
-     */
-    private void sortByMake(boolean ascending) {
-        Comparator<Item> makeComp = new Comparator<Item>() {
-            @Override
-            public int compare(Item o1, Item o2) {
-                String make1 = o1.getMake();
-                String make2 = o2.getMake();
-
-                // compare alphabetically
-                int result = make1.compareToIgnoreCase(make2);
-                // check for descending
-                if (!ascending){
-                    result = -result;
-                }
-                return result;
-            }
-        };
-        itemList.sort(makeComp);
-        inventoryAdapter.notifyDataSetChanged();
-    }
-
-    /**
-     * Sort the list items by the Highest Precedent Tag (alphabetically) in ascending or descending order.
-     * @param ascending specifies the sorting order, true = ascending, descending otherwise
-     */
-    private void sortByHighestPrecedentTag(boolean ascending) {
-        Comparator<Item> tagComp = new Comparator<Item>() {
-            @Override
-            public int compare(Item o1, Item o2) {
-                Tag tag1 = findHighestPrecedentTag(o1);
-                Tag tag2 = findHighestPrecedentTag(o2);
-
-                int result = tag1.getName().compareToIgnoreCase(tag2.getName());
-                // check for descending
-                if (!ascending){
-                    result = -result;
-                }
-                return result;
-            }
-        };
-        itemList.sort(tagComp);
-        inventoryAdapter.notifyDataSetChanged();
-    }
-
-    /**
-     * Helper function that helps to find the highest precedent tag in an item
-     * @param item The item of which we want to find the highest precedent tag
-     * @return
-     *         The tag with highest precedent
-     */
-    private Tag findHighestPrecedentTag(Item item){
-        Tag highestTag = null;
-        for (Tag tag : item.getTags()){
-            if(highestTag == null || item.getName().compareToIgnoreCase(highestTag.getName()) < 0){
-                highestTag = tag;
-            }
-        }
-        return highestTag;
-    }
 
     /**
      * This method handles acquiring new data from the Firestore database
-     * Uses a latch to ensure that it only returns after completing
+     * and ensures that all async firestore tasks complete before processing the update
      * all async firestore tasks
      * @param snapshot
      *      The querySnapshot to process
@@ -544,16 +445,11 @@ public class InventoryFragment extends Fragment {
             item.getTags().add(tag);
     }
 
-    private double calculateTotalSum(ArrayList<Item> items) {
-        double totalSum = 0.0;
-        for (Item item : items) {
-            totalSum += item.getEstimatedValue();
-        }
-        return totalSum;
-    }
-
+    /**
+     * Get the total sum of all items estimated values and display it to the screen
+     */
     public void updateTotalSum() {
-        double totalSum = calculateTotalSum(itemList);
+        Double totalSum = itemList.calculateTotalSum();
         totalSumTextView.setText("Total: " +StringFormatter.getMonetaryString(totalSum));
     }
 }

@@ -7,6 +7,12 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 
+/**
+ * This class represents a tag which can be applied to an item for the purposes of
+ * sorting and filtering
+ * Tags contain data such as name, databaseID, color, and description,
+ * and provide methods for updating or retrieving data.
+ */
 public class Tag implements Serializable {
     private String name;
     private String description;

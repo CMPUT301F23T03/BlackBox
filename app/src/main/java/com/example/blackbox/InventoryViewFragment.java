@@ -12,5 +12,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
+/**
+ * Planned class which will allow the user to view an item without editing it
+ */
 public class InventoryViewFragment extends Fragment {
 }

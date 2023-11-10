@@ -20,6 +20,10 @@ import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
+
+/**
+ * The fragment responsible for handling user input for creating new tags.
+ */
 public class TagAddFragment extends TagAddEditFragment {
 
 

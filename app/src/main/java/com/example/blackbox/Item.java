@@ -120,6 +120,8 @@ public class Item implements Serializable {
         return name;
     }
 
+
+
     public void setName(String name) {
         this.name = name;
     }
@@ -230,6 +232,21 @@ public class Item implements Serializable {
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+    }
+
+    /**
+     * Returns the tag with the highest alphabetical president associated with the item
+     * @return
+     *         The tag with highest precedent
+     */
+    public Tag getHighestPrecedentTag(){
+        Tag highestTag = null;
+        for (Tag tag : tags){
+            if(highestTag == null || tag.getName().compareToIgnoreCase(highestTag.getName()) < 0){
+                highestTag = tag;
+            }
+        }
+        return highestTag;
     }
 
 }

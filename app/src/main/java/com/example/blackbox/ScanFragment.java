@@ -12,6 +12,10 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+/**
+ * This class represents a view where a user can choose to scan a barcode with their camera
+ * or choose to select a barcode from images on their phone
+ */
 public class ScanFragment extends Fragment{
     View view;
 

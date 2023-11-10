@@ -37,6 +37,12 @@ import java.io.IOException;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
+/**
+ * Fragments of this class are responsible for allowing the user to select a barcode
+ * image and automatically filling information from that image into an InventoryAddFragment
+ * if the image is valid
+ */
+
 public class ScanGalleryFragment extends Fragment {
     private static final String READ_MEDIA_IMAGES_PERMISSION = READ_MEDIA_IMAGES;
     private BarcodeDetector barcodeDetector;

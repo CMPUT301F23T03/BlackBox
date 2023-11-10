@@ -4,6 +4,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+/**
+ * A control class which allows for navigation
+ * related actions to be executed
+ */
 public class NavigationManager {
     /**
      * This method swaps out the currently displayed fragment for a new one

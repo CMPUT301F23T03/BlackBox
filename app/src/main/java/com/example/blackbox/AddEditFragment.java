@@ -7,6 +7,11 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
+
+/**
+ * This abstract class provides a base layout for how fragments
+ * which allow the user to add or edit data should function
+ */
 public abstract class AddEditFragment extends Fragment {
     private int fragment_id;
 
@@ -39,7 +44,7 @@ public abstract class AddEditFragment extends Fragment {
     public abstract void setupFragment(View view);
 
     /**
-     * This is a method which will be responsible for adding an element
+     * This is a method which will be responsible for adding an element to a database
      * whatever that may entail in the specific instance
      */
     public abstract void add();

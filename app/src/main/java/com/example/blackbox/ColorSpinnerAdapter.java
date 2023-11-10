@@ -13,6 +13,10 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+/**
+ * This class defines a custom adapter to display color options
+ * which a user can select for a tag
+ */
 public class ColorSpinnerAdapter extends ArrayAdapter<TagColor> {
     private Context context;
     private ArrayList<TagColor> colors;
