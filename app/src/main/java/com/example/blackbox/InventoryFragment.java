@@ -130,7 +130,7 @@ public class InventoryFragment extends Fragment {
 
         filterButton = (Button) view.findViewById(R.id.filter_button);
         filterButton.setOnClickListener((args)->{
-            FilterDialog.showFilter(getActivity(),R.id.filter_layout,R.id.cancel_button,R.id.accept_button);
+            FilterDialog.showFilter(getActivity(),R.layout.filters,R.id.cancel_button,R.id.accept_button);
         });
 
         // add an item - display add fragment

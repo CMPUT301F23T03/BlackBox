@@ -14,6 +14,7 @@ public abstract class FilterDialog {
     private Button cancelButton;
     private Button acceptFilters;
     public static void showFilter(FragmentActivity activity, int layoutId, int cancelId, int acceptId){
+        System.out.println(activity);
         View view = activity.getLayoutInflater().inflate(layoutId,null);
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setView(view)
@@ -30,10 +31,6 @@ public abstract class FilterDialog {
                 })
                 .show()
         ;
-
-
-
-
 
     }
 }
