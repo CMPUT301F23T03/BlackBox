@@ -27,6 +27,13 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 
+
+/**
+ * Fragments of this class allow the user to input information
+ * relating to and item
+ * This is an abstract class with two subclasses, one relating to adding items
+ * and one related to editing items
+ */
 public abstract class InventoryAddEditFragment extends AddEditFragment {
     private EditText itemName;
     private EditText itemValue;

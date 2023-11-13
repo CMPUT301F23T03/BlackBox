@@ -17,10 +17,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 /**
- * A Fragment responsible for adding a new item to the inventory. Allows users to input the item's name, value, and description.
+ * A Fragment responsible for adding a new item to the inventory. Allows users to input the item's name, value, description, tags, and more.
  */
 public class InventoryAddFragment extends InventoryAddEditFragment {
-    ArrayAdapter<Item> inventoryAdapter;
 
     /**
      * Default constructor for the InventoryAddFragment.
@@ -35,7 +34,7 @@ public class InventoryAddFragment extends InventoryAddEditFragment {
      * @param item The Item object to be associated with the fragment.
      * @return A new instance of InventoryEditFragment.
      */
-    static InventoryAddFragment newInstance(Item item) {
+    public static InventoryAddFragment newInstance(Item item) {
         Bundle args = new Bundle();
         args.putSerializable("item", item);    // serialize Item object
         InventoryAddFragment fragment = new InventoryAddFragment();

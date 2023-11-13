@@ -15,8 +15,10 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
+
 /**
- * A fragment responsible for both, editing, and adding tags
+ * The fragment responsible for handling user data input related to the
+ * creation or editing of tags.
  */
 public abstract class TagAddEditFragment extends AddEditFragment {
     private EditText tagName;  // itemName text box
