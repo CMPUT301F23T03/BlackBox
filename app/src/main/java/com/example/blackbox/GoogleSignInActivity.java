@@ -48,5 +48,5 @@ public class GoogleSignInActivity extends AppCompatActivity {
                         .setFilterByAuthorizedAccounts(true)
                         .build())
                 .build();
-        // ...
+         ...
 }
