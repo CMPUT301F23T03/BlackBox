@@ -16,6 +16,7 @@ import android.util.SparseArray;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.blackbox.scanBarcode.ScanGalleryFragment;
 import com.google.android.gms.vision.barcode.Barcode;
 
 import org.junit.After;
