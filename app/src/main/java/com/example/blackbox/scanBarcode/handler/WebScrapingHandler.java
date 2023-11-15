@@ -33,24 +33,24 @@ public class WebScrapingHandler implements CustomHandler {
         // perform web-scraping
         String url = "https://www.barcodelookup.com/" + barcodeData;
 
-        try {
-            Document doc = Jsoup.connect(url).get();
-            // Get the meta description element
-            Element metaDescription = doc.selectFirst("meta[name=description]");
-            String descriptionContent = metaDescription.attr("content");
-            // Check if product is found in online database
-            if (descriptionContent.contains("This Product doesn't exist in our database.")) {
-                newItem = new Item(null, null, null,
-                        null, null, null, barcodeData,
-                        null, null);
-            } else {
-                newItem = new Item(null, null, null,
-                        null, null, null, barcodeData,
-                        null, null);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Document doc = Jsoup.connect(url).get();
+//            // Get the meta description element
+//            Element metaDescription = doc.selectFirst("meta[name=description]");
+//            String descriptionContent = metaDescription.attr("content");
+//            // Check if product is found in online database
+//            if (descriptionContent.contains("This Product doesn't exist in our database.")) {
+//                newItem = new Item(null, null, null,
+//                        null, null, null, barcodeData,
+//                        null, null);
+//            } else {
+//                newItem = new Item(null, null, null,
+//                        null, null, null, barcodeData,
+//                        null, null);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         barcodeText.post(new Runnable() {
             @Override
@@ -58,6 +58,9 @@ public class WebScrapingHandler implements CustomHandler {
                 // Display the barcode content and play a tone.
                 barcodeText.setText(barcodeData);
                 toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
+                newItem = new Item(null, null, null,
+                        null, null, null, barcodeData,
+                        null, null);
                 InventoryAddFragment invFrag = InventoryAddFragment.newInstance(newItem);
                 NavigationManager.switchFragment(invFrag, fm);
             }

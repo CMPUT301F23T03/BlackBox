@@ -13,10 +13,10 @@ public class BarcodeHandleChain {
     public BarcodeHandleChain(){
         this.h1 = new BarcodeValidHandler();
         CustomHandler databaseHandler = new DatabaseHandler();
-        CustomHandler serialNumberHandler = new WebScrapingHandler();
+        CustomHandler webScrapingHandler = new WebScrapingHandler();
 
         h1.setNextHandler(databaseHandler);
-        databaseHandler.setNextHandler(serialNumberHandler);
+        databaseHandler.setNextHandler(webScrapingHandler);
     }
 
     public void handleRequest(TextView barcodeText, SparseArray<Barcode> barcodes,
