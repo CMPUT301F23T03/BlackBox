@@ -3,14 +3,12 @@ package com.example.blackbox.scanBarcode.handler;
 import android.media.ToneGenerator;
 import android.util.SparseArray;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
 
-import com.example.blackbox.InventoryAddFragment;
-import com.example.blackbox.Item;
-import com.example.blackbox.NavigationManager;
 import com.google.android.gms.vision.barcode.Barcode;
+
+import java.net.MalformedURLException;
 
 public class BarcodeHandler implements CustomHandler {
     private CustomHandler nextCustomHandler;
