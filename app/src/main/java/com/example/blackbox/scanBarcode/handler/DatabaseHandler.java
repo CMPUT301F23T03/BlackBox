@@ -7,12 +7,17 @@ import android.widget.TextView;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.vision.barcode.Barcode;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class DatabaseHandler implements CustomHandler{
     private CustomHandler nextCustomHandler;
+    private CollectionReference inventory;
     @Override
     public void setNextHandler(CustomHandler customHandler) {
         this.nextCustomHandler = customHandler;
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        inventory = db.collection("inventory");
     }
 
     @Override

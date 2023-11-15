@@ -17,8 +17,9 @@ import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 
-public class SerialNumberHandler implements CustomHandler {
+public class WebScrapingHandler implements CustomHandler {
     private CustomHandler nextCustomHandler;
+    private Item newItem;
 
     @Override
     public void setNextHandler(CustomHandler customHandler) {
@@ -28,7 +29,6 @@ public class SerialNumberHandler implements CustomHandler {
     @Override
     public void handleRequest(TextView barcodeText, SparseArray<Barcode> barcodes,
                               ToneGenerator toneGen1, FragmentManager fm)  {
-        Item newItem;
         String barcodeData = barcodes.valueAt(0).displayValue;
         // perform web-scraping
         String url = "https://www.barcodelookup.com/" + barcodeData;
@@ -38,19 +38,20 @@ public class SerialNumberHandler implements CustomHandler {
             // Get the meta description element
             Element metaDescription = doc.selectFirst("meta[name=description]");
             String descriptionContent = metaDescription.attr("content");
-            // Check if the content matches the specific text
+            // Check if product is found in online database
             if (descriptionContent.contains("This Product doesn't exist in our database.")) {
                 newItem = new Item(null, null, null,
                         null, null, null, barcodeData,
                         null, null);
             } else {
-                // Handle other cases
-                System.out.println("Product found or description doesn't match.");
+                newItem = new Item(null, null, null,
+                        null, null, null, barcodeData,
+                        null, null);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
+
         barcodeText.post(new Runnable() {
             @Override
             public void run() {
