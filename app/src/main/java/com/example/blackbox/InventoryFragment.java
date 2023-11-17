@@ -50,6 +50,7 @@ public class InventoryFragment extends Fragment {
     Button addButton;
     Button deleteButton;
     Button cancelButton;
+    Button tagSelectionButton;
     ListenerRegistration dbListener;
     private Context activityContext;
     InventoryDB inventoryDB;
@@ -179,6 +180,7 @@ public class InventoryFragment extends Fragment {
 
         deleteButton = view.findViewById(R.id.inventory_delete_button);
         cancelButton = view.findViewById(R.id.inventory_cancel_button);
+        tagSelectionButton = view.findViewById(R.id.inventory_tag_multiselect_button);
         itemViewList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -197,6 +199,8 @@ public class InventoryFragment extends Fragment {
                     // Make the delete and cancel button visible
                     deleteButton.setVisibility(View.VISIBLE);
                     cancelButton.setVisibility(View.VISIBLE);
+                    tagSelectionButton.setVisibility(View.VISIBLE);
+
 
                 }
                 return true; // Return true to indicate that the long click event is consumed
@@ -211,21 +215,10 @@ public class InventoryFragment extends Fragment {
                     selectedItem.setSelected(Boolean.FALSE);
                 }
 
-                // Clear the selection and update UI
-                selectedItemsList.clear();
+                exitMultiselect();
 
                 // Update the view to reflect the change in selection
                 inventoryAdapter.notifyDataSetChanged();
-
-                // Hide the delete and cancel button
-                deleteButton.setVisibility(View.GONE);
-                cancelButton.setVisibility(View.GONE);
-
-                // Show the add button
-                addButton.setVisibility(View.VISIBLE);
-
-                // Reset long click flag
-                isLongClick = false;
             }
         });
 
@@ -247,21 +240,10 @@ public class InventoryFragment extends Fragment {
                         itemList.remove(selectedItem);
                     }
                 }
+                exitMultiselect();
+
                 // Update the view to reflect the change in selection
                 inventoryAdapter.notifyDataSetChanged();
-
-                // Clear the selection and update UI
-                selectedItemsList.clear();
-
-                // Hide the delete and cancel button
-                deleteButton.setVisibility(View.GONE);
-                cancelButton.setVisibility(View.GONE);
-
-                // Show the add button
-                addButton.setVisibility(View.VISIBLE);
-
-                // Reset long click flag
-                isLongClick = false;
             }
         });
 
@@ -287,6 +269,27 @@ public class InventoryFragment extends Fragment {
 
         // Update the view to reflect the change in selection
         inventoryAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Helper method to exit multi-selection
+     */
+    private void exitMultiselect(){
+        // Clear the selection and update UI
+        if (!selectedItemsList.isEmpty()) {
+            selectedItemsList.clear();
+        }
+
+        // Hide the delete and cancel button
+        deleteButton.setVisibility(View.GONE);
+        cancelButton.setVisibility(View.GONE);
+        tagSelectionButton.setVisibility(View.GONE);
+
+        // Show the add button
+        addButton.setVisibility(View.VISIBLE);
+
+        // Reset long click flag
+        isLongClick = false;
     }
 
     /**
