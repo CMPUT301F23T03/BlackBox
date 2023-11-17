@@ -83,7 +83,7 @@ public class ScanCameraFragment extends Fragment {
     private void initializeDetectorsAndSources() {
         // Initialize a barcode detector with all barcode formats.
         barcodeDetector = new BarcodeDetector.Builder(requireContext())
-                .setBarcodeFormats(Barcode.CODE_128 | Barcode.EAN_13 | Barcode.UPC_A)
+                .setBarcodeFormats(Barcode.ALL_FORMATS)
                 .build();
 
         // Initialize a camera source using the barcode detector and configure it.

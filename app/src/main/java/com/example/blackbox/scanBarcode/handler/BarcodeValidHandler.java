@@ -23,22 +23,19 @@ public class BarcodeValidHandler implements CustomHandler {
                               ToneGenerator toneGen1, FragmentManager fm) {
         // Check barcode validity
         if (barcodes.size() != 0) {
-            String barcodeData = barcodes.valueAt(0).displayValue;
-            // EAN-13 barcode has 13 digits
-            boolean isEAN = barcodeData.matches("\\d{13}");
-            // UPC-A barcode usually has a length of 12 and contains only digits
-            boolean isUPC = (barcodeData.length() == 12 && barcodeData.matches("\\d+"));
-            // Regular expression pattern for a basic Code 128 barcode
-            boolean isCode128 = barcodeData.matches("^\\p{ASCII}+$");
+            Barcode barcode = barcodes.valueAt(0);
 
-            if (isEAN || isUPC || isCode128){
+            if (barcode.format == Barcode.CODE_128 ||
+                    barcode.format == Barcode.UPC_A ||
+                    barcode.format == Barcode.EAN_13){
                 String barcodeType = "";
-                if (isEAN) {
-                    barcodeType = "EAN";
-                } else if (isUPC) {
-                    barcodeType = "UPC";
-                } else if (isCode128) {
-                    barcodeType = "Code 128";
+                switch (barcode.format) {
+                    case Barcode.CODE_128:
+                        barcodeType = "CODE_128";
+                    case Barcode.UPC_A:
+                        barcodeType = "UPC_A";
+                    case Barcode.EAN_13:
+                        barcodeType = "EAN_13";
                 }
                 Log.d("BarcodeDetection", "Detected barcode type: " + barcodeType);
                 nextCustomHandler.handleRequest(barcodeText, barcodes, toneGen1, fm);
@@ -46,7 +43,12 @@ public class BarcodeValidHandler implements CustomHandler {
                 barcodeText.post(new Runnable() {
                     @Override
                     public void run() {
-                        barcodeText.setText("Barcode not in EAN, UPC, or Code-128 format");
+                        barcodeText.setText("Incorrect Barcode format. Only accept CODE 128, UPC, and EAN");
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 });
             }
