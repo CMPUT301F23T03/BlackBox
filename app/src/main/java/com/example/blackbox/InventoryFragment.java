@@ -312,6 +312,7 @@ public class InventoryFragment extends Fragment {
                 String[] tagNameList = new String[tagList.size()];
                 ArrayList<Tag> selectedTagsList = new ArrayList<>();
 
+                // Sorting tag list multi-select dialogue
                 Comparator<Tag> tagComp = new Comparator<Tag>() {
                     @Override
                     public int compare(Tag tag1, Tag tag2) {
@@ -327,6 +328,15 @@ public class InventoryFragment extends Fragment {
                     }
                 }
 
+                // Check if all items with a tag are selected
+                for (int i = 0; i < tagList.size(); i++) {
+                    Tag currentTag = tagList.get(i);
+                    boolean allItemsWithSameTagSelected = areAllItemsWithSameTagSelected(currentTag);
+                    selectedTags[i] = allItemsWithSameTagSelected;
+                }
+
+                boolean[] originalTags = selectedTags;
+
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                 builder.setTitle("Select Tags");
                 builder.setCancelable(false);
@@ -337,24 +347,35 @@ public class InventoryFragment extends Fragment {
                 });
 
                 builder.setPositiveButton("OK", (dialogInterface, which) -> {
-                    ArrayList<Tag> tags = new ArrayList<>();
-                    for (int i = 0; i < selectedTags.length; i++) {
-                        if (selectedTags[i]) {
-                            selectedTagsList.add(tagList.get(i));
+                    int i = 0;
+                    for (Tag currentTag : tagList){
+                        if (originalTags[i] == false && areAllItemsWithSameTagSelected(currentTag) == true) {
+                            for (Item item : selectedItemsList) {
+                                for (Tag itemTag : item.getTags()) {
+                                    if (itemTag.getName().equals(currentTag.getName())) {
+                                        item.setSelected(false);
+                                        selectedTagsList.remove(item);
+                                        break;
+                                    }
+                                }
+                            }
                         }
+                        i++;
                     }
 
                     // Toggle selection for items that contain any of the selected tags
                     for (Item item : itemList) {
-                        for (Tag selectedTag : selectedTagsList) {
+                        i = 0;
+                        for (Tag selectedTag : tagList) {
                             for (Tag itemTag : item.getTags()) {
-                                if (itemTag.getName().equals(selectedTag.getName())) {
+                                if (selectedTags[i] == true && itemTag.getName().equals(selectedTag.getName())) {
                                     // Toggle selection for the item
-                                    item.setSelected(!item.isSelected());
+                                    item.setSelected(true);
                                     selectedItemsList.add(item);
                                     break; // Break after toggling once for each item
                                 }
                             }
+                            i++;
                         }
                     }
 
@@ -365,12 +386,6 @@ public class InventoryFragment extends Fragment {
                     dialogInterface.dismiss();
                 });
 
-                builder.setNeutralButton("Clear All", (dialogInterface, which) -> {
-                    for (int i = 0; i < selectedTags.length; i++) {
-                        selectedTags[i] = false;
-                    }
-                });
-
                 builder.show();
             }
             @Override
@@ -379,6 +394,35 @@ public class InventoryFragment extends Fragment {
                 Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
             }
         });
+    }
+
+    /**
+     * Helper function for showTagMultiselectDialog
+     * Finds if all items with a tag are selected
+     * @param currentTag
+     * @return true if all items with currentTag is selected; false otherwise
+     */
+    private boolean areAllItemsWithSameTagSelected(Tag currentTag) {
+        boolean allItemsWithSameTagSelected = true;
+
+        for (Item item : itemList) {
+            boolean itemContainsTag = false;
+
+            for (Tag itemTag : item.getTags()) {
+                if (itemTag.getName().equals(currentTag.getName())) {
+                    itemContainsTag = true;
+                    break;
+                }
+            }
+
+            // Check if the item contains the tag and if it is selected
+            if (itemContainsTag && !item.isSelected()) {
+                allItemsWithSameTagSelected = false;
+                break;
+            }
+        }
+
+        return allItemsWithSameTagSelected;
     }
 
     /**
