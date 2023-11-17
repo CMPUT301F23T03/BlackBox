@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -34,6 +35,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -247,6 +249,15 @@ public class InventoryFragment extends Fragment {
             }
         });
 
+        tagSelectionButton.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                  showTagMultiSelectDialogue();
+
+                  // Update the view to reflect the change in selection
+                  inventoryAdapter.notifyDataSetChanged();
+              }
+        });
     }
 
     /**
@@ -290,6 +301,84 @@ public class InventoryFragment extends Fragment {
 
         // Reset long click flag
         isLongClick = false;
+    }
+
+    private void showTagMultiSelectDialogue() {
+        TagDB tagDB = new TagDB();
+        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
+            @Override
+            public void onSuccess(ArrayList<Tag> tagList) {
+                boolean[] selectedTags = new boolean[tagList.size()];
+                String[] tagNameList = new String[tagList.size()];
+                ArrayList<Tag> selectedTagsList = new ArrayList<>();
+
+                Comparator<Tag> tagComp = new Comparator<Tag>() {
+                    @Override
+                    public int compare(Tag tag1, Tag tag2) {
+                        int result = tag1.getName().compareToIgnoreCase(tag2.getName());
+                        return result;
+                    }
+                };
+                tagList.sort(tagComp);
+
+                if (tagList.size() > 0) {
+                    for (int i = 0; i < tagList.size(); i++) {
+                        tagNameList[i] = tagList.get(i).getName();
+                    }
+                }
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setTitle("Select Tags");
+                builder.setCancelable(false);
+
+                builder.setMultiChoiceItems(tagNameList, selectedTags, (dialogInterface, index, isChecked) -> {
+                    // Update the selectedTags array when a tag is selected or deselected
+                    selectedTags[index] = isChecked;
+                });
+
+                builder.setPositiveButton("OK", (dialogInterface, which) -> {
+                    ArrayList<Tag> tags = new ArrayList<>();
+                    for (int i = 0; i < selectedTags.length; i++) {
+                        if (selectedTags[i]) {
+                            selectedTagsList.add(tagList.get(i));
+                        }
+                    }
+
+                    // Toggle selection for items that contain any of the selected tags
+                    for (Item item : itemList) {
+                        for (Tag selectedTag : selectedTagsList) {
+                            for (Tag itemTag : item.getTags()) {
+                                if (itemTag.getName().equals(selectedTag.getName())) {
+                                    // Toggle selection for the item
+                                    item.setSelected(!item.isSelected());
+                                    selectedItemsList.add(item);
+                                    break; // Break after toggling once for each item
+                                }
+                            }
+                        }
+                    }
+
+                    inventoryAdapter.notifyDataSetChanged();
+                });
+
+                builder.setNegativeButton("Cancel", (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                });
+
+                builder.setNeutralButton("Clear All", (dialogInterface, which) -> {
+                    for (int i = 0; i < selectedTags.length; i++) {
+                        selectedTags[i] = false;
+                    }
+                });
+
+                builder.show();
+            }
+            @Override
+            public void onError(String errorMessage) {
+                // Handle the error, e.g., display an error message
+                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
+            }
+        });
     }
 
     /**
