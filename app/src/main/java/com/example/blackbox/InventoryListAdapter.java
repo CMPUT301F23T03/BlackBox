@@ -1,13 +1,19 @@
 package com.example.blackbox;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 
@@ -47,18 +53,63 @@ public class InventoryListAdapter extends ArrayAdapter {
             view = LayoutInflater.from(context).inflate(R.layout.item_list, parent, false);
         }
 
+
         Item item = items.get(position);   // Get the desired item in the list of items
 
         // Get the elements of the item
         TextView name = view.findViewById(R.id.name);
         TextView value = view.findViewById(R.id.value);
         TextView desc = view.findViewById(R.id.desc);
+        ImageView tagImage = view.findViewById(R.id.tag_image);
+        ImageView tagImage2 = view.findViewById(R.id.tag_image2);
+
 
         // Set the text for the elements of the item
         name.setText(item.getName());
-        String str_val = String.format("%.2f", item.getEstimatedValue()); // Convert double to a string with 2 decimal places
-        value.setText("$" + str_val);
-        desc.setText(item.getDescription());
+        String str_val = StringFormatter.getMonetaryString(item.getEstimatedValue()); // Convert double to a string with 2 decimal places
+        value.setText(str_val);
+
+        String strDesc = item.getDescription();
+        int maxLength = 70;
+        // Check if the description is too long and shorten if required
+        if (strDesc.length() > maxLength) {
+            strDesc = strDesc.substring(0, maxLength - 1) + "...";
+        }
+
+        desc.setText(strDesc);
+
+        if (item.getNumTags() == 0 ){
+            // Hide the tag images
+            tagImage.setVisibility(View.GONE);
+            tagImage2.setVisibility(View.GONE);
+            Log.d("SetColor", "Not Tags " + item.getName());
+
+        }
+        else if (item.getNumTags() == 1) {
+            // hide one tag image
+            tagImage.setVisibility(View.VISIBLE);
+            tagImage2.setVisibility(View.GONE);
+            Log.d("SetColor", "One Tag " + item.getName());
+            tagImage.setBackgroundTintList(ColorStateList.valueOf(item.getTags().get(0).getColor()));
+        }
+        else{
+            // show both tag images
+            tagImage.setVisibility(View.VISIBLE);
+            tagImage2.setVisibility(View.VISIBLE);
+            // this has to be set otherwise it will default to something weird sometimes
+            tagImage.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
+            tagImage2.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
+
+        }
+
+        //TODO
+        // NOTE THIS IS JUST FOR TESTING IMPLEMENTATION WILL BE CHANGED IN THE FUTURE
+        // Set the background color baxsed on item selection
+        int backgroundColor = item.isSelected() ?
+                ContextCompat.getColor(context, android.R.color.holo_blue_light) :
+                Color.TRANSPARENT;
+        Log.d("BackgroundColor", "Item: " + item.getName() + ", isSelected: " + item.isSelected() + ", Color: " + backgroundColor);
+        view.findViewById(R.id.inventory_list_item).setBackgroundColor(backgroundColor);
 
         return view;
     }

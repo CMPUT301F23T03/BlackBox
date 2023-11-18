@@ -20,6 +20,9 @@ import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
+/**
+ * A fragment responsible for adding tags
+ */
 public class TagAddFragment extends TagAddEditFragment {
 
 
@@ -47,9 +50,9 @@ public class TagAddFragment extends TagAddEditFragment {
         View.OnClickListener saveOnClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // if current input is valid generate a new tag
+                // if current input is valid add a new tag
                 if(validateInput()){
-                    generateTag();
+                    add();
                 };
             }
         };

@@ -7,6 +7,10 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
+/**
+ * A planned fragment representing the user profile
+ * Currently just a placeholder
+ */
 public class ProfileFragment extends Fragment{
     View view;
     @Override

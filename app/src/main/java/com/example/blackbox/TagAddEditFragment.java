@@ -1,22 +1,20 @@
 package com.example.blackbox;
 
-import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
-
 import java.util.ArrayList;
 
-public class TagAddEditFragment extends Fragment {
+/**
+ * The fragment responsible for handling user data input related to the
+ * creation or editing of tags.
+ */
+public abstract class TagAddEditFragment extends AddEditFragment {
     private EditText tagName;  // itemName text box
     private EditText tagDescription;   // itemDescription text box
     private TagDB tagDB;
@@ -26,30 +24,14 @@ public class TagAddEditFragment extends Fragment {
     private String colorName;
     private Spinner spinner;
     private ColorSpinnerAdapter spinnerAdapter;
-    private int fragment_id;
 
     /**
      * Default constructor for the TagAddEditFragment.
      */
     public TagAddEditFragment(int fragment_id){
-        this.fragment_id = fragment_id;
+        super(fragment_id);
     }
-    /**
-     * Called to create the view for the fragment.
-     *
-     * @param inflater           The LayoutInflater object that can be used to inflate views.
-     * @param container          The parent view that the fragment's UI should be attached to.
-     * @param savedInstanceState  A Bundle containing the saved state of the fragment.
-     * @return The view for the fragment.
-     */
-    @Override
-    public View onCreateView(
-            LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState
-    ) {
-        View fragmentLayout = inflater.inflate(fragment_id, container, false);
-        return fragmentLayout;
-    }
+
 
     /**
      * A method which sets up the database, listeners,
@@ -76,7 +58,7 @@ public class TagAddEditFragment extends Fragment {
     public void setupBackButtonListener(View view){
         final Button backButton = view.findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> {
-            NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
+            getParentFragmentManager().popBackStack();
         });
     }
 
@@ -115,13 +97,13 @@ public class TagAddEditFragment extends Fragment {
     public Boolean validateInput(){
         name = tagName.getText().toString();
         desc = tagDescription.getText().toString();
-        if (name.length() > 0 && selectedColor != null && desc.length() > 0) {
+        if (name.length() > 0 && selectedColor != null) {
             // allow save action
             return Boolean.TRUE;
             }
         else{
             // display error message
-            Toast.makeText(getActivity(), "Missing Information", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Name Required", Toast.LENGTH_SHORT).show();
             return Boolean.FALSE;
         }
     }
@@ -129,14 +111,17 @@ public class TagAddEditFragment extends Fragment {
     /**
      * A method which creates a new tag and adds it to the database
      */
-    public void generateTag(){
+    @Override
+    public void add(){
         Tag new_tag = new Tag(name, selectedColor, colorName, desc);
         tagDB.addTagToDB(new_tag);
-        NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
+        NavigationManager.switchFragmentWithBack(new TagFragment(), getParentFragmentManager());
     }
 
     /**
      * A method to adjust the fields to reflect the data from a tag
+     * @param tag
+     *      The tag whose info will be used to fill fields
      */
     public void adjustFields(Tag tag){
         tagName.setText(tag.getName());
@@ -155,7 +140,7 @@ public class TagAddEditFragment extends Fragment {
     public void editTag(Tag tag){
         Tag new_tag = new Tag(name, selectedColor, colorName, desc);
         tagDB.editTag(tag, new_tag);
-        NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
+        NavigationManager.switchFragmentWithBack(new TagFragment(), getParentFragmentManager());
     }
 
     /**
@@ -165,7 +150,7 @@ public class TagAddEditFragment extends Fragment {
      */
     public void deleteTag(Tag tag){
         tagDB.deleteTag(tag);
-        NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
+        NavigationManager.switchFragmentWithBack(new TagFragment(), getParentFragmentManager());
     }
 
 

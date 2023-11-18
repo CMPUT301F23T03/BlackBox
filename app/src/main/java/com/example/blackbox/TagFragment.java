@@ -3,25 +3,21 @@ package com.example.blackbox;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
-import com.google.firebase.database.collection.LLRBNode;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -37,6 +33,7 @@ public class TagFragment extends Fragment {
     private View view;
     private Context activityContext;       // context of MainActivity
     private TagDB tagDB;
+    private ListenerRegistration tagDBlistener;
     /**
      * Called to create the view for the fragment.
      *
@@ -75,7 +72,9 @@ public class TagFragment extends Fragment {
         // initialize database
         tagDB = new TagDB();
         // DB listener
-        tagDB.getTags().addSnapshotListener(new EventListener<QuerySnapshot>() {
+        tagDBlistener = tagDB.getTags()
+                .orderBy("update_date", Query.Direction.DESCENDING)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value,
                                 @Nullable FirebaseFirestoreException e) {
@@ -90,7 +89,9 @@ public class TagFragment extends Fragment {
                     String desc = doc.getString("description");
                     String colorName = doc.getString("color_name");
                     String dbID = doc.getId();
-                    tagList.add(new Tag(name, col, colorName, desc, dbID));
+                    Tag tag = new Tag(name, col, colorName, desc, dbID);
+                    tag.setDateUpdatedWithString(doc.getString("update_date"));
+                    tagList.add(tag);
                 }
                 // Notify the adapter that the data has changed
                 tagAdapter.notifyDataSetChanged();
@@ -99,12 +100,12 @@ public class TagFragment extends Fragment {
         final Button addButton = (Button) view.findViewById(R.id.add_tag_button);
         addButton.setOnClickListener((v) -> {
             TagAddFragment tagAddFragment = new TagAddFragment();
-            NavigationManager.switchFragment(tagAddFragment, getParentFragmentManager());
+            NavigationManager.switchFragmentWithBack(tagAddFragment, getParentFragmentManager());
         });
 
         tagListView.setOnItemClickListener((parent, view1, position, id) -> {
             TagEditFragment tagEditFragment = TagEditFragment.newInstance(tagList.get(position));
-            NavigationManager.switchFragment(tagEditFragment, getParentFragmentManager());
+            NavigationManager.switchFragmentWithBack(tagEditFragment, getParentFragmentManager());
         });
 
 
@@ -127,6 +128,7 @@ public class TagFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         activityContext = null;
+        tagDBlistener.remove();
     }
 
 }

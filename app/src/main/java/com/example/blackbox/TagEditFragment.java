@@ -10,6 +10,9 @@ import android.widget.Button;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+/**
+ * A fragment responsible for editing tags
+ */
 public class TagEditFragment extends TagAddEditFragment{
     private Tag tag;
 
@@ -26,7 +29,7 @@ public class TagEditFragment extends TagAddEditFragment{
      * @param tag The index of Tag object to be associated with the fragment.
      * @return A new instance of TagEditFragment.
      */
-    static TagEditFragment newInstance(Tag tag) {
+    public static TagEditFragment newInstance(Tag tag) {
         Bundle args = new Bundle();
         args.putSerializable("tagToEdit", tag);    // serialize Item object
         TagEditFragment fragment = new TagEditFragment();
@@ -55,12 +58,17 @@ public class TagEditFragment extends TagAddEditFragment{
             }
         });
 
+        // setup a delete button
         final Button deleteButton = view.findViewById(R.id.delete_tag_button);
         deleteButton.setOnClickListener(v -> {
             showDeletePopup();
         });
     }
 
+
+    /**
+     * Display a confirmation dialog for deleting a tag
+     */
     private void showDeletePopup(){
         DeletePopupFragment confirmationPopup = new DeletePopupFragment();
         getParentFragmentManager().setFragmentResultListener("DELETE_RESULT_KEY", this, (requestKey, result) -> {

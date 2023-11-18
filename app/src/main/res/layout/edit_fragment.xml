@@ -11,6 +11,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/delete_item_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/rounded_square"
+            android:backgroundTint="@color/gray02"
+            android:text="Delete Item"
+            android:textColor="@color/warning"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout3"
             android:layout_width="match_parent"
@@ -59,9 +74,10 @@
 
         <ScrollView
             android:id="@+id/scrollView2"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/delete_item_button"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
 
@@ -80,20 +96,22 @@
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
-                    android:hint="Item Name"
+                    android:hint="@string/item_name"
+                    android:maxLength="21"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt" />
 
-                <Spinner
+                <TextView
                     android:id="@+id/tag_dropdown"
                     android:layout_width="297dp"
-                    android:layout_height="47dp"
+                    android:layout_height="48dp"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_white_rounded"
+                    android:drawableRight="@android:drawable/arrow_down_float"
                     android:backgroundTint="@color/gray02"
-                    android:ems="10"
-                    android:spinnerMode="dropdown"
+                    android:completionHint="Tag"
+                    android:completionThreshold="1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tag_prompt"
                     tools:ignore="TouchTargetSizeCheck" />
@@ -148,7 +166,8 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.086"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/date_editText" />
+                    app:layout_constraintTop_toBottomOf="@+id/date_editText"
+                    tools:ignore="TouchTargetSizeCheck" />
 
                 <TextView
                     android:id="@+id/enter_name_prompt5"
@@ -174,7 +193,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.086"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/name_editText5" />
+                    app:layout_constraintTop_toBottomOf="@+id/make_editText" />
 
                 <TextView
                     android:id="@+id/enter_name_prompt7"
@@ -187,7 +206,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.087"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/name_editText6" />
+                    app:layout_constraintTop_toBottomOf="@+id/model_editText" />
 
                 <TextView
                     android:id="@+id/enter_name_prompt8"
@@ -200,7 +219,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.087"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/name_editText7" />
+                    app:layout_constraintTop_toBottomOf="@+id/serial_number_editText" />
 
                 <TextView
                     android:id="@+id/enter_name_prompt9"
@@ -214,16 +233,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/desc_editText" />
 
-                <Spinner
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/date_editText"
                     android:layout_width="297dp"
-                    android:layout_height="47dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="8dp"
+                    android:textSize="16sp"
+                    android:hint="Select a date"
+                    android:gravity="left|center_vertical"
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
-                    android:spinnerMode="dropdown"
+                    android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/date_prompt"
                     tools:ignore="TouchTargetSizeCheck" />
@@ -238,12 +260,15 @@
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
                     android:hint="Value"
+                    android:maxLength="10"
+                    android:inputType="numberDecimal"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt4" />
 
                 <EditText
-                    android:id="@+id/name_editText5"
+                    android:id="@+id/make_editText"
                     android:layout_width="297dp"
+                    android:maxLength="30"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="8dp"
@@ -255,7 +280,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt5" />
 
                 <EditText
-                    android:id="@+id/name_editText6"
+                    android:id="@+id/model_editText"
                     android:layout_width="297dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -263,12 +288,13 @@
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
+                    android:maxLength="30"
                     android:hint="Model"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt6" />
 
                 <EditText
-                    android:id="@+id/name_editText7"
+                    android:id="@+id/serial_number_editText"
                     android:layout_width="297dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -277,11 +303,12 @@
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
                     android:hint="Serial Number"
+                    android:inputType="number"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt7" />
 
                 <EditText
-                    android:id="@+id/name_editText8"
+                    android:id="@+id/comment_editText"
                     android:layout_width="297dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="28dp"

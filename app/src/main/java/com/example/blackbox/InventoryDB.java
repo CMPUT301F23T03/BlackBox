@@ -10,6 +10,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -20,9 +21,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Handles interactions with the Firestore database for managing inventory items.
@@ -40,6 +43,26 @@ public class InventoryDB {
     }
 
     /**
+     * Initializes the Firestore database with a provided colletion name
+     * Used for testing
+     * @param collection_name name of the collection to be created
+     */
+    public InventoryDB(String collection_name) {
+        db = FirebaseFirestore.getInstance();
+        inventory = db.collection(collection_name);
+    }
+
+    /**
+     * Returns the instance of the Firestore database
+     *
+     * @return db
+     */
+    public FirebaseFirestore getDb() {
+        return db;
+    }
+
+
+    /**
      * Gets the inventory collection
      * @return inventory    a CollectionReference object
      */
@@ -53,10 +76,7 @@ public class InventoryDB {
      * @param item The Item object to be added to the database.
      */
     public void addItemToDB(Item item) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("name", item.getName());
-        data.put("value", item.getEstimatedValue());
-        data.put("description", item.getDescription());
+        Map<String, Object> data = generateItemHashMap(item);
         inventory.add(data);
     }
 
@@ -67,11 +87,71 @@ public class InventoryDB {
      * @param new_item  The item from which the new values should come.
      */
     public void updateItemInDB(Item old_item, Item new_item) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("name", new_item.getName());
-        data.put("value", new_item.getEstimatedValue());
-        data.put("description", new_item.getDescription());
+        Map<String, Object> data = generateItemHashMap(new_item);
         inventory.document(old_item.getID()).set(data);
+    }
+
+    /**
+     * Creates a HashMap which represents the data of a tag
+     * @param item
+     *      The item to create a HashMap from
+     */
+    private Map<String, Object> generateItemHashMap(Item item){
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", item.getName());
+        data.put("value", item.getEstimatedValue());
+        data.put("description", item.getDescription());
+        data.put("make", item.getMake());
+        data.put("model", item.getModel());
+        data.put("serial_number", item.getSerialNumber());
+        data.put("comment", item.getComment());
+        data.put("purchase_date", item.getDateOfPurchase());
+        item.setDateUpdated(Calendar.getInstance().getTime());
+        data.put("update_date", item.getStringDateUpdated());
+
+        // Convert the list of tags to a list of tag IDs
+        List<String> tagIDs = new ArrayList<>();
+        for (Tag tag : item.getTags()) {
+            tagIDs.add(tag.getDataBaseID());
+        }
+        data.put("tags", tagIDs);
+
+        return data;
+    }
+
+    /**
+     * Delete a specified tag from the database
+     * @param item
+     *      The item to be deleted
+     */
+    public void deleteItem(Item item){
+        if (item.getID() != null) {
+            inventory.document(item.getID()).delete();
+            Log.d("Firestore", "Item deleted Successfully");
+        }
+        else{
+            Log.d("Firestore", "Deletion failed, item has no ID specified");
+        }
+    }
+
+    /**
+     * Clears all items in the 'inventory' collection in the Firestore database.
+     */
+    public void clearInventory() {
+        inventory.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        document.getReference().delete();
+                    }
+                    Log.d("Firestore", "Inventory cleared Successfully");
+
+                } else {
+                    Log.d("Firestore", "Failed to clear inventory", task.getException());
+                }
+            }
+        });
     }
 }
 

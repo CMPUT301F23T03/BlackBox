@@ -43,8 +43,8 @@
 
     <SurfaceView
         android:id="@+id/surface_view"
-        android:layout_width="394dp"
-        android:layout_height="430dp"
+        android:layout_width="410dp"
+        android:layout_height="366dp"
         android:layout_marginTop="100dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -52,11 +52,11 @@
 
     <TextView
         android:id="@+id/barcode_text"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_width="410dp"
+        android:layout_height="109dp"
         android:layout_marginTop="52dp"
         android:padding="5dp"
-        android:text="Barcode Text"
+        android:text=""
         android:textSize="25sp"
         app:layout_constraintTop_toBottomOf="@id/surface_view"
         tools:layout_editor_absoluteX="0dp" />

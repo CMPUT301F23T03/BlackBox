@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/add_fragment"
     tools:context=".InventoryAddFragment">
 
 
@@ -66,7 +67,7 @@
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout"
+                android:id="@+id/insideConstraintLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:context=".MainActivity">
@@ -80,20 +81,23 @@
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
+                    android:maxLength="21"
                     android:hint="Item Name"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt" />
 
-                <Spinner
+                <TextView
                     android:id="@+id/tag_dropdown"
                     android:layout_width="297dp"
-                    android:layout_height="47dp"
+                    android:layout_height="48dp"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_white_rounded"
+                    android:hint="Select Tags"
+                    android:drawableRight="@android:drawable/arrow_down_float"
                     android:backgroundTint="@color/gray02"
-                    android:ems="10"
-                    android:spinnerMode="dropdown"
+                    android:completionHint="Tag"
+                    android:completionThreshold="1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tag_prompt"
                     tools:ignore="TouchTargetSizeCheck" />
@@ -116,7 +120,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="Select one or more tags"
+                    android:text="@string/select_one_or_more_tags"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -174,7 +178,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.086"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/name_editText5" />
+                    app:layout_constraintTop_toBottomOf="@+id/make_editText" />
 
                 <TextView
                     android:id="@+id/enter_name_prompt7"
@@ -187,7 +191,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.087"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/name_editText6" />
+                    app:layout_constraintTop_toBottomOf="@+id/model_editText" />
 
                 <TextView
                     android:id="@+id/enter_name_prompt8"
@@ -200,7 +204,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.087"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/name_editText7" />
+                    app:layout_constraintTop_toBottomOf="@+id/serial_number_editText" />
 
                 <TextView
                     android:id="@+id/enter_name_prompt9"
@@ -214,16 +218,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/desc_editText" />
 
-                <Spinner
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/date_editText"
                     android:layout_width="297dp"
-                    android:layout_height="47dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="8dp"
+                    android:textSize="16sp"
+                    android:hint="Select a date"
+                    android:gravity="left|center_vertical"
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
-                    android:spinnerMode="dropdown"
+                    android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/date_prompt"
                     tools:ignore="TouchTargetSizeCheck" />
@@ -238,11 +245,13 @@
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
                     android:hint="Value"
+                    android:inputType="numberDecimal"
+                    android:maxLength="10"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt4" />
 
                 <EditText
-                    android:id="@+id/name_editText5"
+                    android:id="@+id/make_editText"
                     android:layout_width="297dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -250,12 +259,13 @@
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
+                    android:maxLength="30"
                     android:hint="Make"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt5" />
 
                 <EditText
-                    android:id="@+id/name_editText6"
+                    android:id="@+id/model_editText"
                     android:layout_width="297dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -264,11 +274,12 @@
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
                     android:hint="Model"
+                    android:maxLength="30"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt6" />
 
                 <EditText
-                    android:id="@+id/name_editText7"
+                    android:id="@+id/serial_number_editText"
                     android:layout_width="297dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -276,12 +287,13 @@
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
+                    android:inputType="number"
                     android:hint="Serial Number"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt7" />
 
                 <EditText
-                    android:id="@+id/name_editText8"
+                    android:id="@+id/comment_editText"
                     android:layout_width="297dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="28dp"
