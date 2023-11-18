@@ -39,9 +39,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-/**
- * Demonstrate Firebase Authentication using a Google ID Token.
- */
 public class GoogleSignInActivity extends Activity {
 
     private static final String TAG = "GoogleActivity";

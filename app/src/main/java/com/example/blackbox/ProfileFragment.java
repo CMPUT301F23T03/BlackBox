@@ -2,27 +2,32 @@ package com.example.blackbox;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
 
 /**
  * A planned fragment representing the user profile
- * Currently just a placeholder
  */
 public class ProfileFragment extends Fragment{
     private View view;
     private Button logOutButton;
     private Context activityContext;
+    private ProfileDB profileDB = new ProfileDB();
 
 
     public ProfileFragment() {}
@@ -54,10 +59,23 @@ public class ProfileFragment extends Fragment{
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseAuth.getInstance().signOut();
+                profileDB.logOut();
                 Intent i = new Intent(activityContext, GoogleSignInActivity.class);
                 startActivity(i);
             }
         });
+
+        // Display profile name
+        TextView profileName = view.findViewById(R.id.name_profile);
+        profileName.setText(profileDB.getName());
+
+        // Display profile email
+        TextView profileEmail = view.findViewById(R.id.username);
+        profileEmail.setText(profileDB.getEmail());
+
+        // Display profile picture
+        ImageView profilePicture = view.findViewById(R.id.profile_pic);
+        Uri imageUri = profileDB.getPhotoUrl();
+        profilePicture.setImageURI(imageUri);
     }
 }
