@@ -3,29 +3,21 @@ package com.example.blackbox;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
-import java.util.Date;
 
 
 /**
@@ -178,8 +170,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     public void setupBackButtonListener(View view){
         final Button backButton = view.findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> {
-            InventoryFragment inventoryFragment = new InventoryFragment();
-            NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());
+            getParentFragmentManager().popBackStack();
         });
     }
 
@@ -237,7 +228,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
                 }
                 Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment);
                 itemDB.addItemToDB(new_item);
-                NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
+                NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
             }
             @Override
             public void onError(String errorMessage) {
@@ -271,7 +262,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
                 Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment);
                 itemDB.updateItemInDB(item, new_item);
                 InventoryFragment inventoryFragment = new InventoryFragment();
-                NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());
+                NavigationManager.switchFragmentWithBack(inventoryFragment, getParentFragmentManager());
 
             }
             @Override
@@ -289,7 +280,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
      */
     public void deleteItem(Item item){
         itemDB.deleteItem(item);
-        NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
+        NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
     }
 
     /**

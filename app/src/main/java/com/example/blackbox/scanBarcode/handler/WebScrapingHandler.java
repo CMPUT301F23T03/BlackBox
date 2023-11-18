@@ -85,7 +85,7 @@ public class WebScrapingHandler implements CustomHandler {
                 barcodeText.setText(barcodeData);
                 toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
                 InventoryAddFragment invFrag = InventoryAddFragment.newInstance(newItem);
-                NavigationManager.switchFragment(invFrag, fm);
+                NavigationManager.switchFragmentWithBack(invFrag, fm);
             }
         });
     }

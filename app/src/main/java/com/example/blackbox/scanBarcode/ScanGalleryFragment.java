@@ -142,8 +142,7 @@ public class ScanGalleryFragment extends Fragment {
     public void setupBackButtonListener(View view){
         final Button backButton = view.findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> {
-            ScanFragment scanFragment = new ScanFragment();
-            NavigationManager.switchFragment(scanFragment, getParentFragmentManager());
+            getParentFragmentManager().popBackStack();
         });
     }
     /**
