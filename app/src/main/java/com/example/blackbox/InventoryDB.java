@@ -108,6 +108,7 @@ public class InventoryDB {
         data.put("purchase_date", item.getDateOfPurchase());
         item.setDateUpdated(Calendar.getInstance().getTime());
         data.put("update_date", item.getStringDateUpdated());
+        data.put("user_id", item.getUserID());
 
         // Convert the list of tags to a list of tag IDs
         List<String> tagIDs = new ArrayList<>();

@@ -39,6 +39,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+/**
+ * The `GoogleSignInActivity` class represents the activity responsible for handling
+ * Google Sign-In authentication. It utilizes Firebase Authentication to sign in the user
+ * using their Google credentials.
+ */
 public class GoogleSignInActivity extends Activity {
 
     private static final String TAG = "GoogleActivity";
@@ -47,6 +52,13 @@ public class GoogleSignInActivity extends Activity {
     private GoogleSignInClient mGoogleSignInClient;
     Button signInButton;
 
+    /**
+     * Called when the activity is first created.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after previously
+     *                           being shut down, this Bundle contains the data it most
+     *                           recently supplied in onSaveInstanceState(Bundle).
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,6 +85,9 @@ public class GoogleSignInActivity extends Activity {
         });
     }
 
+    /**
+     * Called when the activity is becoming visible to the user.
+     */
     @Override
     public void onStart() {
         super.onStart();
@@ -81,6 +96,15 @@ public class GoogleSignInActivity extends Activity {
         updateUI(currentUser);
     }
 
+    /**
+     * Called when an activity you launched exits, giving you the requestCode you started it with,
+     * the resultCode it returned, and any additional data from it.
+     *
+     * @param requestCode The integer request code originally supplied to startActivityForResult(),
+     *                    allowing you to identify who this result came from.
+     * @param resultCode  The integer result code returned by the child activity through its setResult().
+     * @param data        An Intent, which can return result data to the caller (various data can be attached to Intent "extras").
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -99,6 +123,11 @@ public class GoogleSignInActivity extends Activity {
         }
     }
 
+    /**
+     * Authenticate with Firebase using the Google Sign-In credentials.
+     *
+     * @param idToken The ID token obtained from the Google Sign-In process.
+     */
     private void firebaseAuthWithGoogle(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         mAuth.signInWithCredential(credential)
@@ -119,11 +148,19 @@ public class GoogleSignInActivity extends Activity {
                 });
     }
 
+    /**
+     * Start the Google Sign-In process by launching the Google Sign-In intent.
+     */
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+    /**
+     * Update the UI based on the authentication status of the user.
+     *
+     * @param user The authenticated Firebase user.
+     */
     private void updateUI(FirebaseUser user) {
         if (user != null) {
             // User is signed in

@@ -21,7 +21,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.firebase.auth.FirebaseAuth;
 
 /**
- * A planned fragment representing the user profile
+ * A fragment that represents the user profile screen. It displays user information,
+ * allows the user to log out, and presents the user's name, email, and profile picture.
  */
 public class ProfileFragment extends Fragment{
     private View view;
@@ -29,7 +30,9 @@ public class ProfileFragment extends Fragment{
     private Context activityContext;
     private ProfileDB profileDB = new ProfileDB();
 
-
+    /**
+     * Default constructor for the ProfileFragment.
+     */
     public ProfileFragment() {}
 
     /**
@@ -43,6 +46,17 @@ public class ProfileFragment extends Fragment{
         activityContext = context;
     }
 
+    /**
+     * Called to create the view hierarchy associated with the fragment.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate
+     *                           any views in the fragment.
+     * @param container          If non-null, this is the parent view that the fragment's
+     *                           UI should be attached to.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from
+     *                           a previous saved state as given here.
+     * @return                   The root view of the fragment.
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -50,6 +64,14 @@ public class ProfileFragment extends Fragment{
         return view;
     }
 
+    /**
+     * Called immediately after onCreateView(LayoutInflater, ViewGroup, Bundle)
+     * has returned, but before any saved state has been restored in to the view.
+     *
+     * @param view               The View returned by onCreateView.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed from
+     *                           a previous saved state as given here.
+     */
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

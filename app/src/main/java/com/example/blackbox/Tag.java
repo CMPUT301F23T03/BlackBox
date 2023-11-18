@@ -22,6 +22,8 @@ public class Tag implements Serializable {
     private Date dateUpdated;
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private String userID;
+
     /**
      * Constructor of an Tag object
      *

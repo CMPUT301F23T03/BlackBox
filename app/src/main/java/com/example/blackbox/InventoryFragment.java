@@ -61,6 +61,7 @@ public class InventoryFragment extends Fragment {
     private double totalSum = 0.0;
     private ArrayList<Item> selectedItemsList = new ArrayList<>();
     private boolean isLongClick = false;
+    private ProfileDB profileDB = new ProfileDB();
 
     /**
      * Default constructor for the InventoryFragment.
@@ -383,11 +384,11 @@ public class InventoryFragment extends Fragment {
             String comment = doc.getString("comment");
             String dateOfPurchase = doc.getString("purchase_date");
             String dbID = doc.getId();
+            String userID = doc.getString("user_id");
             ArrayList<Tag> tags = new ArrayList<>();
-
             List<String> tagIDs = (List<String>) doc.get("tags");
 
-            Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID);
+            Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID, userID);
             if (tagIDs != null && !tagIDs.isEmpty()) {
                 for (String tagID : tagIDs) {
                     Task<DocumentSnapshot> tagTask = tagDB.getTags().document(tagID).get();
@@ -398,7 +399,11 @@ public class InventoryFragment extends Fragment {
                     });
                 }
             }
-            itemList.add(item);
+
+            // Only add items that belong to the current user to the list to display
+            if (userID.equals(profileDB.getUid())) {
+                itemList.add(item);
+            }
 
         }
         if (tagTasks.size() > 0){

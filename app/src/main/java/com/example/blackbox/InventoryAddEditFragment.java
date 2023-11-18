@@ -58,6 +58,8 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     private ArrayList<Tag> tags;
     private TextView tagDropdown;
     ArrayList<Tag> selectedTags = new ArrayList<>();
+    private ProfileDB profileDB = new ProfileDB();
+
 
     /**
      * Default constructor for the InventoryAddEditFragment
@@ -235,7 +237,8 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
                         }
                     }
                 }
-                Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment);
+                String userID = profileDB.getUid();
+                Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment, userID);
                 itemDB.addItemToDB(new_item);
                 NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
             }
@@ -268,7 +271,8 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
                         }
                     }
                 }
-                Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment);
+                String userID = profileDB.getUid();
+                Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment, userID);
                 itemDB.updateItemInDB(item, new_item);
                 InventoryFragment inventoryFragment = new InventoryFragment();
                 NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());

@@ -8,6 +8,12 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
+/**
+ * The `ProfileDB` class represents a user profile in a Firebase authentication system.
+ * It encapsulates user information such as display name, email, photo URL, and authentication status.
+ * This class provides methods to interact with the user profile, such as retrieving and setting user information,
+ * checking email verification status, and logging out the user.
+ */
 public class ProfileDB {
     private FirebaseUser user;
     private String uid;
@@ -15,30 +21,32 @@ public class ProfileDB {
     private String name;
     private String email;
     private Uri photoUrl;
-    private ArrayList<String> itemIDs;  // store a list of item IDs that are owned by this profile
-    private InventoryDB inventoryDB;    // the inventory database object
 
+    /**
+     * Constructs a new `ProfileDB` instance by retrieving user information from the current Firebase authentication session.
+     * If no user is authenticated, the instance will be initialized with default values.
+     */
     public ProfileDB() {
         user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
-            // Name, email address, and profile photo Url
             name = user.getDisplayName();
             email = user.getEmail();
             photoUrl = user.getPhotoUrl();
-            // Check if user's email is verified
             emailVerified = user.isEmailVerified();
-            // The user's ID, unique to the Firebase project. Do NOT use this value to
-            // authenticate with your backend server, if you have one. Use
-            // FirebaseUser.getIdToken() instead.
             uid = user.getUid();
-            inventoryDB = new InventoryDB();
         }
     }
 
+    /**
+     * Logs out the currently authenticated user by signing them out of Firebase.
+     */
     public void logOut() {
         FirebaseAuth.getInstance().signOut();
     }
 
+    /**
+     * Getters and setters
+     */
     public FirebaseUser getUser() {
         return user;
     }
