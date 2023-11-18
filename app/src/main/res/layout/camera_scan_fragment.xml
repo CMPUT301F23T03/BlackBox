@@ -52,8 +52,8 @@
 
     <TextView
         android:id="@+id/barcode_text"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_width="410dp"
+        android:layout_height="109dp"
         android:layout_marginTop="52dp"
         android:padding="5dp"
         android:text=""

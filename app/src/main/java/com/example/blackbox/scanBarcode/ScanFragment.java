@@ -28,7 +28,7 @@ public class ScanFragment extends Fragment {
         final Button cameraButton = view.findViewById(R.id.button_camera);
         cameraButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                NavigationManager.switchFragment(new ScanCameraFragment(), getParentFragmentManager());
+                NavigationManager.switchFragmentWithBack(new ScanCameraFragment(), getParentFragmentManager());
             }
         });
 
@@ -36,7 +36,7 @@ public class ScanFragment extends Fragment {
         final Button galleryButton = view.findViewById(R.id.button_gallery);
         galleryButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                NavigationManager.switchFragment(new ScanGalleryFragment(), getParentFragmentManager());
+                NavigationManager.switchFragmentWithBack(new ScanGalleryFragment(), getParentFragmentManager());
             }
         });
 

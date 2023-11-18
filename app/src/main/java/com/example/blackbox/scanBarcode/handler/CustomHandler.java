@@ -8,6 +8,8 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.vision.barcode.Barcode;
 
+import java.net.MalformedURLException;
+
 public interface CustomHandler {
     void setNextHandler(CustomHandler customHandler);
 
