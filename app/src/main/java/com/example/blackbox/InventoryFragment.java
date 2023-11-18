@@ -2,7 +2,6 @@ package com.example.blackbox;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,20 +13,13 @@ import android.widget.ListView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 
@@ -36,6 +28,11 @@ import java.util.ArrayList;
  */
 public class InventoryFragment extends Fragment {
     ListView itemViewList;
+
+    private RecyclerView filterViewList;
+
+    private RecyclerView.Adapter filterAdapter;
+    private ArrayList<Filter> filterList;
     ArrayAdapter<Item> inventoryAdapter;
     ArrayList<Item> itemList;
 
@@ -105,8 +102,18 @@ public class InventoryFragment extends Fragment {
         // display the inventory list
         filteredItemsList = new ArrayList<>();
         itemList = new ArrayList<>();
+        filterList = new ArrayList<>();
         itemViewList = (ListView) view.findViewById(R.id.item_list);
+        filterViewList = (RecyclerView) view.findViewById(R.id.filter_list);
+
         inventoryAdapter = new InventoryListAdapter(activityContext, itemList);
+        filterAdapter = new FilterListAdapter(filterList,itemList,inventoryAdapter);
+        GridLayoutManager layoutManager = new GridLayoutManager(activityContext,3);
+
+        filterViewList.setLayoutManager(layoutManager);
+        filterViewList.setAdapter(filterAdapter);
+
+
         itemViewList.setAdapter(inventoryAdapter);
 
         // listener for data changes in DB
@@ -135,10 +142,9 @@ public class InventoryFragment extends Fragment {
         //make filter go up
         filterButton = (Button) view.findViewById(R.id.filter_button);
         filterButton.setOnClickListener((args)->{
-            filteredItemsList = FilterDialog.showFilter(getActivity(),R.layout.filters
-                    ,itemList);
-            inventoryAdapter.notifyDataSetChanged();
+            filteredItemsList = FilterDialog.showFilter(getActivity(),itemList,inventoryAdapter,filterAdapter);
         });
+
 
         // add an item - display add fragment
         addButton = (Button) view.findViewById(R.id.add_button);
