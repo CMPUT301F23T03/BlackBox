@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -54,6 +55,10 @@ public class ScanCameraFragment extends Fragment {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                .permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         View view = inflater.inflate(R.layout.camera_scan_fragment, container, false);
         toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
         barcodeHandleChain = new BarcodeHandleChain();
@@ -123,7 +128,6 @@ public class ScanCameraFragment extends Fragment {
                 final SparseArray<Barcode> barcodes = detections.getDetectedItems();
                 barcodeHandleChain.handleRequest(barcodeText, barcodes, toneGen1,
                         getParentFragmentManager());
-
             }
         });
     }

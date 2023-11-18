@@ -23,6 +23,8 @@ public class DatabaseHandler implements CustomHandler{
     @Override
     public void handleRequest(TextView barcodeText, SparseArray<Barcode> barcodes,
                               ToneGenerator toneGen1, FragmentManager fm) {
-        nextCustomHandler.handleRequest(barcodeText, barcodes, toneGen1, fm);
+        if (nextCustomHandler != null){
+            nextCustomHandler.handleRequest(barcodeText, barcodes, toneGen1, fm);
+        }
     }
 }

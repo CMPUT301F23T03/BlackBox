@@ -38,17 +38,14 @@ public class BarcodeValidHandler implements CustomHandler {
                         barcodeType = "EAN_13";
                 }
                 Log.d("BarcodeDetection", "Detected barcode type: " + barcodeType);
-                nextCustomHandler.handleRequest(barcodeText, barcodes, toneGen1, fm);
+                if (nextCustomHandler != null){
+                    nextCustomHandler.handleRequest(barcodeText, barcodes, toneGen1, fm);
+                }
             } else{
                 barcodeText.post(new Runnable() {
                     @Override
                     public void run() {
                         barcodeText.setText("Incorrect Barcode format. Only accept CODE 128, UPC, and EAN");
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            throw new RuntimeException(e);
-                        }
                     }
                 });
             }

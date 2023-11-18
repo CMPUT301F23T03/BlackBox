@@ -1,6 +1,7 @@
 package com.example.blackbox.scanBarcode.handler;
 
 import android.media.ToneGenerator;
+import android.util.Log;
 import android.util.SparseArray;
 import android.widget.TextView;
 
@@ -26,6 +27,23 @@ public class WebScrapingHandler implements CustomHandler {
         this.nextCustomHandler = customHandler;
     }
 
+    private String getAttributeValue(Element element, String query) {
+        try {
+            Element selectedElement = element.select(query).first();
+            if (selectedElement != null) {
+                if (selectedElement.tagName().equalsIgnoreCase("textarea")) {
+                    return selectedElement.text(); // Retrieve content of the textarea
+                } else {
+                    return selectedElement.attr("value"); // Retrieve value attribute of the input
+                }
+            }
+        } catch (NullPointerException | IllegalArgumentException e) {
+            return null;
+        }
+        return null;
+    }
+
+
     @Override
     public void handleRequest(TextView barcodeText, SparseArray<Barcode> barcodes,
                               ToneGenerator toneGen1, FragmentManager fm)  {
@@ -33,24 +51,32 @@ public class WebScrapingHandler implements CustomHandler {
         // perform web-scraping
         String url = "https://www.barcodelookup.com/" + barcodeData;
 
-//        try {
-//            Document doc = Jsoup.connect(url).get();
-//            // Get the meta description element
-//            Element metaDescription = doc.selectFirst("meta[name=description]");
-//            String descriptionContent = metaDescription.attr("content");
-//            // Check if product is found in online database
-//            if (descriptionContent.contains("This Product doesn't exist in our database.")) {
-//                newItem = new Item(null, null, null,
-//                        null, null, null, barcodeData,
-//                        null, null);
-//            } else {
-//                newItem = new Item(null, null, null,
-//                        null, null, null, barcodeData,
-//                        null, null);
-//            }
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            Document doc = Jsoup.connect(url).userAgent("Mozilla/5.0").get();
+            // Get the meta description element
+            Element metaDescription = doc.selectFirst("meta[name=description]");
+            String descriptionContent = metaDescription.attr("content");
+            Log.d("Web scrape", "Web description content " + descriptionContent);
+            // Check if product is found in online database
+            if (descriptionContent.contains("This Product doesn't exist in our database.")) {
+                newItem = new Item(null, null, null,
+                        null, null, null, barcodeData,
+                        null, null);
+            } else {
+                String name = getAttributeValue(doc, "input[name=title]");
+                String description = getAttributeValue(doc, "textarea[name=description]");
+                String make = getAttributeValue(doc, "input[name=manufacturer]");
+                newItem = new Item(name, null, null,
+                        null, make, null, barcodeData,
+                        description, null);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d("Web scrape", "Fail");
+            newItem = new Item(null, null, null,
+                    null, null, null, barcodeData,
+                    null, null);
+        }
 
         barcodeText.post(new Runnable() {
             @Override
@@ -58,9 +84,6 @@ public class WebScrapingHandler implements CustomHandler {
                 // Display the barcode content and play a tone.
                 barcodeText.setText(barcodeData);
                 toneGen1.startTone(ToneGenerator.TONE_CDMA_PIP, 150);
-                newItem = new Item(null, null, null,
-                        null, null, null, barcodeData,
-                        null, null);
                 InventoryAddFragment invFrag = InventoryAddFragment.newInstance(newItem);
                 NavigationManager.switchFragment(invFrag, fm);
             }

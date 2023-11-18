@@ -10,9 +10,12 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.net.Uri;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.SparseArray;
@@ -34,6 +37,7 @@ import com.example.blackbox.Item;
 import com.example.blackbox.MainActivity;
 import com.example.blackbox.NavigationManager;
 import com.example.blackbox.R;
+import com.example.blackbox.scanBarcode.handler.BarcodeHandleChain;
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
@@ -57,6 +61,8 @@ public class ScanGalleryFragment extends Fragment {
     private Button choosePictureButton;
     private Context context;
     private Activity testActivity;
+    private ToneGenerator toneGen1;
+    private BarcodeHandleChain barcodeHandleChain;
 
     ActivityResultLauncher<PickVisualMediaRequest> pickMedia =
             registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
@@ -83,9 +89,18 @@ public class ScanGalleryFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                .permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         View view = inflater.inflate(R.layout.gallery_scan_fragment, container, false);
         imageView = view.findViewById(R.id.image_view);
         barcodeText = view.findViewById(R.id.barcode_text);
+        toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
+        barcodeHandleChain = new BarcodeHandleChain();
+        barcodeDetector = new BarcodeDetector.Builder(requireContext())
+                .setBarcodeFormats(Barcode.ALL_FORMATS)
+                .build();
 
         choosePictureButton = view.findViewById(R.id.choose_button);
         choosePictureButton.setOnClickListener(v -> {
@@ -168,10 +183,6 @@ public class ScanGalleryFragment extends Fragment {
      */
     private SparseArray<Barcode> detectBarcodes(Bitmap bitmap) {
         Frame frame = new Frame.Builder().setBitmap(bitmap).build();
-        BarcodeDetector barcodeDetector = new BarcodeDetector.Builder(requireContext())
-                .setBarcodeFormats(Barcode.EAN_13 | Barcode.UPC_A | Barcode.ISBN)
-                .build();
-
         return barcodeDetector.detect(frame);
     }
 
@@ -183,20 +194,8 @@ public class ScanGalleryFragment extends Fragment {
      */
     @SuppressLint("RestrictedApi")
     public void checkBarcode(SparseArray<Barcode> barcodes){
-        if(barcodes != null && barcodes.size() > 0){
-            for (int i = 0; i < barcodes.size(); i++){
-                Log.d(LOG_TAG, "Value: " + barcodes.valueAt(i).rawValue + "----" + barcodes.valueAt(i).displayValue);
-            }
-            barcodeData = barcodes.valueAt(0).displayValue;
-            barcodeText.setText(barcodeData);
-            Item newItem = new Item(null, null, null, null, null, null, barcodes.valueAt(0).displayValue, null, null);
-            InventoryAddFragment invFrag = InventoryAddFragment.newInstance(newItem);
-            NavigationManager.switchFragment(invFrag, getParentFragmentManager());
-        }else {
-            Log.e(LOG_TAG,"SparseArray null or empty");
-            Toast.makeText(requireContext(), "Barcode not found", Toast.LENGTH_SHORT).show();
-            barcodeText.setText("Barcode not found");
-        }
+        barcodeHandleChain.handleRequest(barcodeText, barcodes, toneGen1,
+                getParentFragmentManager());
     }
 
     public void onAttach(Context context) {
