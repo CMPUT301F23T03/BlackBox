@@ -89,12 +89,11 @@ public class ScanFragmentTest {
         // Use UI Automator to click on the first image in the Android gallery
         UiDevice uiDevice = UiDevice.getInstance((InstrumentationRegistry.getInstrumentation()));
 
-        Thread.sleep(2000);
         // Create a UiSelector to find the first image in the gallery by its resource ID
         UiSelector firstImageSelector = new UiSelector()
                 .resourceId("com.android.gallery3d:id/grid")
                 .childSelector(new UiSelector().index(0));
-        Thread.sleep(2000);
+
         UiObject firstImage = uiDevice.findObject(firstImageSelector);
 
         boolean isFirstImageFound = firstImage.exists();
