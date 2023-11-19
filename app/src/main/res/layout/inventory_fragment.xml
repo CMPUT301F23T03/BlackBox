@@ -59,12 +59,12 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
-            android:id="@+id/inventory_tag_multiselect_button"
+            android:id="@+id/set_tags_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             android:backgroundTint="@color/gray02"
-            android:text="Select Tags"
+            android:text="Set Tags"
             android:textColor="@color/black"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -4,9 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,14 +30,9 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * A Fragment that displays and manages an inventory of items. It includes features to add and edit items.
@@ -52,7 +45,7 @@ public class InventoryFragment extends Fragment {
     Button addButton;
     Button deleteButton;
     Button cancelButton;
-    Button tagSelectionButton;
+    Button setTagButton;
     ListenerRegistration dbListener;
     private Context activityContext;
     InventoryDB inventoryDB;
@@ -182,7 +175,7 @@ public class InventoryFragment extends Fragment {
 
         deleteButton = view.findViewById(R.id.inventory_delete_button);
         cancelButton = view.findViewById(R.id.inventory_cancel_button);
-        tagSelectionButton = view.findViewById(R.id.inventory_tag_multiselect_button);
+        setTagButton = view.findViewById(R.id.set_tags_button);
         itemViewList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -201,7 +194,7 @@ public class InventoryFragment extends Fragment {
                     // Make the delete and cancel button visible
                     deleteButton.setVisibility(View.VISIBLE);
                     cancelButton.setVisibility(View.VISIBLE);
-                    tagSelectionButton.setVisibility(View.VISIBLE);
+                    setTagButton.setVisibility(View.VISIBLE);
 
 
                 }
@@ -249,7 +242,7 @@ public class InventoryFragment extends Fragment {
             }
         });
 
-        tagSelectionButton.setOnClickListener(new View.OnClickListener() {
+        setTagButton.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View v) {
                   showTagMultiSelectDialogue();
@@ -294,7 +287,7 @@ public class InventoryFragment extends Fragment {
         // Hide the delete and cancel button
         deleteButton.setVisibility(View.GONE);
         cancelButton.setVisibility(View.GONE);
-        tagSelectionButton.setVisibility(View.GONE);
+        setTagButton.setVisibility(View.GONE);
 
         // Show the add button
         addButton.setVisibility(View.VISIBLE);
@@ -310,7 +303,6 @@ public class InventoryFragment extends Fragment {
             public void onSuccess(ArrayList<Tag> tagList) {
                 boolean[] selectedTags = new boolean[tagList.size()];
                 String[] tagNameList = new String[tagList.size()];
-                ArrayList<Tag> selectedTagsList = new ArrayList<>();
 
                 // Sorting tag list multi-select dialogue
                 Comparator<Tag> tagComp = new Comparator<Tag>() {
@@ -328,17 +320,8 @@ public class InventoryFragment extends Fragment {
                     }
                 }
 
-                // Check if all items with a tag are selected
-                for (int i = 0; i < tagList.size(); i++) {
-                    Tag currentTag = tagList.get(i);
-                    boolean allItemsWithSameTagSelected = areAllItemsWithSameTagSelected(currentTag);
-                    selectedTags[i] = allItemsWithSameTagSelected;
-                }
-
-                boolean[] originalTags = selectedTags;
-
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-                builder.setTitle("Select Tags");
+                builder.setTitle("Set Tags");
                 builder.setCancelable(false);
 
                 builder.setMultiChoiceItems(tagNameList, selectedTags, (dialogInterface, index, isChecked) -> {
@@ -347,36 +330,51 @@ public class InventoryFragment extends Fragment {
                 });
 
                 builder.setPositiveButton("OK", (dialogInterface, which) -> {
-                    int i = 0;
-                    for (Tag currentTag : tagList){
-                        if (originalTags[i] == false && areAllItemsWithSameTagSelected(currentTag) == true) {
-                            for (Item item : selectedItemsList) {
-                                for (Tag itemTag : item.getTags()) {
-                                    if (itemTag.getName().equals(currentTag.getName())) {
-                                        item.setSelected(false);
-                                        selectedTagsList.remove(item);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                        i++;
+                    // Check if every selected item has the same tags
+                    boolean allItemsHaveSameTags = true;
+                    ArrayList<Tag> commonTags = new ArrayList<>();
+
+                    // Initialize commonTags with the tags of the first selected item
+                    if (!selectedItemsList.isEmpty()) {
+                        commonTags.addAll(selectedItemsList.get(0).getTags());
                     }
 
-                    // Toggle selection for items that contain any of the selected tags
-                    for (Item item : itemList) {
-                        i = 0;
-                        for (Tag selectedTag : tagList) {
-                            for (Tag itemTag : item.getTags()) {
-                                if (selectedTags[i] == true && itemTag.getName().equals(selectedTag.getName())) {
-                                    // Toggle selection for the item
-                                    item.setSelected(true);
-                                    selectedItemsList.add(item);
-                                    break; // Break after toggling once for each item
+                    // Check if every selected item has the same tags
+                    for (Item selectedItem : selectedItemsList) {
+                        ArrayList<Tag> currentTags = selectedItem.getTags();
+
+                        // Check if the current tags are the same as commonTags
+                        if (!currentTags.equals(commonTags)) {
+                            allItemsHaveSameTags = false;
+                            break;
+                        }
+                    }
+
+                    // Apply tags based on the conditions
+                    for (Item selectedItem : selectedItemsList) {
+                        ArrayList<Tag> existingTags = selectedItem.getTags();
+                        ArrayList<Tag> newTags = new ArrayList<>(existingTags);
+
+                        for (int i = 0; i < tagList.size(); i++) {
+                            Tag currentTag = tagList.get(i);
+                            boolean tagAlreadyExists = false;
+
+                            // Check if the tag already exists in the item's tags
+                            for (Tag existingTag : existingTags) {
+                                if (existingTag.getName().equals(currentTag.getName())) {
+                                    tagAlreadyExists = true;
+                                    break;
                                 }
                             }
-                            i++;
+
+                            if (selectedTags[i] && !tagAlreadyExists) {
+                                // Add new tag if it doesn't already exist
+                                newTags.add(tagList.get(i));
+                            }
                         }
+
+                        // Update tags for the item
+                        selectedItem.setTags(newTags);
                     }
 
                     inventoryAdapter.notifyDataSetChanged();
@@ -388,6 +386,7 @@ public class InventoryFragment extends Fragment {
 
                 builder.show();
             }
+
             @Override
             public void onError(String errorMessage) {
                 // Handle the error, e.g., display an error message
@@ -398,25 +397,27 @@ public class InventoryFragment extends Fragment {
 
     /**
      * Helper function for showTagMultiselectDialog
-     * Finds if all items with a tag are selected
-     * @param currentTag
-     * @return true if all items with currentTag is selected; false otherwise
+     * Finds if all items with the same tag are selected
+     * @param item
+     * @param tagList
+     * @param selectedTags
+     * @return
      */
-    private boolean areAllItemsWithSameTagSelected(Tag currentTag) {
+    private boolean areAllItemsWithSameTagSelected(Item item, ArrayList<Tag> tagList, boolean[] selectedTags) {
         boolean allItemsWithSameTagSelected = true;
 
-        for (Item item : itemList) {
+        for (Tag selectedTag : tagList) {
             boolean itemContainsTag = false;
 
             for (Tag itemTag : item.getTags()) {
-                if (itemTag.getName().equals(currentTag.getName())) {
+                if (itemTag.getName().equals(selectedTag.getName())) {
                     itemContainsTag = true;
                     break;
                 }
             }
 
-            // Check if the item contains the tag and if it is selected
-            if (itemContainsTag && !item.isSelected()) {
+            // Check if the item contains the tag
+            if (!itemContainsTag && selectedTags[tagList.indexOf(selectedTag)]) {
                 allItemsWithSameTagSelected = false;
                 break;
             }
