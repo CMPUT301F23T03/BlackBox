@@ -1,5 +1,7 @@
 package com.example.blackbox;
 
+import android.util.Log;
+
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.assertion.ViewAssertions;
@@ -9,10 +11,12 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.rule.GrantPermissionRule;
 import androidx.test.platform.app.InstrumentationRegistry;
 
-//import androidx.test.uiautomator.UiDevice;
-//import androidx.test.uiautomator.UiObject;
-//import androidx.test.uiautomator.UiObjectNotFoundException;
-//import androidx.test.uiautomator.UiSelector;
+import androidx.test.uiautomator.By;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiObjectNotFoundException;
+import androidx.test.uiautomator.UiSelector;
+import androidx.test.uiautomator.Until;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -31,7 +35,7 @@ public class ScanFragmentTest {
             android.Manifest.permission.READ_MEDIA_IMAGES);
 
     @Test
-    public void testScanFragment() {
+    public void testScanFragment() throws UiObjectNotFoundException, InterruptedException {
         // Navigate to ScanFragment
         Espresso.onView(ViewMatchers.withId(R.id.scan)).perform(ViewActions.click());
 
@@ -72,31 +76,40 @@ public class ScanFragmentTest {
         Espresso.onView(ViewMatchers.withId(R.id.barcode_text)).check(ViewAssertions.matches(ViewMatchers.isDisplayed()));
 
         // Click on "choose_button"
-        // Espresso.onView(ViewMatchers.withId(R.id.choose_button)).perform(ViewActions.click());
+         Espresso.onView(ViewMatchers.withId(R.id.choose_button)).perform(ViewActions.click());
 
-//        clickOnFirstImageInGallery();
-        // Wait for 1 seconds (1000 milliseconds)
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        clickOnFirstImageInGallery();
 
         // Navigate back to ScanFragment
         Espresso.onView(ViewMatchers.withId(R.id.back_button)).perform(ViewActions.click());
 
     }
 
-//    private void clickOnFirstImageInGallery() {
-//        // Use UI Automator to click on the first image in the Android gallery
-//        UiDevice uiDevice = UiDevice.getInstance(UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-//        UiObject firstImage = uiDevice.findObject(new UiSelector().resourceId("com.android.gallery3d:id/grid")
-//                .childSelector(new UiSelector().index(0)));
-//        try {
-//            firstImage.click();
-//        } catch (UiObjectNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    private void clickOnFirstImageInGallery() throws UiObjectNotFoundException, InterruptedException {
+        // Use UI Automator to click on the first image in the Android gallery
+        UiDevice uiDevice = UiDevice.getInstance((InstrumentationRegistry.getInstrumentation()));
+
+        Thread.sleep(2000);
+        // Create a UiSelector to find the first image in the gallery by its resource ID
+        UiSelector firstImageSelector = new UiSelector()
+                .resourceId("com.android.gallery3d:id/grid")
+                .childSelector(new UiSelector().index(0));
+        Thread.sleep(2000);
+        UiObject firstImage = uiDevice.findObject(firstImageSelector);
+
+        boolean isFirstImageFound = firstImage.exists();
+
+        if (isFirstImageFound){
+            try {
+                firstImage.click();
+            } catch (UiObjectNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            uiDevice.pressBack();
+        } else{
+            Log.d("Image check", "Image not found");
+            uiDevice.pressBack();
+        }
+    }
 }
 
