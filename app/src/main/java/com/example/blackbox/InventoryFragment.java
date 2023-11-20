@@ -245,7 +245,11 @@ public class InventoryFragment extends Fragment {
         setTagButton.setOnClickListener(new View.OnClickListener() {
               @Override
               public void onClick(View v) {
-                  showTagMultiSelectDialogue();
+                  if (selectedItemsList.isEmpty()){
+                      Toast.makeText(requireContext(), "No items have been selected.", Toast.LENGTH_SHORT).show();
+                  } else {
+                      showTagMultiSelectDialogue();
+                  }
 
                   // Update the view to reflect the change in selection
                   inventoryAdapter.notifyDataSetChanged();
@@ -344,29 +348,47 @@ public class InventoryFragment extends Fragment {
                         ArrayList<Tag> existingTags = selectedItem.getTags();
                         ArrayList<Tag> newTags = new ArrayList<>(existingTags);
 
-                        for (int i = 0; i < tagList.size(); i++) {
-                            Tag currentTag = tagList.get(i);
+                        for (Tag existingTag : existingTags) {
+                            for (Tag tag : tagList) {
+                                if (tag.getName().equals(existingTag.getName())) {
+                                    existingTag.setID(tag.getDataBaseID());
+                                    newTags.add(existingTag);
+                                    break;
+                                }
+                            }
+                        }
+
+                        int tagIndex = 0;
+
+                        for (Tag currentTag : tagList) {
                             boolean tagAlreadyExists = false;
 
                             // Check if the tag already exists in the item's tags
                             for (Tag existingTag : existingTags) {
                                 if (existingTag.getName().equals(currentTag.getName())) {
                                     tagAlreadyExists = true;
+                                    if (selectedTags[tagIndex] == false && originalTags[tagIndex] == true) {
+                                        newTags.remove(existingTag);
+                                    }
                                     break;
                                 }
                             }
 
-                            if (selectedTags[i] && !tagAlreadyExists) {
+                            if (selectedTags[tagIndex] && !tagAlreadyExists) {
                                 // Add new tag if it doesn't already exist
                                 newTags.add(currentTag);
                             }
 
-                            if (selectedTags[i] == false && originalTags[i] == true) {
-                                newTags.removeIf(tag -> tag.getName().equals(currentTag.getName()));
+                            if (selectedTags[tagIndex] == false && originalTags[tagIndex] == true) {
+                                for (Tag oldTag : selectedItem.getTags()) {
+                                    if (oldTag.getName().equals(currentTag.getName())){
+                                        newTags.remove(oldTag);
+                                        break;
+                                    }
+                                }
                             }
-
+                            tagIndex++;
                         }
-                        selectedItem.setTags(newTags);
 
                         // Recreate the item with updated tags
                         Item updatedItem = new Item(
@@ -381,21 +403,13 @@ public class InventoryFragment extends Fragment {
                                 selectedItem.getComment()
                         );
 
-                        boolean test = false;
-                        for(Tag tag : newTags) {
-                            if (tag == null) {
-                                test = true;
-                                Toast.makeText(requireContext(), "Null Item Found", Toast.LENGTH_SHORT).show();
-                            }
-
-
-                        }
                         // Update the item in the database
-                        if (test == false) {
-                            inventoryDB.updateItemInDB(selectedItem, updatedItem);
-                        }
-                    }
+                        inventoryDB.updateItemInDB(selectedItem, updatedItem);
 
+                    }
+                    // Refresh selectedItemsList after updating items
+                    selectedItemsList.clear();
+//                    selectedItemsList.addAll(updatedItemsListFromDatabase);
                     inventoryAdapter.notifyDataSetChanged();
                 });
 
