@@ -312,6 +312,7 @@ public class InventoryFragment extends Fragment {
                         return result;
                     }
                 };
+
                 tagList.sort(tagComp);
 
                 if (tagList.size() > 0) {
@@ -319,6 +320,13 @@ public class InventoryFragment extends Fragment {
                         tagNameList[i] = tagList.get(i).getName();
                     }
                 }
+
+                // Check if all items with a tag are selected
+                for (int i = 0; i < tagList.size(); i++) {
+                    Tag currentTag = tagList.get(i);
+                    selectedTags[i] = areAllSelectedItemsWithSameTag(currentTag);
+                }
+                boolean[] originalTags = selectedTags.clone();
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
                 builder.setTitle("Set Tags");
@@ -330,25 +338,6 @@ public class InventoryFragment extends Fragment {
                 });
 
                 builder.setPositiveButton("OK", (dialogInterface, which) -> {
-                    // Check if every selected item has the same tags
-                    boolean allItemsHaveSameTags = true;
-                    ArrayList<Tag> commonTags = new ArrayList<>();
-
-                    // Initialize commonTags with the tags of the first selected item
-                    if (!selectedItemsList.isEmpty()) {
-                        commonTags.addAll(selectedItemsList.get(0).getTags());
-                    }
-
-                    // Check if every selected item has the same tags
-                    for (Item selectedItem : selectedItemsList) {
-                        ArrayList<Tag> currentTags = selectedItem.getTags();
-
-                        // Check if the current tags are the same as commonTags
-                        if (!currentTags.equals(commonTags)) {
-                            allItemsHaveSameTags = false;
-                            break;
-                        }
-                    }
 
                     // Apply tags based on the conditions
                     for (Item selectedItem : selectedItemsList) {
@@ -369,12 +358,42 @@ public class InventoryFragment extends Fragment {
 
                             if (selectedTags[i] && !tagAlreadyExists) {
                                 // Add new tag if it doesn't already exist
-                                newTags.add(tagList.get(i));
+                                newTags.add(currentTag);
                             }
-                        }
 
-                        // Update tags for the item
+                            if (selectedTags[i] == false && originalTags[i] == true) {
+                                newTags.removeIf(tag -> tag.getName().equals(currentTag.getName()));
+                            }
+
+                        }
                         selectedItem.setTags(newTags);
+
+                        // Recreate the item with updated tags
+                        Item updatedItem = new Item(
+                                selectedItem.getName(),
+                                newTags,
+                                selectedItem.getDateOfPurchase(),
+                                selectedItem.getEstimatedValue(),
+                                selectedItem.getMake(),
+                                selectedItem.getModel(),
+                                selectedItem.getSerialNumber(),
+                                selectedItem.getDescription(),
+                                selectedItem.getComment()
+                        );
+
+                        boolean test = false;
+                        for(Tag tag : newTags) {
+                            if (tag == null) {
+                                test = true;
+                                Toast.makeText(requireContext(), "Null Item Found", Toast.LENGTH_SHORT).show();
+                            }
+
+
+                        }
+                        // Update the item in the database
+                        if (test == false) {
+                            inventoryDB.updateItemInDB(selectedItem, updatedItem);
+                        }
                     }
 
                     inventoryAdapter.notifyDataSetChanged();
@@ -395,35 +414,27 @@ public class InventoryFragment extends Fragment {
         });
     }
 
-    /**
-     * Helper function for showTagMultiselectDialog
-     * Finds if all items with the same tag are selected
-     * @param item
-     * @param tagList
-     * @param selectedTags
-     * @return
-     */
-    private boolean areAllItemsWithSameTagSelected(Item item, ArrayList<Tag> tagList, boolean[] selectedTags) {
-        boolean allItemsWithSameTagSelected = true;
+    private boolean areAllSelectedItemsWithSameTag(Tag tag) {
+        // Check if all selected items have the same tag based on name comparison
+        for (Item selectedItem : selectedItemsList) {
+            boolean hasTag = false;
 
-        for (Tag selectedTag : tagList) {
-            boolean itemContainsTag = false;
-
-            for (Tag itemTag : item.getTags()) {
-                if (itemTag.getName().equals(selectedTag.getName())) {
-                    itemContainsTag = true;
+            // Perform name comparison for each tag in the item's tag list
+            for (Tag itemTag : selectedItem.getTags()) {
+                if (itemTag.getName().equals(tag.getName())) {
+                    hasTag = true;
                     break;
                 }
             }
 
-            // Check if the item contains the tag
-            if (!itemContainsTag && selectedTags[tagList.indexOf(selectedTag)]) {
-                allItemsWithSameTagSelected = false;
-                break;
+            // If the item does not have the tag, return false
+            if (!hasTag) {
+                return false;
             }
         }
 
-        return allItemsWithSameTagSelected;
+        // All selected items have the same tag based on name comparison
+        return true;
     }
 
     /**
@@ -490,9 +501,6 @@ public class InventoryFragment extends Fragment {
         builder.setView(mView);
         builder.create().show();
     }
-
-
-
 
     /**
      * This method handles acquiring new data from the Firestore database
