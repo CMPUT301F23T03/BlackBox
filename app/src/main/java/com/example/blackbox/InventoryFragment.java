@@ -300,6 +300,9 @@ public class InventoryFragment extends Fragment {
         isLongClick = false;
     }
 
+    /**
+     * Shows a dialogue that allows the user to select multiple tags to assign to items
+     */
     private void showTagMultiSelectDialogue() {
         TagDB tagDB = new TagDB();
         tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
@@ -428,6 +431,11 @@ public class InventoryFragment extends Fragment {
         });
     }
 
+    /**
+     * Helper method to determine where the selected items have the common tag
+     * @param tag
+     * @return true if all items have the tag; false otherwise
+     */
     private boolean areAllSelectedItemsWithSameTag(Tag tag) {
         // Check if all selected items have the same tag based on name comparison
         for (Item selectedItem : selectedItemsList) {
