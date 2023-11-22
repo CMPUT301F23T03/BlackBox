@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +51,10 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     private ArrayList<Tag> tags;
     private TextView tagDropdown;
     ArrayList<Tag> selectedTags = new ArrayList<>();
+    private ImageButton addImgBtn;
+    private AttachImageFragment attachImageFragment = new AttachImageFragment();
+
+
 
     /**
      * Default constructor for the InventoryAddEditFragment
@@ -103,7 +108,14 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
 
         // setup a date picker listener
         setupDatePickerListener(view);
-
+        // add image
+        addImgBtn = view.findViewById(R.id.add_img_btn);
+        addImgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NavigationManager.switchFragmentWithBack(attachImageFragment, getParentFragmentManager());
+            }
+        });
 
     }
 
