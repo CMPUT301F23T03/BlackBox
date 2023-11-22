@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,13 +30,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * A Fragment that displays and manages an inventory of items. It includes features to add and edit items.
@@ -161,7 +155,7 @@ public class InventoryFragment extends Fragment {
         // add an item - display add fragment
         addButton = view.findViewById(R.id.add_button);
         addButton.setOnClickListener((v) -> {
-            NavigationManager.switchFragment(inventoryAddFragment, getParentFragmentManager());
+            NavigationManager.switchFragmentWithBack(inventoryAddFragment, getParentFragmentManager());
         });
 
         // edit item - display edit fragment
@@ -170,7 +164,7 @@ public class InventoryFragment extends Fragment {
                 if (!isLongClick) {
                     // Regular click
                     inventoryEditFragment = InventoryEditFragment.newInstance(itemList.get(i));
-                    NavigationManager.switchFragment(inventoryEditFragment, getParentFragmentManager());
+                    NavigationManager.switchFragmentWithBack(inventoryEditFragment, getParentFragmentManager());
                 } else {
                     toggleSelection(i);
                 }

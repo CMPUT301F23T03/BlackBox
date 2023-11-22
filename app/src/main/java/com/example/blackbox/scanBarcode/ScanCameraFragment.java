@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -23,10 +24,7 @@ import androidx.fragment.app.Fragment;
 import com.example.blackbox.NavigationManager;
 import com.example.blackbox.R;
 import com.example.blackbox.scanBarcode.handler.BarcodeHandleChain;
-import com.example.blackbox.scanBarcode.handler.BarcodeHandler;
-import com.example.blackbox.scanBarcode.handler.CustomHandler;
-import com.example.blackbox.scanBarcode.handler.DatabaseHandler;
-import com.example.blackbox.scanBarcode.handler.SerialNumberHandler;
+import com.example.blackbox.scanBarcode.handler.BarcodeValidHandler;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -57,6 +55,10 @@ public class ScanCameraFragment extends Fragment {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                .permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
         View view = inflater.inflate(R.layout.camera_scan_fragment, container, false);
         toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
         barcodeHandleChain = new BarcodeHandleChain();
@@ -75,8 +77,7 @@ public class ScanCameraFragment extends Fragment {
     public void setupBackButtonListener(View view){
         final Button backButton = view.findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> {
-            ScanFragment scanFragment = new ScanFragment();
-            NavigationManager.switchFragment(scanFragment, getParentFragmentManager());
+            getParentFragmentManager().popBackStack();
         });
     }
 
@@ -86,7 +87,7 @@ public class ScanCameraFragment extends Fragment {
     private void initializeDetectorsAndSources() {
         // Initialize a barcode detector with all barcode formats.
         barcodeDetector = new BarcodeDetector.Builder(requireContext())
-                .setBarcodeFormats(Barcode.CODE_128 | Barcode.EAN_13)
+                .setBarcodeFormats(Barcode.ALL_FORMATS)
                 .build();
 
         // Initialize a camera source using the barcode detector and configure it.
