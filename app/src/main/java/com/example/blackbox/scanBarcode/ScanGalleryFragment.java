@@ -6,6 +6,7 @@ import static android.Manifest.permission.READ_MEDIA_IMAGES;
 import static androidx.core.content.PackageManagerCompat.LOG_TAG;
 
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
@@ -53,7 +55,6 @@ import pub.devrel.easypermissions.EasyPermissions;
  */
 
 public class ScanGalleryFragment extends Fragment {
-    private static final String READ_MEDIA_IMAGES_PERMISSION = READ_MEDIA_IMAGES;
     private BarcodeDetector barcodeDetector;
     private TextView barcodeText;
     private String barcodeData;
@@ -120,17 +121,15 @@ public class ScanGalleryFragment extends Fragment {
      * is displayed to prompt the user to grant permission.
      */
     private void openGallery() {
-        if (ContextCompat.checkSelfPermission(requireContext(), READ_MEDIA_IMAGES_PERMISSION)
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES)
                 == PackageManager.PERMISSION_GRANTED) {
             // Permission already granted, set up the gallery picker
             pickMedia.launch(new PickVisualMediaRequest());
+
         } else {
             // Request storage permission if not granted.
-//             ActivityCompat.requestPermissions(requireActivity(), new
-//                     String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO}, REQUEST_GALLERY_PERMISSION);
-            String[] perms = {READ_MEDIA_IMAGES};
-            EasyPermissions.requestPermissions(this,"Please grant permission",
-                   REQUEST_GALLERY_PERMISSION, perms);
+            ActivityCompat.requestPermissions(requireActivity(),
+                    new String[]{Manifest.permission.READ_MEDIA_IMAGES}, REQUEST_GALLERY_PERMISSION);
             Toast.makeText(requireContext(), "Please grant permission to access the gallery", Toast.LENGTH_SHORT).show();
         }
     }

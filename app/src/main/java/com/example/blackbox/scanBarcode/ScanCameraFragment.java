@@ -138,12 +138,14 @@ public class ScanCameraFragment extends Fragment {
     private void startCameraSource() {
         try {
             // Check if the camera permission is granted.
-            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED) {
                 // Camera permission is granted, start the camera source.
                 cameraSource.start(surfaceView.getHolder());
             } else {
                 // Camera permission is not granted, request it from the user.
-                ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+                ActivityCompat.requestPermissions(requireActivity(),
+                        new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
             }
         } catch (IOException e) {
             // Handle an exception if there's an issue starting the camera source.
