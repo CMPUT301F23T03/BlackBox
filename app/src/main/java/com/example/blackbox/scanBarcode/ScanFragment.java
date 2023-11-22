@@ -8,6 +8,7 @@ import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.blackbox.AttachImageFragment;
 import com.example.blackbox.NavigationManager;
 import com.example.blackbox.R;
 
@@ -37,6 +38,14 @@ public class ScanFragment extends Fragment {
         galleryButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 NavigationManager.switchFragmentWithBack(new ScanGalleryFragment(), getParentFragmentManager());
+            }
+        });
+
+        // Gallery button
+        final Button photoButton = view.findViewById(R.id.button_photo);
+        photoButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                NavigationManager.switchFragmentWithBack(new AttachImageFragment(), getParentFragmentManager());
             }
         });
 

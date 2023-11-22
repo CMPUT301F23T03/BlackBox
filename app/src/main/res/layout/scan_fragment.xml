@@ -43,7 +43,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/top_constraint_layout" />
 
-    <Button
+        <Button
             android:id="@+id/button_camera"
             android:layout_width="293dp"
             android:layout_height="45dp"
@@ -66,5 +66,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/button_camera" />
+
+    <Button
+        android:id="@+id/button_photo"
+        android:layout_width="293dp"
+        android:layout_height="45dp"
+        android:layout_marginBottom="200dp"
+        android:backgroundTint="@color/primary"
+        android:text="Add photo"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_gallery" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
