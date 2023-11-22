@@ -31,6 +31,7 @@ import android.view.MenuItem;
  */
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
+    GoogleAuthDB googleAuthDB;
 
     /**
      * Called when the activity is created. Initializes the main layout and sets up the BottomNavigationView.
@@ -42,14 +43,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Create a profile from Google Sign-In
+        googleAuthDB = new GoogleAuthDB();
+        googleAuthDB.createProfile();
+
         final FragmentManager fm = getSupportFragmentManager();
 
-        // load home page
+        // Load home page
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.inventory);
         NavigationManager.switchFragment(new InventoryFragment(), fm);
 
-        // set a listener to handle item selection in the BottomNavigationView
+        // Set a listener to handle item selection in the BottomNavigationView
         bottomNavigationView.setOnItemSelectedListener(
                 new NavigationBarView.OnItemSelectedListener() {
                     @Override

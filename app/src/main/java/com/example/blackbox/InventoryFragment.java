@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,13 +30,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * A Fragment that displays and manages an inventory of items. It includes features to add and edit items.
@@ -61,7 +55,7 @@ public class InventoryFragment extends Fragment {
     private double totalSum = 0.0;
     private ArrayList<Item> selectedItemsList = new ArrayList<>();
     private boolean isLongClick = false;
-    private ProfileDB profileDB = new ProfileDB();
+    private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
 
     /**
      * Default constructor for the InventoryFragment.
@@ -387,6 +381,7 @@ public class InventoryFragment extends Fragment {
             String userID = doc.getString("user_id");
             ArrayList<Tag> tags = new ArrayList<>();
             List<String> tagIDs = (List<String>) doc.get("tags");
+            Log.d("VALUE OF USERID","MESSAGE: " + userID);
 
             Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID, userID);
             if (tagIDs != null && !tagIDs.isEmpty()) {
@@ -401,7 +396,7 @@ public class InventoryFragment extends Fragment {
             }
 
             // Only add items that belong to the current user to the list to display
-            if (userID.equals(profileDB.getUid())) {
+            if (userID != null && userID.equals(googleAuthDB.getUid())) {
                 itemList.add(item);
             }
 

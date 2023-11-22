@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
-import com.google.firebase.auth.FirebaseAuth;
-
 /**
  * A fragment that represents the user profile screen. It displays user information,
  * allows the user to log out, and presents the user's name, email, and profile picture.
@@ -27,8 +23,9 @@ import com.google.firebase.auth.FirebaseAuth;
 public class ProfileFragment extends Fragment{
     private View view;
     private Button logOutButton;
+    private Button editButton;
     private Context activityContext;
-    private ProfileDB profileDB = new ProfileDB();
+    private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
 
     /**
      * Default constructor for the ProfileFragment.
@@ -81,7 +78,7 @@ public class ProfileFragment extends Fragment{
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                profileDB.logOut();
+                googleAuthDB.logOut();
                 Intent i = new Intent(activityContext, GoogleSignInActivity.class);
                 startActivity(i);
             }
@@ -89,15 +86,24 @@ public class ProfileFragment extends Fragment{
 
         // Display profile name
         TextView profileName = view.findViewById(R.id.name_profile);
-        profileName.setText(profileDB.getName());
+        profileName.setText(googleAuthDB.getName());
 
         // Display profile email
         TextView profileEmail = view.findViewById(R.id.username);
-        profileEmail.setText(profileDB.getEmail());
+        profileEmail.setText(googleAuthDB.getEmail());
 
         // Display profile picture
         ImageView profilePicture = view.findViewById(R.id.profile_pic);
-        Uri imageUri = profileDB.getPhotoUrl();
+        Uri imageUri = googleAuthDB.getPhotoUrl();
         profilePicture.setImageURI(imageUri);
+
+        // Edit profile button
+        editButton = view.findViewById(R.id.edit_profile);
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(activityContext, "LET'S EDIT", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

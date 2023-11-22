@@ -129,7 +129,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/name_editText" />
 
                 <TextView
-                    android:id="@+id/date_prompt"
+                    android:id="@+id/bio_prompt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -152,7 +152,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.086"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/date_editText" />
+                    app:layout_constraintTop_toBottomOf="@+id/bio_editText" />
 
                 <TextView
                     android:id="@+id/enter_name_prompt5"
@@ -219,7 +219,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/desc_editText" />
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/date_editText"
+                    android:id="@+id/bio_editText"
                     android:layout_width="297dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -232,7 +232,7 @@
                     android:ems="10"
                     android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/date_prompt"
+                    app:layout_constraintTop_toBottomOf="@+id/bio_prompt"
                     tools:ignore="TouchTargetSizeCheck" />
 
                 <EditText

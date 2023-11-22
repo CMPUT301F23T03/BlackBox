@@ -43,7 +43,7 @@ public class InventoryDB {
     }
 
     /**
-     * Initializes the Firestore database with a provided colletion name
+     * Initializes the Firestore database with a provided collection name
      * Used for testing
      * @param collection_name name of the collection to be created
      */

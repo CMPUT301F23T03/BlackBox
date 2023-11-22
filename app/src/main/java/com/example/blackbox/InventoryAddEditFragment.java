@@ -3,29 +3,21 @@ package com.example.blackbox;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
-import java.util.Date;
 
 
 /**
@@ -52,13 +44,12 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     private String comment;
     private Button dateButton;
     private final String dateFormat = "%d-%02d-%02d";
-
     private String date;
     private Context activityContext;
     private ArrayList<Tag> tags;
     private TextView tagDropdown;
     ArrayList<Tag> selectedTags = new ArrayList<>();
-    private ProfileDB profileDB = new ProfileDB();
+    private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
 
 
     /**
@@ -124,7 +115,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
      *      The view from which to find UI elements
      */
     public void setupDatePickerListener(View view){
-        dateButton = view.findViewById(R.id.date_editText);
+        dateButton = view.findViewById(R.id.bio_editText);
         Calendar calendar = Calendar.getInstance();
         int currentYear = calendar.get(Calendar.YEAR);
         int currentMonth = calendar.get(Calendar.MONTH);
@@ -237,7 +228,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
                         }
                     }
                 }
-                String userID = profileDB.getUid();
+                String userID = googleAuthDB.getUid();
                 Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment, userID);
                 itemDB.addItemToDB(new_item);
                 NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
@@ -271,7 +262,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
                         }
                     }
                 }
-                String userID = profileDB.getUid();
+                String userID = googleAuthDB.getUid();
                 Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment, userID);
                 itemDB.updateItemInDB(item, new_item);
                 InventoryFragment inventoryFragment = new InventoryFragment();
