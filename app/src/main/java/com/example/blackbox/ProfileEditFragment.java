@@ -102,7 +102,7 @@ public class ProfileEditFragment extends Fragment {
 
                 // Go back to the ProfileFragment view
                 ProfileFragment profileFragment = new ProfileFragment();
-                NavigationManager.switchFragment(profileFragment, getParentFragmentManager());
+                NavigationManager.switchFragmentWithoutBack(profileFragment, getParentFragmentManager());
             }
         });
 
@@ -113,7 +113,7 @@ public class ProfileEditFragment extends Fragment {
             public void onClick(View v) {
                 // Go back to the ProfileFragment view
                 ProfileFragment profileFragment = new ProfileFragment();
-                NavigationManager.switchFragment(profileFragment, getParentFragmentManager());
+                NavigationManager.switchFragmentWithoutBack(profileFragment, getParentFragmentManager());
             }
         });
     }

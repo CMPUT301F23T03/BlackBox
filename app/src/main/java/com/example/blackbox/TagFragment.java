@@ -122,7 +122,7 @@ public class TagFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 ProfileFragment profileFragment = new ProfileFragment();
-                NavigationManager.switchFragment(profileFragment, getParentFragmentManager());
+                NavigationManager.switchFragmentWithoutBack(profileFragment, getParentFragmentManager());
             }
         });
 
