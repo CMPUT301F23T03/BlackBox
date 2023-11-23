@@ -133,23 +133,27 @@ public class InventoryFragment extends Fragment {
 
         // listener for data changes in DB
         dbListener =
-                inventoryDB.getInventory()
+                inventoryDB.getInventory().whereEqualTo("user_id", googleAuthDB.getUid())
                 // whenever database is update it is reordered by add date
                 .orderBy("update_date", Query.Direction.DESCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value,
                                 @Nullable FirebaseFirestoreException e) {
-
-                // update inventory
-                if (value != null && !value.isEmpty()){
-                    handleGetInventory(value, e);
+                if (e != null) {
+                    // An error occurred while fetching the data
+                    // Handle the error here
+                    Log.e("Firestore", "Error getting inventory", e);
                 }
-                else{
-                    itemList.clear();
-                    processUpdate();
+                else {
+                    // update inventory
+                    if (value != null && !value.isEmpty()) {
+                        handleGetInventory(value, e);
+                    } else {
+                        itemList.clear();
+                        processUpdate();
+                    }
                 }
-
             }
         });
 
@@ -394,11 +398,8 @@ public class InventoryFragment extends Fragment {
                     });
                 }
             }
+            itemList.add(item);
 
-            // Only add items that belong to the current user to the list to display
-            if (userID != null && userID.equals(googleAuthDB.getUid())) {
-                itemList.add(item);
-            }
 
         }
         if (tagTasks.size() > 0){
