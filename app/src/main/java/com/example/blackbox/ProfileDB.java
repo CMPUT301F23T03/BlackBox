@@ -22,6 +22,11 @@ public class ProfileDB {
         profileRef = db.collection("profiles");
     }
 
+    public ProfileDB(String collectionName) {
+        db = FirebaseFirestore.getInstance();
+        profileRef = db.collection(collectionName);
+    }
+
     public CollectionReference getProfileRef() {
         return profileRef;
     }
