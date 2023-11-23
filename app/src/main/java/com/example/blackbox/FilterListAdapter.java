@@ -8,17 +8,25 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.ViewHolder> {
     private ArrayList<Filter> filterList;
-    private ArrayList<Item> itemList;
-    private ArrayAdapter<Item> inventoryAdapter;
+    private ItemList itemList;
 
-    public FilterListAdapter(ArrayList<Filter> filterList,ArrayList<Item> itemList, ArrayAdapter<Item> inventoryAdapter) {
+    private ArrayAdapter<Item> inventoryAdapter;
+    private FragmentActivity activity;
+    private TextView totalSum;
+
+
+
+    public FilterListAdapter(ArrayList<Filter> filterList, ItemList itemList, ArrayAdapter<Item> inventoryAdapter, FragmentActivity activity) {
         this.filterList = filterList;
+        this.totalSum = activity.findViewById(R.id.total_sum);
+        this.activity = activity;
         this.itemList = itemList;
         this.inventoryAdapter = inventoryAdapter;
     }
@@ -29,17 +37,35 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
         return new ViewHolder(newView);
     }
 
+    private void updateTotalSum(){
+        Double totalSum = itemList.calculateTotalSum();
+        this.totalSum.setText("Total: " +StringFormatter.getMonetaryString(totalSum));
+
+    }
+
+
+
     @Override
     public void onBindViewHolder(ViewHolder viewHolder,final int position){
-        viewHolder.getTextView().setText(filterList.get(viewHolder.getAdapterPosition()).getFilterType());
+        viewHolder.getTextView().setText(filterList.get(viewHolder.getAdapterPosition()).getFilterName());
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 updateItemList(viewHolder.getLayoutPosition());
+                updateTotalSum();
                 filterList.remove(viewHolder.getLayoutPosition());
                 FilterListAdapter.this.notifyDataSetChanged();
             }
         });
+    }
+
+    public void clearFilters(){
+        for (Filter filter: filterList){
+            updateItemList(filterList.indexOf(filter));
+            updateTotalSum();
+            filterList.remove(filter);
+        }
+        FilterListAdapter.this.notifyDataSetChanged();
     }
 
     @Override
@@ -56,6 +82,10 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
         inventoryAdapter.notifyDataSetChanged();
     }
 
+    public ArrayList<Filter> getFilterList(){
+        return this.filterList;
+    }
+
     public void addItem(Filter filter){
         filterList.add(filter);
     }
@@ -64,7 +94,7 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
         TextView filter;
         public ViewHolder(View view){
             super(view);
-            filter = (TextView) view.findViewById(R.id.filter);
+            filter = (TextView) view.findViewById(R.id.filter_name);
         }
 
         public TextView getTextView(){

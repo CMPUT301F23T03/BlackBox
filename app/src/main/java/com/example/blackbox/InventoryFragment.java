@@ -4,13 +4,16 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.Task;
@@ -42,13 +46,12 @@ public class InventoryFragment extends Fragment {
     ListView itemViewList;
 
     private RecyclerView filterViewList;
-
+    private SearchView searchView;
     private RecyclerView.Adapter filterAdapter;
     private ArrayList<Filter> filterList;
     ArrayAdapter<Item> inventoryAdapter;
     ItemList itemList;
 
-    ArrayList<Item> filteredItemsList;
     Button addButton;
     Button deleteButton;
     Button cancelButton;
@@ -124,14 +127,29 @@ public class InventoryFragment extends Fragment {
 
         // display the inventory list
         itemList = new ItemList();
-        filteredItemsList = new ArrayList<>();
         filterList = new ArrayList<>();
         itemViewList = (ListView) view.findViewById(R.id.item_list);
         filterViewList = (RecyclerView) view.findViewById(R.id.filter_list);
+        searchView = view.findViewById(R.id.searchView);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.d("SearchView","Query submitted");
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d("SearchView","Query changed");
+                return false;
+            }
+        });
 
         inventoryAdapter = new InventoryListAdapter(activityContext, itemList);
-        filterAdapter = new FilterListAdapter(filterList,itemList,inventoryAdapter);
-        GridLayoutManager layoutManager = new GridLayoutManager(activityContext,3);
+        filterAdapter = new FilterListAdapter(filterList,itemList,inventoryAdapter, getActivity());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(activityContext,LinearLayoutManager.HORIZONTAL,false);
+        //GridLayoutManager layoutManager = new GridLayoutManager(this,);
 
         filterViewList.setLayoutManager(layoutManager);
         filterViewList.setAdapter(filterAdapter);
@@ -172,6 +190,15 @@ public class InventoryFragment extends Fragment {
             }
         });
 
+        filterButton = (Button) view.findViewById(R.id.filter_button);
+        filterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FilterDialog.showFilter(getActivity(),itemList,inventoryAdapter,filterAdapter);
+                Log.d("FilterDialog","Returned from filter dialog");
+                updateTotalSum();
+            }
+        });
         // add an item - display add fragment
         addButton = view.findViewById(R.id.add_button);
         addButton.setOnClickListener((v) -> {
@@ -438,10 +465,8 @@ public class InventoryFragment extends Fragment {
         Log.d("Firestore", "Processed Update");
     }
 
-    filterButton = (Button) view.findViewById(R.id.filter_button);
-        filterButton.setOnClickListener((args)->{
-        filteredItemsList = FilterDialog.showFilter(getActivity(),itemList,inventoryAdapter,filterAdapter);
-    });
+    
+
 
     /**
      * Fetches tags associated with an item from the Firestore database and
