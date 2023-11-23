@@ -3,23 +3,26 @@
     <item
         android:id="@+id/inventory"
         android:title=""
-        android:icon="@drawable/rounded_corner"/>
+        android:icon="@drawable/list"/>
     <item
         android:id="@+id/expenses"
         android:title=""
-        android:icon="@drawable/rounded_corner"/>
+        android:icon="@drawable/expenses"/>
     <item
         android:id="@+id/scan"
         android:title=""
-        android:icon="@drawable/rounded_corner"/>
+        android:icon="@drawable/camera"/>
     <item
         android:id="@+id/profile"
-        android:title=""
-        android:icon="@drawable/rounded_corner"/>
+        android:icon="@drawable/profile_icon"
+        android:title="">
+
+    </item>
     <item
         android:id="@+id/settings"
         android:title=""
-        android:icon="@drawable/rounded_corner"/>
+        android:icon="@drawable/settings"
+        />
 </menu>
 
 
