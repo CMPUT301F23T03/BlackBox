@@ -4,7 +4,6 @@ package com.example.blackbox;
 import android.content.Context;
 import android.media.Image;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,16 +11,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
-import com.google.firebase.database.collection.LLRBNode;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
@@ -114,12 +108,12 @@ public class TagFragment extends Fragment {
         final Button addButton = (Button) view.findViewById(R.id.add_tag_button);
         addButton.setOnClickListener((v) -> {
             TagAddFragment tagAddFragment = new TagAddFragment();
-            NavigationManager.switchFragment(tagAddFragment, getParentFragmentManager());
+            NavigationManager.switchFragmentWithBack(tagAddFragment, getParentFragmentManager());
         });
 
         tagListView.setOnItemClickListener((parent, view1, position, id) -> {
             TagEditFragment tagEditFragment = TagEditFragment.newInstance(tagList.get(position));
-            NavigationManager.switchFragment(tagEditFragment, getParentFragmentManager());
+            NavigationManager.switchFragmentWithBack(tagEditFragment, getParentFragmentManager());
         });
 
         // When profile icon is clicked, switch to profile fragment
@@ -128,7 +122,7 @@ public class TagFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 ProfileFragment profileFragment = new ProfileFragment();
-                NavigationManager.switchFragment(profileFragment, getParentFragmentManager());
+                NavigationManager.switchFragmentWithoutBack(profileFragment, getParentFragmentManager());
             }
         });
 

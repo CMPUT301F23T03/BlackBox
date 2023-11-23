@@ -1,18 +1,12 @@
 package com.example.blackbox;
 
-import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
-
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.Fragment;
 
 import java.util.ArrayList;
 
@@ -65,7 +59,7 @@ public abstract class TagAddEditFragment extends AddEditFragment {
     public void setupBackButtonListener(View view){
         final Button backButton = view.findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> {
-            NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
+            getParentFragmentManager().popBackStack();
         });
     }
 
@@ -123,7 +117,7 @@ public abstract class TagAddEditFragment extends AddEditFragment {
         String userID = googleAuthDB.getUid();
         Tag new_tag = new Tag(name, selectedColor, colorName, desc, userID);
         tagDB.addTagToDB(new_tag);
-        NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
+        NavigationManager.switchFragmentWithBack(new TagFragment(), getParentFragmentManager());
     }
 
     /**
@@ -149,7 +143,7 @@ public abstract class TagAddEditFragment extends AddEditFragment {
         String userID = googleAuthDB.getUid();
         Tag new_tag = new Tag(name, selectedColor, colorName, desc, userID);
         tagDB.editTag(tag, new_tag);
-        NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
+        NavigationManager.switchFragmentWithBack(new TagFragment(), getParentFragmentManager());
     }
 
     /**
@@ -159,7 +153,7 @@ public abstract class TagAddEditFragment extends AddEditFragment {
      */
     public void deleteTag(Tag tag){
         tagDB.deleteTag(tag);
-        NavigationManager.switchFragment(new TagFragment(), getParentFragmentManager());
+        NavigationManager.switchFragmentWithBack(new TagFragment(), getParentFragmentManager());
     }
 
 

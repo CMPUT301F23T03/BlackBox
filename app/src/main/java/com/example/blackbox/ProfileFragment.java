@@ -113,7 +113,7 @@ public class ProfileFragment extends Fragment{
             @Override
             public void onClick(View view) {
                 ProfileEditFragment profileEditFragment = new ProfileEditFragment();
-                NavigationManager.switchFragment(profileEditFragment, getParentFragmentManager());
+                NavigationManager.switchFragmentWithBack(profileEditFragment, getParentFragmentManager());
                 Toast.makeText(activityContext, "LET'S EDIT", Toast.LENGTH_SHORT).show();
             }
         });

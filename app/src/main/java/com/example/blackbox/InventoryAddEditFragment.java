@@ -171,8 +171,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     public void setupBackButtonListener(View view){
         final Button backButton = view.findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> {
-            InventoryFragment inventoryFragment = new InventoryFragment();
-            NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());
+            getParentFragmentManager().popBackStack();
         });
     }
 
@@ -231,7 +230,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
                 String userID = googleAuthDB.getUid();
                 Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment, userID);
                 itemDB.addItemToDB(new_item);
-                NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
+                NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
             }
             @Override
             public void onError(String errorMessage) {
@@ -266,7 +265,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
                 Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment, userID);
                 itemDB.updateItemInDB(item, new_item);
                 InventoryFragment inventoryFragment = new InventoryFragment();
-                NavigationManager.switchFragment(inventoryFragment, getParentFragmentManager());
+                NavigationManager.switchFragmentWithBack(inventoryFragment, getParentFragmentManager());
 
             }
             @Override
@@ -284,7 +283,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
      */
     public void deleteItem(Item item){
         itemDB.deleteItem(item);
-        NavigationManager.switchFragment(new InventoryFragment(), getParentFragmentManager());
+        NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
     }
 
     /**

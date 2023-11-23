@@ -16,11 +16,24 @@ public class NavigationManager {
      * @param fm
      *          a fragment manager which allows the transaction to be processed
      */
-    public static void switchFragment(Fragment fragment, FragmentManager fm) {
+    public static void switchFragmentWithBack(Fragment fragment, FragmentManager fm) {
         // Create a FragmentTransaction to begin the transaction and replace the Fragment
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
         // Replace the FrameLayout with the new Fragment
         fragmentTransaction.replace(R.id.contentFragment, fragment);
+        // allow the Android phone back button to be in-app functional
+        fragmentTransaction.addToBackStack(null);
+        // Save the changes
+        fragmentTransaction.commit();
+    }
+
+    public static void switchFragmentWithoutBack(Fragment fragment, FragmentManager fm) {
+        // Create a FragmentTransaction to begin the transaction and replace the Fragment
+        FragmentTransaction fragmentTransaction = fm.beginTransaction();
+        // Replace the FrameLayout with the new Fragment
+        fragmentTransaction.replace(R.id.contentFragment, fragment);
+        // Clear backStack when unnecessary
+        fm.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         // Save the changes
         fragmentTransaction.commit();
     }

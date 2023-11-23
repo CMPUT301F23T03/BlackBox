@@ -1,21 +1,17 @@
 package com.example.blackbox;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ListView;
 
+import com.example.blackbox.scanBarcode.ScanFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.firebase.firestore.EventListener;
@@ -49,12 +45,12 @@ public class MainActivity extends AppCompatActivity {
 
         final FragmentManager fm = getSupportFragmentManager();
 
-        // Load home page
+        // load home page
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.inventory);
-        NavigationManager.switchFragment(new InventoryFragment(), fm);
+        NavigationManager.switchFragmentWithBack(new InventoryFragment(), fm);
 
-        // Set a listener to handle item selection in the BottomNavigationView
+        // set a listener to handle item selection in the BottomNavigationView
         bottomNavigationView.setOnItemSelectedListener(
                 new NavigationBarView.OnItemSelectedListener() {
                     @Override
@@ -63,21 +59,21 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("ItemId", String.format("%d",id));
                         if (id == R.id.inventory){
                             // load inventory fragment
-                            NavigationManager.switchFragment(new InventoryFragment(), fm);
+                            NavigationManager.switchFragmentWithoutBack(new InventoryFragment(), fm);
                         }
                         else if (id == R.id.expenses){
-                            NavigationManager.switchFragment( new ExpenseFragment(), fm);
+                            NavigationManager.switchFragmentWithoutBack( new ExpenseFragment(), fm);
                         }
                         else if (id == R.id.scan){
                             // load scan fragment
-                            NavigationManager.switchFragment(new ScanFragment(), fm);
+                            NavigationManager.switchFragmentWithoutBack(new ScanFragment(), fm);
                         }
                         else if (id == R.id.profile){
-                            NavigationManager.switchFragment(new ProfileFragment(), fm);
+                            NavigationManager.switchFragmentWithoutBack(new ProfileFragment(), fm);
                         }
                         else if (id == R.id.settings){
                             // load tag fragment
-                            NavigationManager.switchFragment(new TagFragment(), fm);
+                            NavigationManager.switchFragmentWithoutBack(new TagFragment(), fm);
                         }
                         return true;
                     }
