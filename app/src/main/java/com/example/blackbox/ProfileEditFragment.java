@@ -15,8 +15,19 @@ public class ProfileEditFragment extends Fragment {
 
     private Context activityContext;
 
+    /**
+     * Default constructor for an ProfileEditFragment
+     */
     public ProfileEditFragment() {}
 
+    /**
+     * Called to create the view for the fragment.
+     *
+     * @param inflater           The LayoutInflater object that can be used to inflate views.
+     * @param container          The parent view that the fragment's UI should be attached to.
+     * @param savedInstanceState  A Bundle containing the saved state of the fragment.
+     * @return The view for the fragment.
+     */
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View fragmentLayout = inflater.inflate(R.layout.profile_edit_fragment, container, false);
         return fragmentLayout;
@@ -42,6 +53,5 @@ public class ProfileEditFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
     }
 }

@@ -72,60 +72,73 @@
                 android:layout_width="297dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="40dp"
+                android:layout_marginTop="40dp"
                 android:background="@drawable/bg_white_rounded"
                 android:backgroundTint="@color/gray02"
                 android:ems="10"
-                android:hint="Item Name"
+                android:hint="Name"
                 android:maxLength="21"
+                android:textSize="16sp"
                 app:layout_constraintStart_toStartOf="parent"
-                tools:layout_editor_absoluteY="299dp" />
+                app:layout_constraintTop_toBottomOf="@+id/imageView4" />
 
             <TextView
                 android:id="@+id/enter_name_prompt"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
                 android:text="Name"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/name_editText"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.108"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:layout_editor_absoluteY="267dp" />
+                app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
                 android:id="@+id/bio_prompt"
                 android:layout_width="30dp"
                 android:layout_height="0dp"
+                android:layout_marginBottom="4dp"
                 android:text="Bio"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/bio_editText"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.104"
-                app:layout_constraintStart_toStartOf="parent"
-                tools:layout_editor_absoluteY="372dp" />
+                app:layout_constraintStart_toStartOf="parent" />
 
             <EditText
                 android:id="@+id/bio_editText"
-                android:layout_width="297dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
+                android:layout_width="298dp"
+                android:layout_height="157dp"
+                android:layout_gravity="top"
+                android:layout_marginTop="40dp"
                 android:background="@drawable/bg_white_rounded"
                 android:backgroundTint="@color/gray02"
-                android:ems="10"
-                android:gravity="left|center_vertical"
-                android:hint="Select a date"
-                android:textColor="@color/black"
-                android:textSize="16sp"
+                android:gravity="top|start"
+                android:hint="Bio"
+                android:inputType="textMultiLine"
+                android:lines="8"
+                android:maxLines="10"
+                android:minLines="6"
+                android:scrollbars="vertical"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.415"
                 app:layout_constraintStart_toStartOf="parent"
-                tools:ignore="TouchTargetSizeCheck"
-                tools:layout_editor_absoluteY="401dp" />
+                app:layout_constraintTop_toBottomOf="@+id/name_editText" />
 
             <ImageView
                 android:id="@+id/imageView4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:layout_editor_absoluteX="147dp"
-                tools:layout_editor_absoluteY="95dp"
+                android:layout_width="62dp"
+                android:layout_height="54dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.207"
+                android:src="@drawable/google_logo"
                 tools:srcCompat="@tools:sample/avatars" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

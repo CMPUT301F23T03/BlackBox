@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -34,6 +35,7 @@ public class ProfileFragment extends Fragment{
     private Button logOutButton;
     private Button editButton;
     private Context activityContext;
+    private BottomNavigationView bottomNavigationView;
     private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
     private ProfileDB profileDB = new ProfileDB();
 
@@ -107,6 +109,8 @@ public class ProfileFragment extends Fragment{
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ProfileEditFragment profileEditFragment = new ProfileEditFragment();
+                NavigationManager.switchFragment(profileEditFragment, getParentFragmentManager());
                 Toast.makeText(activityContext, "LET'S EDIT", Toast.LENGTH_SHORT).show();
             }
         });
