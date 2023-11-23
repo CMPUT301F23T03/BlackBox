@@ -84,6 +84,7 @@ public class TagFragment extends Fragment {
         tagDB = new TagDB();
         // DB listener
         tagDBlistener = tagDB.getTags()
+                .whereEqualTo("user_id", googleAuthDB.getUid())
                 .orderBy("update_date", Query.Direction.DESCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
@@ -104,9 +105,7 @@ public class TagFragment extends Fragment {
                     Tag tag = new Tag(name, col, colorName, desc, dbID, userID);
                     tag.setDateUpdatedWithString(doc.getString("update_date"));
                     // Only add tags that belong to the current user to the list to display
-                    if (userID != null && userID.equals(googleAuthDB.getUid())) {
-                        tagList.add(tag);
-                    }
+                    tagList.add(tag);
                 }
                 // Notify the adapter that the data has changed
                 tagAdapter.notifyDataSetChanged();

@@ -177,7 +177,7 @@ public class TagDB {
     }
 
     public void getAllTags(OnGetTagsCallback callback) {
-        tags.get()
+        tags.whereEqualTo("user_id",googleAuthDB.getUid()).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     ArrayList<Tag> tagList = new ArrayList<>();
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
@@ -189,10 +189,7 @@ public class TagDB {
                         String userID = document.getString("user_id");
 
                         Tag tag = new Tag(name, color, colorName, description, dataBaseID, userID);
-                        // Set the dateUpdated field based on your data
-                        if (userID != null && userID.equals(googleAuthDB.getUid())) {
-                            tagList.add(tag);
-                        }
+                        tagList.add(tag);
                     }
                     callback.onSuccess(tagList);
                 })
