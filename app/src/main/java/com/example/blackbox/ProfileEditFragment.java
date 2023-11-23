@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,6 +41,11 @@ public class ProfileEditFragment extends Fragment {
      */
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View fragmentLayout = inflater.inflate(R.layout.profile_edit_fragment, container, false);
+
+        // Display profile picture (taken from the Google account)
+        ImageButton profilePicture = fragmentLayout.findViewById(R.id.profile_pic_edit);
+        googleAuthDB.displayGoogleProfilePicture(profilePicture, 400, 400, this);
+
         return fragmentLayout;
     }
 

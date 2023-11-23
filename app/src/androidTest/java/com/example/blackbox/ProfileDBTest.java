@@ -76,7 +76,7 @@ public class ProfileDBTest {
      * Test editing profile's name and bio
      */
     @Test
-    public void testEditItem(){
+    public void testEditProfile(){
         ProfileDB profileDB = new ProfileDB("profile_test");
         Profile newProfile = new Profile(googleAuthDB.getUid(), "Micheal Buro", "I love OpenGL", googleAuthDB.getEmail());
         profileDB.addEditProfile(newProfile);
