@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+
 /**
  * A fragment that represents the user profile screen. It displays user information,
  * allows the user to log out, and presents the user's name, email, and profile picture.
@@ -26,6 +35,7 @@ public class ProfileFragment extends Fragment{
     private Button editButton;
     private Context activityContext;
     private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
+    private ProfileDB profileDB = new ProfileDB();
 
     /**
      * Default constructor for the ProfileFragment.
@@ -84,13 +94,8 @@ public class ProfileFragment extends Fragment{
             }
         });
 
-        // Display profile name
-        TextView profileName = view.findViewById(R.id.name_profile);
-        profileName.setText(googleAuthDB.getName());
-
-        // Display profile email
-        TextView profileEmail = view.findViewById(R.id.username);
-        profileEmail.setText(googleAuthDB.getEmail());
+        // Display profile name, email and bio
+        updateDisplayedProfile(googleAuthDB.getUid());
 
         // Display profile picture
         ImageView profilePicture = view.findViewById(R.id.profile_pic);
@@ -103,6 +108,41 @@ public class ProfileFragment extends Fragment{
             @Override
             public void onClick(View view) {
                 Toast.makeText(activityContext, "LET'S EDIT", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void updateDisplayedProfile(String uid) {
+        DocumentReference docRef = profileDB.getProfileRef().document(uid);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        // Get the value of the specified field
+                        Object name = document.get("name");
+                        Object bio = document.get("bio");
+                        Object email = document.get("email");
+
+                        // Display profile name
+                        TextView profileName = view.findViewById(R.id.name_profile);
+                        profileName.setText(name.toString());
+
+                        // Display profile email
+                        TextView profileEmail = view.findViewById(R.id.username);
+                        profileEmail.setText(email.toString());
+
+                        // Display profile bio
+                        TextView profileBio = view.findViewById(R.id.description_profile);
+                        profileBio.setText(bio.toString());
+
+                    } else {
+                        Log.d("TAG", "No such document");
+                    }
+                } else {
+                    Log.w("TAG", "Error getting document", task.getException());
+                }
             }
         });
     }

@@ -5,6 +5,8 @@ import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 
 /**
@@ -48,12 +50,13 @@ public class GoogleAuthDB {
             @Override
             public void onDocumentChecked(boolean exists) {
                 if (!exists) {
-                    String bio = "Bio ...";
+                    System.out.println("Document with name " + uid + " does not exist in the 'profiles' collection.");
+                    String bio = "Write a bio by editing your profile!";
                     Profile profile = new Profile(uid, name, bio, email);
-                    profileDB.getProfileRef().add(profile);
+                    profileDB.addProfile(profile);
                     System.out.println("Document with name " + uid + " does exist in the 'profiles' collection.");
                 } else {
-                    System.out.println("Document with name " + uid + " does not exist in the 'profiles' collection.");
+                    System.out.println("Document with name " + uid + " does exist in the 'profiles' collection.");
                 }
             }
         });
@@ -104,12 +107,11 @@ public class GoogleAuthDB {
 
     private void ProfileExists(String uid, OnDocumentCheckListener listener) {
         // Use a query to check if a document with the specified uid exists
-        System.out.println("HERE DURING CHECKING LOL");
-        Query query = profileDB.getProfileRef().whereEqualTo("uid", uid);
-        query.get().addOnCompleteListener(task -> {
+        DocumentReference docRef = profileDB.getProfileRef().document(uid);
+        docRef.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
-                boolean exists = !task.getResult().isEmpty();
-                listener.onDocumentChecked(exists);
+                DocumentSnapshot document = task.getResult();
+                listener.onDocumentChecked(document.exists());
             } else {
                 listener.onDocumentChecked(false);
             }

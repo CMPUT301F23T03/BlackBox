@@ -17,6 +17,14 @@ public class Profile {
         // this.profilePic = profilePic;
     }
 
+    public Profile(String name, String bio, String email /*,Uri profilePic*/) {
+        this.uid = uid;
+        this.name = name;
+        this.bio = bio;
+        this.email = email;
+        // this.profilePic = profilePic;
+    }
+
     public String getUid() {
         return uid;
     }

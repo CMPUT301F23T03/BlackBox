@@ -1,5 +1,7 @@
 package com.example.blackbox;
 
+import android.util.Log;
+
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -22,9 +24,9 @@ public class ProfileDB {
         return profileRef;
     }
 
-    public void add(Profile profile) {
+    public void addProfile(Profile profile) {
         Map<String, Object> data = generateProfileHashMap(profile);
-        profileRef.add(data);
+        profileRef.document(profile.getUid()).set(data);
     }
 
     public void edit(Profile oldProfile, Profile newProfile) {
@@ -35,7 +37,6 @@ public class ProfileDB {
         Map<String, Object> data = new HashMap<>();
         data.put("name", profile.getName());
         data.put("bio", profile.getBio());
-        data.put("uid",profile.getUid());
         data.put("email", profile.getEmail());
         return data;
     }
