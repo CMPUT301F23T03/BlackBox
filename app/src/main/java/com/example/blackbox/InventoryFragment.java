@@ -36,6 +36,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -55,6 +56,7 @@ public class InventoryFragment extends Fragment {
     Button addButton;
     Button deleteButton;
     Button cancelButton;
+    Button setTagButton;
     ListenerRegistration dbListener;
     private Button filterButton;
     private Context activityContext;
@@ -220,6 +222,7 @@ public class InventoryFragment extends Fragment {
 
         deleteButton = view.findViewById(R.id.inventory_delete_button);
         cancelButton = view.findViewById(R.id.inventory_cancel_button);
+        setTagButton = view.findViewById(R.id.set_tags_button);
         itemViewList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -238,6 +241,8 @@ public class InventoryFragment extends Fragment {
                     // Make the delete and cancel button visible
                     deleteButton.setVisibility(View.VISIBLE);
                     cancelButton.setVisibility(View.VISIBLE);
+                    setTagButton.setVisibility(View.VISIBLE);
+
 
                 }
                 return true; // Return true to indicate that the long click event is consumed
@@ -252,21 +257,10 @@ public class InventoryFragment extends Fragment {
                     selectedItem.setSelected(Boolean.FALSE);
                 }
 
-                // Clear the selection and update UI
-                selectedItemsList.clear();
+                exitMultiselect();
 
                 // Update the view to reflect the change in selection
                 inventoryAdapter.notifyDataSetChanged();
-
-                // Hide the delete and cancel button
-                deleteButton.setVisibility(View.GONE);
-                cancelButton.setVisibility(View.GONE);
-
-                // Show the add button
-                addButton.setVisibility(View.VISIBLE);
-
-                // Reset long click flag
-                isLongClick = false;
             }
         });
 
@@ -288,24 +282,26 @@ public class InventoryFragment extends Fragment {
                         itemList.remove(selectedItem);
                     }
                 }
+                exitMultiselect();
+
                 // Update the view to reflect the change in selection
                 inventoryAdapter.notifyDataSetChanged();
-
-                // Clear the selection and update UI
-                selectedItemsList.clear();
-
-                // Hide the delete and cancel button
-                deleteButton.setVisibility(View.GONE);
-                cancelButton.setVisibility(View.GONE);
-
-                // Show the add button
-                addButton.setVisibility(View.VISIBLE);
-
-                // Reset long click flag
-                isLongClick = false;
             }
         });
 
+        setTagButton.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                  if (selectedItemsList.isEmpty()){
+                      Toast.makeText(requireContext(), "No items have been selected.", Toast.LENGTH_SHORT).show();
+                  } else {
+                      showTagMultiSelectDialogue();
+                  }
+
+                  // Update the view to reflect the change in selection
+                  inventoryAdapter.notifyDataSetChanged();
+              }
+        });
     }
 
     /**
@@ -328,6 +324,186 @@ public class InventoryFragment extends Fragment {
 
         // Update the view to reflect the change in selection
         inventoryAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Helper method to exit multi-selection
+     */
+    private void exitMultiselect(){
+        // Clear the selection and update UI
+        if (!selectedItemsList.isEmpty()) {
+            selectedItemsList.clear();
+        }
+
+        // Hide the delete and cancel button
+        deleteButton.setVisibility(View.GONE);
+        cancelButton.setVisibility(View.GONE);
+        setTagButton.setVisibility(View.GONE);
+
+        // Show the add button
+        addButton.setVisibility(View.VISIBLE);
+
+        // Reset long click flag
+        isLongClick = false;
+    }
+
+    /**
+     * Shows a dialogue that allows the user to select multiple tags to assign to items
+     */
+    private void showTagMultiSelectDialogue() {
+        TagDB tagDB = new TagDB();
+        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
+            @Override
+            public void onSuccess(ArrayList<Tag> tagList) {
+                boolean[] selectedTags = new boolean[tagList.size()];
+                String[] tagNameList = new String[tagList.size()];
+
+                // Sorting tag list multi-select dialogue
+                Comparator<Tag> tagComp = new Comparator<Tag>() {
+                    @Override
+                    public int compare(Tag tag1, Tag tag2) {
+                        int result = tag1.getName().compareToIgnoreCase(tag2.getName());
+                        return result;
+                    }
+                };
+
+                tagList.sort(tagComp);
+
+                if (tagList.size() > 0) {
+                    for (int i = 0; i < tagList.size(); i++) {
+                        tagNameList[i] = tagList.get(i).getName();
+                    }
+                }
+
+                // Check if all items with a tag are selected
+                for (int i = 0; i < tagList.size(); i++) {
+                    Tag currentTag = tagList.get(i);
+                    selectedTags[i] = areAllSelectedItemsWithSameTag(currentTag);
+                }
+                boolean[] originalTags = selectedTags.clone();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+                builder.setTitle("Set Tags");
+                builder.setCancelable(false);
+
+                builder.setMultiChoiceItems(tagNameList, selectedTags, (dialogInterface, index, isChecked) -> {
+                    // Update the selectedTags array when a tag is selected or deselected
+                    selectedTags[index] = isChecked;
+                });
+
+                builder.setPositiveButton("OK", (dialogInterface, which) -> {
+
+                    // Apply tags based on the conditions
+                    for (Item selectedItem : selectedItemsList) {
+                        ArrayList<Tag> existingTags = selectedItem.getTags();
+                        ArrayList<Tag> newTags = new ArrayList<>(existingTags);
+
+                        for (Tag existingTag : existingTags) {
+                            for (Tag tag : tagList) {
+                                if (tag.getName().equals(existingTag.getName())) {
+                                    existingTag.setID(tag.getDataBaseID());
+                                    newTags.add(existingTag);
+                                    break;
+                                }
+                            }
+                        }
+
+                        int tagIndex = 0;
+
+                        for (Tag currentTag : tagList) {
+                            boolean tagAlreadyExists = false;
+
+                            // Check if the tag already exists in the item's tags
+                            for (Tag existingTag : existingTags) {
+                                if (existingTag.getName().equals(currentTag.getName())) {
+                                    tagAlreadyExists = true;
+                                    if (selectedTags[tagIndex] == false && originalTags[tagIndex] == true) {
+                                        newTags.remove(existingTag);
+                                    }
+                                    break;
+                                }
+                            }
+
+                            if (selectedTags[tagIndex] && !tagAlreadyExists) {
+                                // Add new tag if it doesn't already exist
+                                newTags.add(currentTag);
+                            }
+
+                            if (selectedTags[tagIndex] == false && originalTags[tagIndex] == true) {
+                                for (Tag oldTag : selectedItem.getTags()) {
+                                    if (oldTag.getName().equals(currentTag.getName())){
+                                        newTags.remove(oldTag);
+                                        break;
+                                    }
+                                }
+                            }
+                            tagIndex++;
+                        }
+
+                        // Recreate the item with updated tags
+                        Item updatedItem = new Item(
+                                selectedItem.getName(),
+                                newTags,
+                                selectedItem.getDateOfPurchase(),
+                                selectedItem.getEstimatedValue(),
+                                selectedItem.getMake(),
+                                selectedItem.getModel(),
+                                selectedItem.getSerialNumber(),
+                                selectedItem.getDescription(),
+                                selectedItem.getComment()
+                        );
+
+                        // Update the item in the database
+                        inventoryDB.updateItemInDB(selectedItem, updatedItem);
+
+                    }
+                    // Refresh selectedItemsList after updating items
+                    selectedItemsList.clear();
+//                    selectedItemsList.addAll(updatedItemsListFromDatabase);
+                    inventoryAdapter.notifyDataSetChanged();
+                });
+
+                builder.setNegativeButton("Cancel", (dialogInterface, which) -> {
+                    dialogInterface.dismiss();
+                });
+
+                builder.show();
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                // Handle the error, e.g., display an error message
+                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
+            }
+        });
+    }
+
+    /**
+     * Helper method to determine where the selected items have the common tag
+     * @param tag
+     * @return true if all items have the tag; false otherwise
+     */
+    private boolean areAllSelectedItemsWithSameTag(Tag tag) {
+        // Check if all selected items have the same tag based on name comparison
+        for (Item selectedItem : selectedItemsList) {
+            boolean hasTag = false;
+
+            // Perform name comparison for each tag in the item's tag list
+            for (Tag itemTag : selectedItem.getTags()) {
+                if (itemTag.getName().equals(tag.getName())) {
+                    hasTag = true;
+                    break;
+                }
+            }
+
+            // If the item does not have the tag, return false
+            if (!hasTag) {
+                return false;
+            }
+        }
+
+        // All selected items have the same tag based on name comparison
+        return true;
     }
 
     /**
@@ -394,9 +570,6 @@ public class InventoryFragment extends Fragment {
         builder.setView(mView);
         builder.create().show();
     }
-
-
-
 
     /**
      * This method handles acquiring new data from the Firestore database
