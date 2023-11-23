@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         // load home page
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.inventory);
-        NavigationManager.switchFragment(new InventoryFragment(), fm);
+        NavigationManager.switchFragmentWithBack(new InventoryFragment(), fm);
 
         // set a listener to handle item selection in the BottomNavigationView
         bottomNavigationView.setOnItemSelectedListener(
@@ -45,21 +45,21 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("ItemId", String.format("%d",id));
                         if (id == R.id.inventory){
                             // load inventory fragment
-                            NavigationManager.switchFragment(new InventoryFragment(), fm);
+                            NavigationManager.switchFragmentWithoutBack(new InventoryFragment(), fm);
                         }
                         else if (id == R.id.expenses){
-                            NavigationManager.switchFragment( new ExpenseFragment(), fm);
+                            NavigationManager.switchFragmentWithoutBack( new ExpenseFragment(), fm);
                         }
                         else if (id == R.id.scan){
                             // load scan fragment
-                            NavigationManager.switchFragment(new ScanFragment(), fm);
+                            NavigationManager.switchFragmentWithoutBack(new ScanFragment(), fm);
                         }
                         else if (id == R.id.profile){
-                            NavigationManager.switchFragment(new ProfileFragment(), fm);
+                            NavigationManager.switchFragmentWithoutBack(new ProfileFragment(), fm);
                         }
                         else if (id == R.id.settings){
                             // load tag fragment
-                            NavigationManager.switchFragment(new TagFragment(), fm);
+                            NavigationManager.switchFragmentWithoutBack(new TagFragment(), fm);
                         }
                         return true;
                     }

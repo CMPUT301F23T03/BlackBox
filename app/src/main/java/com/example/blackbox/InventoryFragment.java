@@ -157,7 +157,7 @@ public class InventoryFragment extends Fragment {
         // add an item - display add fragment
         addButton = view.findViewById(R.id.add_button);
         addButton.setOnClickListener((v) -> {
-            NavigationManager.switchFragment(inventoryAddFragment, getParentFragmentManager());
+            NavigationManager.switchFragmentWithBack(inventoryAddFragment, getParentFragmentManager());
         });
 
         // edit item - display edit fragment
@@ -166,7 +166,7 @@ public class InventoryFragment extends Fragment {
                 if (!isLongClick) {
                     // Regular click
                     inventoryEditFragment = InventoryEditFragment.newInstance(itemList.get(i));
-                    NavigationManager.switchFragment(inventoryEditFragment, getParentFragmentManager());
+                    NavigationManager.switchFragmentWithBack(inventoryEditFragment, getParentFragmentManager());
                 } else {
                     toggleSelection(i);
                 }
