@@ -3,11 +3,14 @@ package com.example.blackbox;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.Query;
 
 /**
  * The `GoogleAuthDB` class represents a user profile in a Firebase authentication system.
@@ -21,6 +24,7 @@ public class GoogleAuthDB {
     private String name;
     private String email;
     private Uri photoUrl;
+    private Profile currentProfile;
     private ProfileDB profileDB;
 
     /**
@@ -53,7 +57,7 @@ public class GoogleAuthDB {
                     System.out.println("Document with name " + uid + " does not exist in the 'profiles' collection.");
                     String bio = "Write a bio by editing your profile!";
                     Profile profile = new Profile(uid, name, bio, email);
-                    profileDB.addProfile(profile);
+                    profileDB.addEditProfile(profile);
                     System.out.println("Document with name " + uid + " does exist in the 'profiles' collection.");
                 } else {
                     System.out.println("Document with name " + uid + " does exist in the 'profiles' collection.");

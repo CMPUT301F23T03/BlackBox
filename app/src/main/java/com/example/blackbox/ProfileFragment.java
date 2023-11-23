@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -17,11 +18,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
@@ -70,6 +73,22 @@ public class ProfileFragment extends Fragment{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view =  inflater.inflate(R.layout.profile_fragment, container, false);
+
+        // Display profile name, email and bio
+        updateDisplayedProfile(googleAuthDB.getUid());
+
+        // Display profile picture (taken from the Google account)
+        ImageButton profilePicture = view.findViewById(R.id.profile_pic);
+        Uri imageUri = googleAuthDB.getPhotoUrl();
+        int desiredWidth = 400; // width
+        int desiredHeight = 400; // height
+        Glide.with(this)
+                .load(imageUri)
+                .apply(new RequestOptions()
+                        .override(desiredWidth, desiredHeight) // resize the image to the desired dimensions
+                        .circleCrop()) // make the image round
+                .into(profilePicture);
+
         return view;
     }
 
@@ -85,7 +104,7 @@ public class ProfileFragment extends Fragment{
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Log out
+        // Logout button
         logOutButton = view.findViewById(R.id.logout_profile);
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,14 +114,6 @@ public class ProfileFragment extends Fragment{
                 startActivity(i);
             }
         });
-
-        // Display profile name, email and bio
-        updateDisplayedProfile(googleAuthDB.getUid());
-
-        // Display profile picture
-        ImageView profilePicture = view.findViewById(R.id.profile_pic);
-        Uri imageUri = googleAuthDB.getPhotoUrl();
-        profilePicture.setImageURI(imageUri);
 
         // Edit profile button
         editButton = view.findViewById(R.id.edit_profile);
@@ -140,7 +151,6 @@ public class ProfileFragment extends Fragment{
                         // Display profile bio
                         TextView profileBio = view.findViewById(R.id.description_profile);
                         profileBio.setText(bio.toString());
-
                     } else {
                         Log.d("TAG", "No such document");
                     }
