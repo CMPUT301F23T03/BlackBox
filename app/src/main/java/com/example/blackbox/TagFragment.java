@@ -2,6 +2,7 @@ package com.example.blackbox;
 
 
 import android.content.Context;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -40,6 +42,8 @@ public class TagFragment extends Fragment {
     private Context activityContext;       // context of MainActivity
     private TagDB tagDB;
     private ListenerRegistration tagDBlistener;
+    private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
+
     /**
      * Called to create the view for the fragment.
      *
@@ -53,6 +57,9 @@ public class TagFragment extends Fragment {
                              Bundle savedInstanceState) {
         view =  inflater.inflate(R.layout.tag_fragment, container, false);
 
+        // Display profile picture (taken from the Google account)
+        ImageButton profilePicture = view.findViewById(R.id.profile_button2);
+        googleAuthDB.displayGoogleProfilePicture(profilePicture, 80, 80, this);
 
         return view;
     }
@@ -65,8 +72,6 @@ public class TagFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-
 
         // initialize tag list
         tagList = new ArrayList<>();
@@ -95,9 +100,13 @@ public class TagFragment extends Fragment {
                     String desc = doc.getString("description");
                     String colorName = doc.getString("color_name");
                     String dbID = doc.getId();
-                    Tag tag = new Tag(name, col, colorName, desc, dbID);
+                    String userID = doc.getString("user_id");
+                    Tag tag = new Tag(name, col, colorName, desc, dbID, userID);
                     tag.setDateUpdatedWithString(doc.getString("update_date"));
-                    tagList.add(tag);
+                    // Only add tags that belong to the current user to the list to display
+                    if (userID != null && userID.equals(googleAuthDB.getUid())) {
+                        tagList.add(tag);
+                    }
                 }
                 // Notify the adapter that the data has changed
                 tagAdapter.notifyDataSetChanged();
@@ -114,6 +123,15 @@ public class TagFragment extends Fragment {
             NavigationManager.switchFragment(tagEditFragment, getParentFragmentManager());
         });
 
+        // When profile icon is clicked, switch to profile fragment
+        ImageButton profileButton = view.findViewById(R.id.profile_button2);
+        profileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProfileFragment profileFragment = new ProfileFragment();
+                NavigationManager.switchFragment(profileFragment, getParentFragmentManager());
+            }
+        });
 
     }
     /**

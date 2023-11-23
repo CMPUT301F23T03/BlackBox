@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -97,6 +98,11 @@ public class InventoryFragment extends Fragment {
             Bundle savedInstanceState
     ) {
         View ItemFragmentLayout = inflater.inflate(R.layout.inventory_fragment, container, false);
+
+        // Display profile picture (taken from the Google account)
+        ImageButton profilePicture = ItemFragmentLayout.findViewById(R.id.profile_button);
+        googleAuthDB.displayGoogleProfilePicture(profilePicture, 80, 80, this);
+
         return ItemFragmentLayout;
     }
 
@@ -150,6 +156,16 @@ public class InventoryFragment extends Fragment {
                     processUpdate();
                 }
 
+            }
+        });
+
+        // When profile icon is clicked, switch to profile fragment
+        ImageButton profileButton = view.findViewById(R.id.profile_button);
+        profileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProfileFragment profileFragment = new ProfileFragment();
+                NavigationManager.switchFragment(profileFragment, getParentFragmentManager());
             }
         });
 
@@ -381,7 +397,6 @@ public class InventoryFragment extends Fragment {
             String userID = doc.getString("user_id");
             ArrayList<Tag> tags = new ArrayList<>();
             List<String> tagIDs = (List<String>) doc.get("tags");
-            Log.d("VALUE OF USERID","MESSAGE: " + userID);
 
             Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID, userID);
             if (tagIDs != null && !tagIDs.isEmpty()) {

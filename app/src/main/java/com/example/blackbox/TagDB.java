@@ -32,6 +32,7 @@ import java.util.Map;
 public class TagDB {
     private CollectionReference tags;
     private FirebaseFirestore db;
+    private GoogleAuthDB googleAuthDB;
 
     /**
      * Initializes the Firestore database and the 'tag' collection reference.
@@ -39,6 +40,7 @@ public class TagDB {
     public TagDB() {
         db = FirebaseFirestore.getInstance();
         tags = db.collection("tags");
+        googleAuthDB = new GoogleAuthDB();
     }
 
     /**
@@ -106,6 +108,7 @@ public class TagDB {
         // note the date of the tag
         tag.setDateUpdated(Calendar.getInstance().getTime());
         data.put("update_date", tag.getStringDateUpdated());
+        data.put("user_id", tag.getUserID());
         return data;
     }
 
@@ -183,11 +186,13 @@ public class TagDB {
                         int color = document.getLong("color").intValue();
                         String colorName = document.getString("colorName");
                         String dataBaseID = document.getId();
+                        String userID = document.getString("user_id");
 
-                        Tag tag = new Tag(name, color, colorName, description, dataBaseID);
+                        Tag tag = new Tag(name, color, colorName, description, dataBaseID, userID);
                         // Set the dateUpdated field based on your data
-
-                        tagList.add(tag);
+                        if (userID != null && userID.equals(googleAuthDB.getUid())) {
+                            tagList.add(tag);
+                        }
                     }
                     callback.onSuccess(tagList);
                 })

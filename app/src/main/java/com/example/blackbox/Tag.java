@@ -29,16 +29,33 @@ public class Tag implements Serializable {
      *
      * @param  name  the name of the tag
      */
-
     public Tag(String name, int color, String colorName, String description) {
         this.name = name;
         this.color = color;
         this.colorName = colorName;
         this.description = description;
     }
-    public Tag(String name, int color, String colorName, String description, String dataBaseID) {
+
+    /**
+     * Constructor of an Tag object with a user ID
+     *
+     * @param  name  the name of the tag
+     */
+    public Tag(String name, int color, String colorName, String description, String userID) {
+        this(name,color,colorName, description);
+        this.userID = userID;
+        this.dateUpdated = dateUpdated;
+    }
+
+    /**
+     * Constructor of an Tag object with a database ID and a user ID
+     *
+     * @param  name  the name of the tag
+     */
+    public Tag(String name, int color, String colorName, String description, String dataBaseID, String userID) {
         this(name,color,colorName, description);
         this.dataBaseID = dataBaseID;
+        this.userID = userID;
         this.dateUpdated = dateUpdated;
     }
 
@@ -65,6 +82,10 @@ public class Tag implements Serializable {
         return dataBaseID;
     }
 
+    public String getUserID() {
+        return userID;
+    }
+
     public Date getDateUpdated() {
         return dateUpdated;
     }
@@ -74,6 +95,7 @@ public class Tag implements Serializable {
         String dateStr = dateFormat.format(dateUpdated);
         return dateStr;
     }
+
 
     public void setDateUpdated(Date date){
         this.dateUpdated = date;

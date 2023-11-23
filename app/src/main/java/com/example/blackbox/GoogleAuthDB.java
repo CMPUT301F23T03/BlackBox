@@ -1,10 +1,15 @@
 package com.example.blackbox;
 
+import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -64,6 +69,18 @@ public class GoogleAuthDB {
                 }
             }
         });
+    }
+
+    public void displayGoogleProfilePicture(ImageButton profilePicture, int height, int width, Fragment fragment) {
+        Uri imageUri = photoUrl;
+        int desiredWidth = height; // width
+        int desiredHeight = width; // height
+        Glide.with(fragment)
+                .load(imageUri)
+                .apply(new RequestOptions()
+                        .override(desiredWidth, desiredHeight) // resize the image to the desired dimensions
+                        .circleCrop()) // make the image round
+                .into(profilePicture);
     }
 
     /**

@@ -74,20 +74,12 @@ public class ProfileFragment extends Fragment{
                              Bundle savedInstanceState) {
         view =  inflater.inflate(R.layout.profile_fragment, container, false);
 
-        // Display profile name, email and bio
+        // Display profile name, email and bio (taken from the database)
         updateDisplayedProfile(googleAuthDB.getUid());
 
         // Display profile picture (taken from the Google account)
         ImageButton profilePicture = view.findViewById(R.id.profile_pic);
-        Uri imageUri = googleAuthDB.getPhotoUrl();
-        int desiredWidth = 400; // width
-        int desiredHeight = 400; // height
-        Glide.with(this)
-                .load(imageUri)
-                .apply(new RequestOptions()
-                        .override(desiredWidth, desiredHeight) // resize the image to the desired dimensions
-                        .circleCrop()) // make the image round
-                .into(profilePicture);
+        googleAuthDB.displayGoogleProfilePicture(profilePicture, 400, 400, this);
 
         return view;
     }
