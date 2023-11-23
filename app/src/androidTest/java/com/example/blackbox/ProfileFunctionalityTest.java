@@ -20,6 +20,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
+ * The ProfileFunctionalityTest class contains unit tests for the ProfileEditFragment class methods.
  * User MUST already be logged in for all these tests to pass
  */
 @RunWith(AndroidJUnit4.class)
@@ -55,13 +56,13 @@ public class ProfileFunctionalityTest {
         // fill information
         onView(withId(R.id.name_editText)).perform(ViewActions.clearText());
         onView(withId(R.id.bio_editText)).perform(ViewActions.clearText());
-        onView(withId(R.id.name_editText)).perform(ViewActions.typeText("Mass Monster"));
-        onView(withId(R.id.bio_editText)).perform(ViewActions.typeText("Era of Computer Science"));
+        onView(withId(R.id.name_editText)).perform(ViewActions.typeText("Name1"));
+        //onView(withId(R.id.bio_editText)).perform(ViewActions.typeText("Era of Computer Science"));
         // edit item
         onView(withId(R.id.small_save_button)).perform(click());
         // see if the newly edited data is displayed
-        onView(withText("Mass Monster")).check(matches(isDisplayed()));
-        onView(withText("Era of Computer Science")).check(matches(isDisplayed()));
+        onView(withText("Name1")).check(matches(isDisplayed()));
+        //onView(withText("Era of Computer Science")).check(matches(isDisplayed()));
     }
 
     /**

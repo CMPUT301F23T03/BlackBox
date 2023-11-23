@@ -13,29 +13,58 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The ProfileDB class is responsible for interacting with the Firebase Firestore database
+ * to perform operations related to user profiles.
+ */
 public class ProfileDB {
     private CollectionReference profileRef;
     private FirebaseFirestore db;
 
+    /**
+     * Default constructor for the ProfileDB class. Initializes the Firebase Firestore instance
+     * and sets the collection reference to "profiles".
+     */
     public ProfileDB() {
         db = FirebaseFirestore.getInstance();
         profileRef = db.collection("profiles");
     }
 
+    /**
+     * Constructor for the ProfileDB class with a custom collection name.
+     *
+     * @param collectionName The name of the Firestore collection for profiles.
+     */
     public ProfileDB(String collectionName) {
         db = FirebaseFirestore.getInstance();
         profileRef = db.collection(collectionName);
     }
 
+    /**
+     * Retrieves the Firestore collection reference for profiles.
+     *
+     * @return The CollectionReference for profiles.
+     */
     public CollectionReference getProfileRef() {
         return profileRef;
     }
 
+    /**
+     * Adds or updates a user profile in the Firestore database.
+     *
+     * @param profile The Profile object containing user information to be added or updated.
+     */
     public void addEditProfile(Profile profile) {
         Map<String, Object> data = generateProfileHashMap(profile);
         profileRef.document(profile.getUid()).set(data);
     }
 
+    /**
+     * Retrieves a user profile from the Firestore database by the user ID.
+     *
+     * @param uid      The user ID for the profile to retrieve.
+     * @param listener An OnProfileRetrievedListener to handle the retrieved profile.
+     */
     public void getProfileById(String uid, final OnProfileRetrievedListener listener) {
         profileRef
                 .document(uid)
@@ -67,11 +96,19 @@ public class ProfileDB {
                 });
     }
 
-    // Interface to define a callback for Profile retrieval
+    /**
+     * Interface to define a callback for Profile retrieval.
+     */
     public interface OnProfileRetrievedListener {
         void OnProfileRetrievedListener(Profile profile);
     }
 
+    /**
+     * Generates a HashMap from a Profile object, which can be used to update the Firestore database.
+     *
+     * @param profile The Profile object to convert to a HashMap.
+     * @return A HashMap representing the fields of the Profile object.
+     */
     private Map<String, Object> generateProfileHashMap(Profile profile){
         Map<String, Object> data = new HashMap<>();
         data.put("name", profile.getName());

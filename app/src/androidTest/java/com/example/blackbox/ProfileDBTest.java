@@ -24,14 +24,16 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 /**
- * User MUST already be logged in for all these tests to pass
+ * The ProfileDBTest class contains unit tests for the ProfileDB class methods.
+ * Users MUST BE logged in for the tests to pass
  */
 public class ProfileDBTest {
     private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
 
     /**
-     * Deletes all items in the test profile DB
-     * @param profileDB this is an ProfileDB object
+     * Deletes all items in the test profile DB.
+     *
+     * @param profileDB The ProfileDB object representing the test profile database.
      */
     public static void clearProfileDB(ProfileDB profileDB) {
         CollectionReference profileRef = profileDB.getProfileRef();

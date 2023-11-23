@@ -31,7 +31,7 @@ import com.google.firebase.firestore.Query;
 
 /**
  * A fragment that represents the user profile screen. It displays user information,
- * allows the user to log out, and presents the user's name, email, and profile picture.
+ * allows the user to log out, and presents the user's name, email, bio, and profile picture.
  */
 public class ProfileFragment extends Fragment{
     private View view;
@@ -119,6 +119,11 @@ public class ProfileFragment extends Fragment{
         });
     }
 
+    /**
+     * Updates the displayed profile information by retrieving data from the database.
+     *
+     * @param uid The user ID associated with the profile.
+     */
     private void updateDisplayedProfile(String uid) {
         DocumentReference docRef = profileDB.getProfileRef().document(uid);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

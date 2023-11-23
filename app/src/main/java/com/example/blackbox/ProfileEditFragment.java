@@ -24,7 +24,8 @@ public class ProfileEditFragment extends Fragment {
     private ProfileDB profileDB;
 
     /**
-     * Default constructor for an ProfileEditFragment
+     * Default constructor for a ProfileEditFragment.
+     * Initializes instances of GoogleAuthDB and ProfileDB.
      */
     public ProfileEditFragment() {
         googleAuthDB = new GoogleAuthDB();
