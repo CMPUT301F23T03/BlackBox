@@ -11,7 +11,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +21,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -40,13 +45,20 @@ import java.util.List;
  */
 public class InventoryFragment extends Fragment {
     ListView itemViewList;
+
+    private RecyclerView filterViewList;
+    private SearchView searchView;
+    private RecyclerView.Adapter filterAdapter;
+    private ArrayList<Filter> filterList;
     ArrayAdapter<Item> inventoryAdapter;
     ItemList itemList;
+
     Button addButton;
     Button deleteButton;
     Button cancelButton;
     Button setTagButton;
     ListenerRegistration dbListener;
+    private Button filterButton;
     private Context activityContext;
     InventoryDB inventoryDB;
     TagDB tagDB;
@@ -117,8 +129,34 @@ public class InventoryFragment extends Fragment {
 
         // display the inventory list
         itemList = new ItemList();
+        filterList = new ArrayList<>();
         itemViewList = (ListView) view.findViewById(R.id.item_list);
+        filterViewList = (RecyclerView) view.findViewById(R.id.filter_list);
+        searchView = view.findViewById(R.id.searchView);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.d("SearchView","Query submitted");
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d("SearchView","Query changed");
+                return false;
+            }
+        });
+
         inventoryAdapter = new InventoryListAdapter(activityContext, itemList);
+        filterAdapter = new FilterListAdapter(filterList,itemList,inventoryAdapter, getActivity());
+        LinearLayoutManager layoutManager = new LinearLayoutManager(activityContext,LinearLayoutManager.HORIZONTAL,false);
+        //GridLayoutManager layoutManager = new GridLayoutManager(this,);
+
+        filterViewList.setLayoutManager(layoutManager);
+        filterViewList.setAdapter(filterAdapter);
+
+
         itemViewList.setAdapter(inventoryAdapter);
         totalSumTextView = view.findViewById(R.id.total_sum);
 
@@ -154,6 +192,15 @@ public class InventoryFragment extends Fragment {
             }
         });
 
+        filterButton = (Button) view.findViewById(R.id.filter_button);
+        filterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FilterDialog.showFilter(getActivity(),itemList,inventoryAdapter,filterAdapter);
+                Log.d("FilterDialog","Returned from filter dialog");
+                updateTotalSum();
+            }
+        });
         // add an item - display add fragment
         addButton = view.findViewById(R.id.add_button);
         addButton.setOnClickListener((v) -> {
@@ -590,6 +637,9 @@ public class InventoryFragment extends Fragment {
         updateTotalSum();
         Log.d("Firestore", "Processed Update");
     }
+
+    
+
 
     /**
      * Fetches tags associated with an item from the Firestore database and
