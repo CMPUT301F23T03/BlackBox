@@ -4,6 +4,7 @@ package com.example.blackbox;
 import android.content.Context;
 import android.media.Image;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,7 +86,7 @@ public class TagFragment extends Fragment {
             public void onEvent(@Nullable QuerySnapshot value,
                                 @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
-                    // Handle any errors or exceptions
+                    Log.e("Firestore", "Error getting inventory", e);
                     return;
                 }
                 tagList.clear();

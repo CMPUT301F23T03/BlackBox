@@ -237,14 +237,21 @@ public class InventoryFunctionalityTest {
         // fill information
         onView(withId(R.id.name_editText)).perform(ViewActions.typeText("Random Test"));
         onView(withId(R.id.value_editText)).perform(ViewActions.replaceText(String.valueOf(150)));
-
         // add item
         onView(withId(R.id.small_save_button)).perform(click());
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
         // open the newly added item
         onData(is(instanceOf(Item.class))).inAdapterView(withId(R.id.item_list)).atPosition(0).perform(click());
-        // change the name and value
+        // change the name
         onView(withId(R.id.name_editText)).perform(ViewActions.clearText());
         onView(withId(R.id.name_editText)).perform(ViewActions.typeText(name));
+        // change the value
+        onView(withId(R.id.value_editText)).perform(ViewActions.scrollTo());
         onView(withId(R.id.value_editText)).perform(ViewActions.clearText());
         onView(withId(R.id.value_editText)).perform(ViewActions.typeText(String.valueOf(estimatedValue)));
         // update item
@@ -575,6 +582,13 @@ public class InventoryFunctionalityTest {
 
         // Click the delete button
         Espresso.onView(ViewMatchers.withId(R.id.inventory_delete_button)).perform(ViewActions.click());
+
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
 
         // Check if the items are deleted
         onView(withText(name)).check(doesNotExist());

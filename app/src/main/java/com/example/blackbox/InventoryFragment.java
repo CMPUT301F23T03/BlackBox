@@ -242,20 +242,15 @@ public class InventoryFragment extends Fragment {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // If the selectedItemsList size is the same as the itemList size, clear the entire list
-                if (selectedItemsList.size() == itemList.size()) {
-                    // Clear the entire DB
-                    inventoryDB.clearInventory();
 
-                } else {
-                    // Iterate through the selected items and delete them
-                    for (Item selectedItem : selectedItemsList) {
-                        // Delete item from Firestore or perform any other deletion logic
-                        inventoryDB.deleteItem(selectedItem);
-                        // Remove the item from the list
-                        itemList.remove(selectedItem);
-                    }
+                // Iterate through the selected items and delete them
+                for (Item selectedItem : selectedItemsList) {
+                    // Delete item from Firestore or perform any other deletion logic
+                    inventoryDB.deleteItem(selectedItem);
+                    // Remove the item from the list
+                    itemList.remove(selectedItem);
                 }
+
                 exitMultiselect();
 
                 // Update the view to reflect the change in selection

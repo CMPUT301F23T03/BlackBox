@@ -41,14 +41,14 @@ public class InventoryDBTest {
 
     private final Tag basicTag = new Tag("Name", 1, "Color", "Description");
     private final ArrayList<Tag> tag_list = new ArrayList<>();
-
     /**
      * Deletes all items in the inventory DB
      * @param inventoryDB this is an InventoryDB object
      */
     public static void clearInventoryDB(InventoryDB inventoryDB) {
         CollectionReference inventoryRef = inventoryDB.getInventory();
-        Task<QuerySnapshot> querySnapshotInventory = inventoryRef.get();
+        GoogleAuthDB googleAuthDB = new GoogleAuthDB();
+        Task<QuerySnapshot> querySnapshotInventory = inventoryRef.whereEqualTo("user_id", googleAuthDB.getUid()).get();
         Log.d("Firestore", "Before listener");
 
         // Create a CountDownLatch with an initial count of 1
@@ -84,6 +84,7 @@ public class InventoryDBTest {
         InventoryDB inventoryDB = new InventoryDB();
         clearInventoryDB(inventoryDB);
     }
+
 
     /**
      * Test adding an item
