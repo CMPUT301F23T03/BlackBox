@@ -83,6 +83,9 @@ public class GoogleSignInActivity extends Activity {
                 signIn();
             }
         });
+
+
+
     }
 
     /**
@@ -154,6 +157,9 @@ public class GoogleSignInActivity extends Activity {
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+
+        // this clears the cached sign-in data - without this line the user cannot select a different account after logging out:
+        mGoogleSignInClient.signOut();
     }
 
     /**
