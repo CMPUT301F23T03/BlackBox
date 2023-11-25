@@ -3,6 +3,7 @@ package com.example.blackbox;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.app.AlertDialog;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +30,7 @@ import java.util.Comparator;
  * This is an abstract class with two subclasses, one relating to adding items
  * and one related to editing items
  */
-public abstract class InventoryAddEditFragment extends AddEditFragment {
+public abstract class InventoryAddEditFragment extends AddEditFragment implements AttachImageFragment.OnImageSelectedListener {
     private EditText itemName;
     private EditText itemValue;
     private EditText itemDescription;
@@ -53,6 +56,9 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     ArrayList<Tag> selectedTags = new ArrayList<>();
     private ImageButton addImgBtn;
     private AttachImageFragment attachImageFragment = new AttachImageFragment();
+    private RecyclerView recyclerView;
+    private ArrayList<Uri> displayedUris;
+    ImageRecyclerAdapter adapter;
 
 
 
@@ -103,21 +109,40 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
             }
         });
 
-
         setupBackButtonListener(view);
 
         // setup a date picker listener
         setupDatePickerListener(view);
         // add image
+        recyclerView = view.findViewById(R.id.image_recycler_view);
         addImgBtn = view.findViewById(R.id.add_img_btn);
         addImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Set the listener on AttachImageFragment
+                attachImageFragment.setOnImageSelectedListener(InventoryAddEditFragment.this);
                 NavigationManager.switchFragmentWithBack(attachImageFragment, getParentFragmentManager());
             }
         });
 
+        ArrayList<Uri> uriArrayList = new ArrayList<>(attachImageFragment.uriArrayList);
+        displayedUris = new ArrayList<>(uriArrayList);  // Initialize the list
+
+        adapter = new ImageRecyclerAdapter(displayedUris);
+        recyclerView.setLayoutManager(new GridLayoutManager(activityContext, 2));
+        recyclerView.setAdapter(adapter);
     }
+
+    @Override
+    public void onImageSelected(Uri imageUri) {
+        // Handle the selected image URI here
+        // You can add it to the display list or perform any other actions
+        if (!displayedUris.contains(imageUri)) {
+            displayedUris.add(imageUri);
+            adapter.updateDisplayedUris(displayedUris);  // Update the displayed images in the adapter
+        }
+    }
+
 
 
     /**
