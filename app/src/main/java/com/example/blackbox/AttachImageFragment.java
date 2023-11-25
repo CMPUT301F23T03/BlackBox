@@ -28,6 +28,7 @@ import androidx.fragment.app.Fragment;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 
 
 public class AttachImageFragment extends Fragment {
@@ -39,8 +40,11 @@ public class AttachImageFragment extends Fragment {
     private static final int REQUEST_GALLERY_PERMISSION = 200;
     private ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
     private Uri imageUri;
+    ArrayList<Uri> uriArrayList = new ArrayList<>();
     private File imageFile;
     private ActivityResultLauncher<Uri> takePicture;
+    private ItemImageDB itemImageDB = new ItemImageDB();
+    private OnImageSelectedListener imageSelectedListener;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
@@ -90,6 +94,11 @@ public class AttachImageFragment extends Fragment {
         return view;
     }
 
+    // Setter method for the listener
+    public void setOnImageSelectedListener(OnImageSelectedListener listener) {
+        this.imageSelectedListener = listener;
+    }
+
 
     private File CreateTempImage() {
         String imageFileName = "temp";
@@ -118,9 +127,19 @@ public class AttachImageFragment extends Fragment {
         galleryButton.setOnClickListener(v -> pickMedia.launch(new PickVisualMediaRequest()));
     }
 
+
+    public interface OnImageSelectedListener {
+        void onImageSelected(Uri imageUri);
+    }
+
     private void confirmAttachment(){
         confirmButton.setOnClickListener(v -> {
-            imageFile.delete();
+            uriArrayList.add(imageUri);
+            if (imageSelectedListener != null) {
+                imageSelectedListener.onImageSelected(imageUri);
+            }
+            //imageFile.delete();
+            getParentFragmentManager().popBackStack();
         });
     }
 
@@ -131,7 +150,7 @@ public class AttachImageFragment extends Fragment {
      */
     public void setupBackButtonListener(View view){
         final Button backButton = view.findViewById(R.id.back_button);
-        imageFile.delete();
+        //imageFile.delete();
         backButton.setOnClickListener(v -> {
             getParentFragmentManager().popBackStack();
         });
