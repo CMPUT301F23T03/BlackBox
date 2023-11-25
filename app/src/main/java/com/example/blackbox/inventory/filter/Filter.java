@@ -1,4 +1,7 @@
-package com.example.blackbox;
+package com.example.blackbox.inventory.filter;
+
+import com.example.blackbox.inventory.Item;
+import com.example.blackbox.tag.Tag;
 
 import org.checkerframework.checker.units.qual.A;
 

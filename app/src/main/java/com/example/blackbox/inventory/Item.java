@@ -1,9 +1,10 @@
-package com.example.blackbox;
+package com.example.blackbox.inventory;
 
 import android.annotation.SuppressLint;
 
+import com.example.blackbox.tag.Tag;
+
 import java.io.Serializable;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;

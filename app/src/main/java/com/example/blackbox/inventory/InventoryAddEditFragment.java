@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.inventory;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -13,6 +13,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+
+import com.example.blackbox.AddEditFragment;
+import com.example.blackbox.NavigationManager;
+import com.example.blackbox.R;
+import com.example.blackbox.tag.Tag;
+import com.example.blackbox.tag.TagDB;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -315,7 +321,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         }
         ArrayList<Tag> selectedTags = null;
         if (item.getTags() != null){
-             selectedTags = item.getTags();
+            selectedTags = item.getTags();
         }
         if (selectedTags != null){
             ArrayList<String> selectedTagNames = new ArrayList<>();

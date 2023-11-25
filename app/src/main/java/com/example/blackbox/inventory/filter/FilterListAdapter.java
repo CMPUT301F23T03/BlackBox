@@ -1,15 +1,18 @@
-package com.example.blackbox;
+package com.example.blackbox.inventory.filter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.blackbox.R;
+import com.example.blackbox.StringFormatter;
+import com.example.blackbox.inventory.Item;
+import com.example.blackbox.inventory.ItemList;
 
 import java.util.ArrayList;
 
@@ -39,7 +42,7 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
 
     private void updateTotalSum(){
         Double totalSum = itemList.calculateTotalSum();
-        this.totalSum.setText("Total: " +StringFormatter.getMonetaryString(totalSum));
+        this.totalSum.setText("Total: " + StringFormatter.getMonetaryString(totalSum));
 
     }
 
