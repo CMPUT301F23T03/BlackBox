@@ -28,22 +28,36 @@ import androidx.fragment.app.Fragment;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
-
+/**
+ * AttachImageFragment is responsible for handling image attachment functionalities.
+ * It allows users to capture images from the camera or select images from the gallery.
+ * Selected images can be confirmed for attachment and displayed in an ImageView.
+ * Additionally, it provides a listener interface to notify when an image is selected.
+ */
 public class AttachImageFragment extends Fragment {
+    // UI elements
     private ImageView imageView;
     private Button cameraButton;
     private Button galleryButton;
     private Button confirmButton;
+
+    // Constants for permission requests
     private static final int REQUEST_CAMERA_PERMISSION = 201;
     private static final int REQUEST_GALLERY_PERMISSION = 200;
+
+    // Activity Result Launchers and related variables
     private ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
     private Uri imageUri;
     public ArrayList<Uri> uriArrayList = new ArrayList<>();
     private File imageFile;
     private ActivityResultLauncher<Uri> takePicture;
-    private ItemImageDB itemImageDB = new ItemImageDB();
+
+    // Listener for image selection
     private OnImageSelectedListener imageSelectedListener;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,6 +71,7 @@ public class AttachImageFragment extends Fragment {
         galleryButton = view.findViewById(R.id.gallery_button);
         confirmButton = view.findViewById(R.id.confirm_button);
 
+        // Search picture in gallery
         pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
             if (uri != null) {
                 imageView.setImageURI(uri);
@@ -66,10 +81,12 @@ public class AttachImageFragment extends Fragment {
             }
         });
 
+        // Creating a temporary image file and obtaining its URI
         imageFile = CreateTempImage();
         imageUri = FileProvider.getUriForFile(requireContext(),
                 requireContext().getPackageName() + ".provider", imageFile);
 
+        // Activity Result Launcher for capturing an image and store it in side imageFile
         takePicture = registerForActivityResult(
                 new ActivityResultContracts.TakePicture(),
                 new ActivityResultCallback<Boolean>() {
@@ -99,9 +116,14 @@ public class AttachImageFragment extends Fragment {
         this.imageSelectedListener = listener;
     }
 
-
+    /**
+     * Creates a temporary image file with a timestamp in the directory
+     * obtained from external files directory in the Pictures directory.
+     * @return File object representing the created image file.
+     */
     private File CreateTempImage() {
-        String imageFileName = "temp";
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String imageFileName = "temp" + timeStamp;
         File storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File imageFile = new File(storageDir, imageFileName + ".jpg");
         return imageFile;
@@ -138,7 +160,6 @@ public class AttachImageFragment extends Fragment {
             if (imageSelectedListener != null) {
                 imageSelectedListener.onImageSelected(imageUri);
             }
-            //imageFile.delete();
             getParentFragmentManager().popBackStack();
         });
     }
@@ -150,7 +171,6 @@ public class AttachImageFragment extends Fragment {
      */
     public void setupBackButtonListener(View view){
         final Button backButton = view.findViewById(R.id.back_button);
-        //imageFile.delete();
         backButton.setOnClickListener(v -> {
             getParentFragmentManager().popBackStack();
         });

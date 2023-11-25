@@ -89,6 +89,9 @@ public class ScanGalleryFragment extends Fragment {
                 .permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        // disable navigation bar
+        ((MainActivity) requireActivity()).toggleBottomNavigationView(false);
+
         View view = inflater.inflate(R.layout.gallery_scan_fragment, container, false);
         imageView = view.findViewById(R.id.image_view);
         barcodeText = view.findViewById(R.id.barcode_text);

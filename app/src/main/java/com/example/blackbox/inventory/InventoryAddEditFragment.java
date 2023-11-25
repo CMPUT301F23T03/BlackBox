@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.app.AlertDialog;
 import android.net.Uri;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -21,13 +22,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.blackbox.AddEditFragment;
 import com.example.blackbox.AttachImageFragment;
 import com.example.blackbox.ImageRecyclerAdapter;
+import com.example.blackbox.MainActivity;
 import com.example.blackbox.NavigationManager;
 import com.example.blackbox.R;
 import com.example.blackbox.tag.Tag;
 import com.example.blackbox.tag.TagDB;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 
@@ -116,6 +118,9 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
                 showTagSelectionDialog();
             }
         });
+
+        // disable navigation bar
+        ((MainActivity) requireActivity()).toggleBottomNavigationView(false);
 
         setupBackButtonListener(view);
 
@@ -215,6 +220,8 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
     public void setupBackButtonListener(View view){
         final Button backButton = view.findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> {
+            // clear all temporary pictures
+            clearTempFiles();
             getParentFragmentManager().popBackStack();
         });
     }
@@ -257,6 +264,8 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
     public void add(){
         Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment);
         itemDB.addItemToDB(new_item);
+        // clear all temporary pictures
+        clearTempFiles();
         NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
     }
 
@@ -268,8 +277,9 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
     public void editItem(Item item){
         Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment);
         itemDB.updateItemInDB(item, new_item);
-        InventoryFragment inventoryFragment = new InventoryFragment();
-        NavigationManager.switchFragmentWithBack(inventoryFragment, getParentFragmentManager());
+        // clear all temporary pictures
+        clearTempFiles();
+        NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
     }
 
     /**
@@ -415,4 +425,28 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
         });
     }
 
+    /**
+     * Clears temporary files from the directory obtained from the external files
+     * directory in the Pictures directory.
+     * Logs a message indicating the attempt to clear temporary files.
+     * Deletes all files found in the directory.
+     * Note: Ensure proper permissions to delete files from the directory.
+     */
+
+    private void clearTempFiles(){
+        File storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        if (storageDir != null && storageDir.isDirectory()) {
+            File[] files = storageDir.listFiles();
+            Log.d("Temp files", "Clearing temp files");
+            if (files != null) {
+                for (File file : files) {
+                    boolean deleted = file.delete();
+                    if (!deleted) {
+                        // Handle deletion failure if needed
+                        // You can log or take appropriate action here
+                    }
+                }
+            }
+        }
+    }
 }

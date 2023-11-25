@@ -23,6 +23,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.blackbox.MainActivity;
 import com.example.blackbox.NavigationManager;
 import com.example.blackbox.R;
 import com.example.blackbox.StringFormatter;
@@ -116,6 +117,9 @@ public class InventoryFragment extends Fragment {
             Bundle savedInstanceState
     ) {
         View ItemFragmentLayout = inflater.inflate(R.layout.inventory_fragment, container, false);
+        // enable navigation bar
+        ((MainActivity) requireActivity()).toggleBottomNavigationView(true);
+
         return ItemFragmentLayout;
     }
 

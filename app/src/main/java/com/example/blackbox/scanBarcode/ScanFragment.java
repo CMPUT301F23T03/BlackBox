@@ -9,6 +9,7 @@ import android.widget.Button;
 import androidx.fragment.app.Fragment;
 
 import com.example.blackbox.AttachImageFragment;
+import com.example.blackbox.MainActivity;
 import com.example.blackbox.NavigationManager;
 import com.example.blackbox.R;
 
@@ -25,6 +26,9 @@ public class ScanFragment extends Fragment {
                              Bundle savedInstanceState) {
         view =  inflater.inflate(R.layout.scan_fragment, container, false);
 
+        // enable navigation bar
+        ((MainActivity) requireActivity()).toggleBottomNavigationView(true);
+
         // Camera button
         final Button cameraButton = view.findViewById(R.id.button_camera);
         cameraButton.setOnClickListener(new View.OnClickListener() {
@@ -38,14 +42,6 @@ public class ScanFragment extends Fragment {
         galleryButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 NavigationManager.switchFragmentWithBack(new ScanGalleryFragment(), getParentFragmentManager());
-            }
-        });
-
-        // Gallery button
-        final Button photoButton = view.findViewById(R.id.button_photo);
-        photoButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                NavigationManager.switchFragmentWithBack(new AttachImageFragment(), getParentFragmentManager());
             }
         });
 
