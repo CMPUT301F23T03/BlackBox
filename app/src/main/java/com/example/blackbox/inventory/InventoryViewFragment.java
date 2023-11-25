@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.inventory;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

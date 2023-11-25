@@ -1,5 +1,7 @@
 package com.example.blackbox;
 
+import com.example.blackbox.tag.Tag;
+import com.example.blackbox.tag.TagDB;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
@@ -14,10 +16,6 @@ import static org.junit.Assert.fail;
 
 import android.util.Log;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.ArrayList;

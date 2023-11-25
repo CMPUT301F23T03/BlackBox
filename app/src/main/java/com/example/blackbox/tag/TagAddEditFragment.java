@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.tag;
 
 import android.util.Log;
 import android.view.View;
@@ -7,6 +7,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.example.blackbox.AddEditFragment;
+import com.example.blackbox.NavigationManager;
+import com.example.blackbox.R;
 
 import java.util.ArrayList;
 

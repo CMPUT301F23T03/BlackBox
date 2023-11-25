@@ -1,4 +1,6 @@
-package com.example.blackbox;
+package com.example.blackbox.inventory;
+
+import com.example.blackbox.tag.Tag;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

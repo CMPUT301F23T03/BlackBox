@@ -3,8 +3,6 @@ package com.example.blackbox.scanBarcode;
 
 import static android.Manifest.permission.READ_MEDIA_IMAGES;
 
-import static androidx.core.content.PackageManagerCompat.LOG_TAG;
-
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -32,10 +30,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.example.blackbox.InventoryAddFragment;
-import com.example.blackbox.Item;
 import com.example.blackbox.MainActivity;
-import com.example.blackbox.NavigationManager;
 import com.example.blackbox.R;
 import com.example.blackbox.scanBarcode.handler.BarcodeHandleChain;
 import com.google.android.gms.vision.Frame;
