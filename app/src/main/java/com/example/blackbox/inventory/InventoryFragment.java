@@ -642,7 +642,7 @@ public class InventoryFragment extends Fragment {
         // Access the db instance from InventoryDB
             String name = document.getString("name");
             int color = document.getLong("color").intValue();
-            String colorName = document.getString("colorName");
+            String colorName = document.getString("color_name");
             String description = document.getString("description");
             String dataBaseId = document.getId();
 

@@ -3,16 +3,22 @@ package com.example.blackbox.inventory;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.app.AlertDialog;
+import android.graphics.Color;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 
 import com.example.blackbox.AddEditFragment;
 import com.example.blackbox.NavigationManager;
@@ -333,6 +339,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
                 builder.setMultiChoiceItems(tagNameList, selectedTags, (dialogInterface, index, isChecked) -> {
                     // Update the selectedTags array when a tag is selected or deselected
                     selectedTags[index] = isChecked;
+
                 });
 
                 builder.setPositiveButton("OK", (dialogInterface, which) -> {
@@ -365,7 +372,6 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
                     }
                     tagDropdown.setText("");
                 });
-
                 builder.show();
             }
             @Override
