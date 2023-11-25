@@ -10,6 +10,7 @@
     <string name="item_name">Item Name</string>
     <string name="select_one_or_more_tags">Select one or more tags</string>
     <string name="default_web_client_id">82712996640-dgigaeoj0ngvvrh9ai5k9v53f25p1e89.apps.googleusercontent.com</string>
+    <string name="tag_name">Tag Name</string>
     <string-array name="sort_category">
         <item>Sorting Category</item>
         <item>By Date</item>
