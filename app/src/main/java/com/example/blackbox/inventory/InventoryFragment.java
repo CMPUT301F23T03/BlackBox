@@ -479,9 +479,9 @@ public class InventoryFragment extends Fragment {
         for (Item selectedItem : selectedItemsList) {
             boolean hasTag = false;
 
-            // Perform name comparison for each tag in the item's tag list
+            // Perform comparison for each tag in the item's tag list
             for (Tag itemTag : selectedItem.getTags()) {
-                if (itemTag.getName().equals(tag.getName())) {
+                if (itemTag.getDataBaseID().equals(tag.getDataBaseID())) {
                     hasTag = true;
                     break;
                 }
