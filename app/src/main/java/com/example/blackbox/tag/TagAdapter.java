@@ -66,4 +66,9 @@ public class TagAdapter extends ArrayAdapter {
 
         return view;
     }
+
+    @Override
+    public int getCount(){
+        return tags.size();
+    }
 }
