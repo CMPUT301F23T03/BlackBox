@@ -38,7 +38,6 @@ public class AttachImageFragment extends Fragment {
     private static final int REQUEST_CAMERA_PERMISSION = 201;
     private static final int REQUEST_GALLERY_PERMISSION = 200;
     private ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
-
     private Uri imageUri;
     private File imageFile;
     private ActivityResultLauncher<Uri> takePicture;
