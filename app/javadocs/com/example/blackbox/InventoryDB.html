@@ -71,7 +71,7 @@ loadScripts(document, 'script');</script>
 <h1 title="Class InventoryDB" class="title">Class InventoryDB</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance">com.example.blackbox.InventoryDB</div>
+<div class="inheritance">com.example.blackbox.inventory.InventoryDB</div>
 </div>
 <section class="class-description" id="class-description">
 <hr>
@@ -113,7 +113,7 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addItemToDB(com.example.blackbox.Item)" class="member-name-link">addItemToDB</a><wbr>(<a href="Item.html" title="class in com.example.blackbox">Item</a>&nbsp;item)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addItemToDB(com.example.blackbox.inventory.Item)" class="member-name-link">addItemToDB</a><wbr>(<a href="Item.html" title="class in com.example.blackbox">Item</a>&nbsp;item)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Adds a new item to the 'inventory' collection in the Firestore database.</div>
 </div>
@@ -123,7 +123,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Clears all items in the 'inventory' collection in the Firestore database.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#deleteItem(com.example.blackbox.Item)" class="member-name-link">deleteItem</a><wbr>(<a href="Item.html" title="class in com.example.blackbox">Item</a>&nbsp;item)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#deleteItem(com.example.blackbox.inventory.Item)" class="member-name-link">deleteItem</a><wbr>(<a href="Item.html" title="class in com.example.blackbox">Item</a>&nbsp;item)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Delete a specified tag from the database</div>
 </div>
@@ -138,7 +138,7 @@ loadScripts(document, 'script');</script>
 <div class="block">Gets the inventory collection</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateItemInDB(com.example.blackbox.Item,com.example.blackbox.Item)" class="member-name-link">updateItemInDB</a><wbr>(<a href="Item.html" title="class in com.example.blackbox">Item</a>&nbsp;old_item,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateItemInDB(com.example.blackbox.inventory.Item,com.example.blackbox.inventory.Item)" class="member-name-link">updateItemInDB</a><wbr>(<a href="Item.html" title="class in com.example.blackbox">Item</a>&nbsp;old_item,
  <a href="Item.html" title="class in com.example.blackbox">Item</a>&nbsp;new_item)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Updates an item in the Firestore database with new values</div>
@@ -210,7 +210,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="addItemToDB(com.example.blackbox.Item)">
+<section class="detail" id="addItemToDB(com.example.blackbox.inventory.Item)">
 <h3>addItemToDB</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addItemToDB</span><wbr><span class="parameters">(<a href="Item.html" title="class in com.example.blackbox">Item</a>&nbsp;item)</span></div>
 <div class="block">Adds a new item to the 'inventory' collection in the Firestore database.</div>
@@ -221,7 +221,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="updateItemInDB(com.example.blackbox.Item,com.example.blackbox.Item)">
+<section class="detail" id="updateItemInDB(com.example.blackbox.inventory.Item,com.example.blackbox.inventory.Item)">
 <h3>updateItemInDB</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">updateItemInDB</span><wbr><span class="parameters">(<a href="Item.html" title="class in com.example.blackbox">Item</a>&nbsp;old_item,
  <a href="Item.html" title="class in com.example.blackbox">Item</a>&nbsp;new_item)</span></div>
@@ -234,7 +234,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="deleteItem(com.example.blackbox.Item)">
+<section class="detail" id="deleteItem(com.example.blackbox.inventory.Item)">
 <h3>deleteItem</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">deleteItem</span><wbr><span class="parameters">(<a href="Item.html" title="class in com.example.blackbox">Item</a>&nbsp;item)</span></div>
 <div class="block">Delete a specified tag from the database</div>

@@ -5,9 +5,7 @@ package com.example.blackbox;
         import static androidx.test.espresso.action.ViewActions.click;
         import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
         import static androidx.test.espresso.assertion.ViewAssertions.matches;
-        import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
         import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-        import static androidx.test.espresso.matcher.ViewMatchers.withChild;
         import static androidx.test.espresso.matcher.ViewMatchers.withId;
         import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
         import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -18,35 +16,22 @@ package com.example.blackbox;
         import static org.hamcrest.CoreMatchers.is;
         import static org.hamcrest.CoreMatchers.not;
 
-        import android.graphics.Color;
-        import android.graphics.drawable.ColorDrawable;
-        import android.graphics.drawable.Drawable;
         import android.util.Log;
-        import android.widget.Switch;
 
         import androidx.test.espresso.Espresso;
-        import androidx.test.espresso.ViewAssertion;
         import androidx.test.espresso.action.ViewActions;
-        import androidx.test.espresso.assertion.ViewAssertions;
-        import androidx.test.espresso.matcher.BoundedMatcher;
         import androidx.test.espresso.matcher.ViewMatchers;
         import androidx.test.ext.junit.rules.ActivityScenarioRule;
         import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-        import org.checkerframework.checker.units.qual.A;
-        import org.hamcrest.Description;
-        import org.hamcrest.Matcher;
-        import org.hamcrest.Matchers;
-        import org.hamcrest.TypeSafeMatcher;
+        import com.example.blackbox.inventory.Item;
+        import com.example.blackbox.tag.Tag;
+
         import org.junit.Rule;
         import org.junit.Test;
         import org.junit.runner.RunWith;
 
         import java.util.ArrayList;
-        import java.util.Arrays;
-        import java.util.Collections;
-        import java.util.Date;
-        import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
 public class InventoryFunctionalityTest {

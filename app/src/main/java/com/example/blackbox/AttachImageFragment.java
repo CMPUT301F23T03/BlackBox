@@ -40,7 +40,7 @@ public class AttachImageFragment extends Fragment {
     private static final int REQUEST_GALLERY_PERMISSION = 200;
     private ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
     private Uri imageUri;
-    ArrayList<Uri> uriArrayList = new ArrayList<>();
+    public ArrayList<Uri> uriArrayList = new ArrayList<>();
     private File imageFile;
     private ActivityResultLauncher<Uri> takePicture;
     private ItemImageDB itemImageDB = new ItemImageDB();
