@@ -20,6 +20,9 @@ import com.example.blackbox.R;
 import com.example.blackbox.StringFormatter;
 import com.example.blackbox.inventory.Item;
 import com.example.blackbox.inventory.ItemList;
+import com.example.blackbox.tag.Tag;
+import com.example.blackbox.tag.TagAdapter;
+import com.example.blackbox.tag.TagDB;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;

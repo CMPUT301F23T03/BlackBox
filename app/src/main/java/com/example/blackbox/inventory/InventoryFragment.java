@@ -629,9 +629,6 @@ public class InventoryFragment extends Fragment {
         Log.d("Firestore", "Processed Update");
     }
 
-    
-
-
     /**
      * Fetches tags associated with an item from the Firestore database and
      * populates the item's tag list.
