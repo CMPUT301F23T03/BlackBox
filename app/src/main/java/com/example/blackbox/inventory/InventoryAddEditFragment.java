@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.inventory;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
@@ -13,6 +13,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+
+import com.example.blackbox.AddEditFragment;
+import com.example.blackbox.NavigationManager;
+import com.example.blackbox.R;
+import com.example.blackbox.tag.Tag;
+import com.example.blackbox.tag.TagDB;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,7 +55,6 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     private Context activityContext;
     private ArrayList<Tag> tags;
     private TextView tagDropdown;
-    ArrayList<Tag> selectedTags = new ArrayList<>();
 
     /**
      * Default constructor for the InventoryAddEditFragment
@@ -222,11 +227,11 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
                 for (String selectedTagName : selectedTagNames) {
                     for (Tag tag : tagList) {
                         if (tag.getName().equals(selectedTagName)){
-                            selectedTags.add(tag);
+                            itemTags.add(tag);
                         }
                     }
                 }
-                Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment);
+                Item new_item = new Item(name, itemTags, date, val, make, model, serialNumber, desc, comment);
                 itemDB.addItemToDB(new_item);
                 NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
             }
@@ -246,20 +251,21 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     public void editItem(Item item){
         TagDB tagDB = new TagDB();
 
-        String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
+//        String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
+        ArrayList<Tag> itemTags = item.getTags();
         tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
 
             @Override
             public void onSuccess(ArrayList<Tag> tagList) {
 
-                for (String selectedTagName : selectedTagNames) {
+                for (Tag itemTag : itemTags) {
                     for (Tag tag : tagList) {
-                        if (tag.getName().equals(selectedTagName)){
-                            selectedTags.add(tag);
+                        if (tag.getDataBaseID().equals(itemTag.getDataBaseID())){
+                            itemTags.add(tag);
                         }
                     }
                 }
-                Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment);
+                Item new_item = new Item(name, itemTags, date, val, make, model, serialNumber, desc, comment);
                 itemDB.updateItemInDB(item, new_item);
                 InventoryFragment inventoryFragment = new InventoryFragment();
                 NavigationManager.switchFragmentWithBack(inventoryFragment, getParentFragmentManager());
@@ -326,6 +332,9 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         }
     }
 
+    /**
+     * Creates a dialog box that prompts user to add or edit the tags of an item
+     */
     private void showTagSelectionDialog() {
         TagDB tagDB = new TagDB();
         tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
@@ -334,6 +343,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
                 boolean[] selectedTags = new boolean[tagList.size()];
                 String[] tagNameList = new String[tagList.size()];
 
+                // Ordering the tags in the dialog box
                 Comparator<Tag> tagComp = new Comparator<Tag>() {
                     @Override
                     public int compare(Tag tag1, Tag tag2) {
@@ -343,6 +353,11 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
                 };
                 tagList.sort(tagComp);
 
+                if (!tags.isEmpty()) {
+                    for (int i = 0; i < tagList.size(); i++) {
+                        for(Tag tag : tag)
+                    }
+                }
 
                 if (tagList.size() > 0) {
                     for (int i = 0; i < tagList.size(); i++) {

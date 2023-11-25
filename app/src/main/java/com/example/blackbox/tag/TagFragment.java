@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.tag;
 
 
 import android.content.Context;
@@ -14,6 +14,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.blackbox.NavigationManager;
+import com.example.blackbox.R;
+import com.example.blackbox.tag.Tag;
+import com.example.blackbox.tag.TagAdapter;
+import com.example.blackbox.tag.TagAddFragment;
+import com.example.blackbox.tag.TagDB;
+import com.example.blackbox.tag.TagEditFragment;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;

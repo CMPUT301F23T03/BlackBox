@@ -2,6 +2,10 @@ package com.example.blackbox;
 
 import static org.junit.Assert.assertEquals;
 
+import com.example.blackbox.inventory.Item;
+import com.example.blackbox.inventory.ItemList;
+import com.example.blackbox.tag.Tag;
+
 import org.junit.Test;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.inventory;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -20,6 +20,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.blackbox.NavigationManager;
+import com.example.blackbox.R;
+import com.example.blackbox.StringFormatter;
+import com.example.blackbox.tag.Tag;
+import com.example.blackbox.tag.TagDB;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -328,7 +333,7 @@ public class InventoryFragment extends Fragment {
                     }
                 }
 
-                // Check if all items with a tag are selected
+                // Check if items with the same tag are selected
                 for (int i = 0; i < tagList.size(); i++) {
                     Tag currentTag = tagList.get(i);
                     selectedTags[i] = areAllSelectedItemsWithSameTag(currentTag);
@@ -348,18 +353,8 @@ public class InventoryFragment extends Fragment {
 
                     // Apply tags based on the conditions
                     for (Item selectedItem : selectedItemsList) {
-                        ArrayList<Tag> existingTags = selectedItem.getTags();
-                        ArrayList<Tag> newTags = new ArrayList<>(existingTags);
-
-                        for (Tag existingTag : existingTags) {
-                            for (Tag tag : tagList) {
-                                if (tag.getName().equals(existingTag.getName())) {
-                                    existingTag.setID(tag.getDataBaseID());
-                                    newTags.add(existingTag);
-                                    break;
-                                }
-                            }
-                        }
+                        // Tags that the selected item already has
+                        ArrayList<Tag> itemsTags = selectedItem.getTags();
 
                         int tagIndex = 0;
 
@@ -367,36 +362,31 @@ public class InventoryFragment extends Fragment {
                             boolean tagAlreadyExists = false;
 
                             // Check if the tag already exists in the item's tags
-                            for (Tag existingTag : existingTags) {
-                                if (existingTag.getName().equals(currentTag.getName())) {
-                                    tagAlreadyExists = true;
-                                    if (selectedTags[tagIndex] == false && originalTags[tagIndex] == true) {
-                                        newTags.remove(existingTag);
-                                    }
-                                    break;
-                                }
-                            }
+                            for (Tag itemTag : itemsTags) {
+                                    if (itemTag.getDataBaseID().equals(currentTag.getDataBaseID())) {
+                                        tagAlreadyExists = true;
 
-                            if (selectedTags[tagIndex] && !tagAlreadyExists) {
-                                // Add new tag if it doesn't already exist
-                                newTags.add(currentTag);
-                            }
-
-                            if (selectedTags[tagIndex] == false && originalTags[tagIndex] == true) {
-                                for (Tag oldTag : selectedItem.getTags()) {
-                                    if (oldTag.getName().equals(currentTag.getName())){
-                                        newTags.remove(oldTag);
+                                        // If the selected tag for it is unchecked, that means the user wants to remove
+                                        // the tag from all the selected items
+                                        if (tagAlreadyExists && selectedTags[tagIndex] == false && originalTags[tagIndex] == true) {
+                                            itemsTags.remove(itemTag);
+                                        }
                                         break;
                                     }
                                 }
+
+                            if (selectedTags[tagIndex] && !tagAlreadyExists) {
+                                // Add new tag if it doesn't already exist
+                                itemsTags.add(currentTag);
                             }
+
                             tagIndex++;
                         }
 
                         // Recreate the item with updated tags
                         Item updatedItem = new Item(
                                 selectedItem.getName(),
-                                newTags,
+                                itemsTags,
                                 selectedItem.getDateOfPurchase(),
                                 selectedItem.getEstimatedValue(),
                                 selectedItem.getMake(),
@@ -606,9 +596,10 @@ public class InventoryFragment extends Fragment {
             int color = document.getLong("color").intValue();
             String colorName = document.getString("colorName");
             String description = document.getString("description");
-            // Create a Tag object with the retrieved data
+            String dataBaseId = document.getId();
 
-            Tag tag = new Tag(name, color, colorName, description);
+            // Create a Tag object with the retrieved data
+            Tag tag = new Tag(name, color, colorName, description, dataBaseId);
             item.getTags().add(tag);
     }
 
@@ -617,6 +608,6 @@ public class InventoryFragment extends Fragment {
      */
     public void updateTotalSum() {
         Double totalSum = itemList.calculateTotalSum();
-        totalSumTextView.setText("Total: " +StringFormatter.getMonetaryString(totalSum));
+        totalSumTextView.setText("Total: " + StringFormatter.getMonetaryString(totalSum));
     }
 }
