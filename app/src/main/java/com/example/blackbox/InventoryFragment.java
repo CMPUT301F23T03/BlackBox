@@ -351,16 +351,6 @@ public class InventoryFragment extends Fragment {
                         ArrayList<Tag> existingTags = selectedItem.getTags();
                         ArrayList<Tag> newTags = new ArrayList<>(existingTags);
 
-                        for (Tag existingTag : existingTags) {
-                            for (Tag tag : tagList) {
-                                if (tag.getName().equals(existingTag.getName())) {
-                                    existingTag.setID(tag.getDataBaseID());
-                                    newTags.add(existingTag);
-                                    break;
-                                }
-                            }
-                        }
-
                         int tagIndex = 0;
 
                         for (Tag currentTag : tagList) {
@@ -606,9 +596,10 @@ public class InventoryFragment extends Fragment {
             int color = document.getLong("color").intValue();
             String colorName = document.getString("colorName");
             String description = document.getString("description");
+            String tagID = document.getId();
             // Create a Tag object with the retrieved data
 
-            Tag tag = new Tag(name, color, colorName, description);
+            Tag tag = new Tag(name, color, colorName, description, tagID);
             item.getTags().add(tag);
     }
 
