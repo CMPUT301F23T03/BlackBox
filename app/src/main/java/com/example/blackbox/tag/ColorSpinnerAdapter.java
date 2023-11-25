@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.tag;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -10,6 +10,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.example.blackbox.R;
+import com.example.blackbox.tag.TagColor;
 
 import java.util.ArrayList;
 /**

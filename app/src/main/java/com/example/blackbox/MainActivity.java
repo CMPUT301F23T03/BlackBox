@@ -9,7 +9,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.example.blackbox.inventory.InventoryFragment;
 import com.example.blackbox.scanBarcode.ScanFragment;
+import com.example.blackbox.tag.TagFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 

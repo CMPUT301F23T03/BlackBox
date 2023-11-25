@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.inventory.filter;
 
 import android.app.AlertDialog;
 import android.util.Log;
@@ -16,7 +16,14 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.sql.SQLOutput;
+import com.example.blackbox.R;
+import com.example.blackbox.StringFormatter;
+import com.example.blackbox.inventory.Item;
+import com.example.blackbox.inventory.ItemList;
+import com.example.blackbox.tag.Tag;
+import com.example.blackbox.tag.TagAdapter;
+import com.example.blackbox.tag.TagDB;
+
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -235,7 +242,7 @@ public abstract class FilterDialog{
 
     private static void updateTotalSum(){
         Double totalSum = allItems.calculateTotalSum();
-        totalSumView.setText("Total: " +StringFormatter.getMonetaryString(totalSum));
+        totalSumView.setText("Total: " + StringFormatter.getMonetaryString(totalSum));
 
     }
 
