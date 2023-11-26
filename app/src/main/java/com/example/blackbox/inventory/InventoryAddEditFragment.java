@@ -3,7 +3,12 @@ package com.example.blackbox.inventory;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.app.AlertDialog;
+<<<<<<< HEAD
 import android.graphics.Color;
+=======
+import android.net.Uri;
+import android.os.Environment;
+>>>>>>> adc3d1286dd293d7dc6ceb63cfad627d66e43dd1
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -12,22 +17,35 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+<<<<<<< HEAD
 import android.widget.ListView;
+=======
+import android.widget.ImageButton;
+>>>>>>> adc3d1286dd293d7dc6ceb63cfad627d66e43dd1
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+<<<<<<< HEAD
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+=======
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+>>>>>>> adc3d1286dd293d7dc6ceb63cfad627d66e43dd1
 
 import com.example.blackbox.AddEditFragment;
+import com.example.blackbox.AttachImageFragment;
+import com.example.blackbox.GoogleAuthDB;
+import com.example.blackbox.ImageRecyclerAdapter;
+import com.example.blackbox.MainActivity;
 import com.example.blackbox.NavigationManager;
 import com.example.blackbox.R;
 import com.example.blackbox.tag.Tag;
 import com.example.blackbox.tag.TagDB;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 
@@ -38,7 +56,7 @@ import java.util.Comparator;
  * This is an abstract class with two subclasses, one relating to adding items
  * and one related to editing items
  */
-public abstract class InventoryAddEditFragment extends AddEditFragment {
+public abstract class InventoryAddEditFragment extends AddEditFragment implements AttachImageFragment.OnImageSelectedListener {
     private EditText itemName;
     private EditText itemValue;
     private EditText itemDescription;
@@ -56,12 +74,20 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     private String comment;
     private Button dateButton;
     private final String dateFormat = "%d-%02d-%02d";
-
     private String date;
     private Context activityContext;
     private ArrayList<Tag> tags = new ArrayList<>();
     private TextView tagDropdown;
     ArrayList<Tag> selectedTags = new ArrayList<>();
+    private ImageButton addImgBtn;
+    private AttachImageFragment attachImageFragment = new AttachImageFragment();
+    private RecyclerView recyclerView;
+    private ArrayList<Uri> displayedUris;
+    ImageRecyclerAdapter adapter;
+
+
+    private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
+
 
     /**
      * Default constructor for the InventoryAddEditFragment
@@ -110,14 +136,40 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
             }
         });
 
-
         setupBackButtonListener(view);
 
         // setup a date picker listener
         setupDatePickerListener(view);
+        // add image
+        recyclerView = view.findViewById(R.id.image_recycler_view);
+        addImgBtn = view.findViewById(R.id.add_img_btn);
+        addImgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Set the listener on AttachImageFragment
+                attachImageFragment.setOnImageSelectedListener(InventoryAddEditFragment.this);
+                NavigationManager.switchFragmentWithBack(attachImageFragment, getParentFragmentManager());
+            }
+        });
 
+        ArrayList<Uri> uriArrayList = new ArrayList<>(attachImageFragment.uriArrayList);
+        displayedUris = new ArrayList<>(uriArrayList);  // Initialize the list
 
+        adapter = new ImageRecyclerAdapter(displayedUris);
+        recyclerView.setLayoutManager(new GridLayoutManager(activityContext, 2));
+        recyclerView.setAdapter(adapter);
     }
+
+    @Override
+    public void onImageSelected(Uri imageUri) {
+        // Handle the selected image URI here
+        // You can add it to the display list or perform any other actions
+        if (!displayedUris.contains(imageUri)) {
+            displayedUris.add(imageUri);
+            adapter.updateDisplayedUris(displayedUris);  // Update the displayed images in the adapter
+        }
+    }
+
 
 
     /**
@@ -126,7 +178,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
      *      The view from which to find UI elements
      */
     public void setupDatePickerListener(View view){
-        dateButton = view.findViewById(R.id.date_editText);
+        dateButton = view.findViewById(R.id.bio_editText);
         Calendar calendar = Calendar.getInstance();
         int currentYear = calendar.get(Calendar.YEAR);
         int currentMonth = calendar.get(Calendar.MONTH);
@@ -182,6 +234,8 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     public void setupBackButtonListener(View view){
         final Button backButton = view.findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> {
+            // clear all temporary pictures
+            clearTempFiles();
             getParentFragmentManager().popBackStack();
         });
     }
@@ -222,9 +276,35 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
      */
     @Override
     public void add(){
-        Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment);
-        itemDB.addItemToDB(new_item);
-        NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
+
+        TagDB tagDB = new TagDB();
+
+        String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
+        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
+
+            @Override
+            public void onSuccess(ArrayList<Tag> tagList) {
+
+                for (String selectedTagName : selectedTagNames) {
+                    for (Tag tag : tagList) {
+                        if (tag.getName().equals(selectedTagName)){
+                            selectedTags.add(tag);
+                        }
+                    }
+                }
+                String userID = googleAuthDB.getUid();
+                Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment, userID);
+                itemDB.addItemToDB(new_item);
+                // clear all temporary pictures
+                clearTempFiles();
+                NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
+            }
+            @Override
+            public void onError(String errorMessage) {
+                // Handle the error, e.g., display an error message
+                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
+            }
+        });
     }
 
     /**
@@ -233,10 +313,36 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
      *      The item to be replaced
      */
     public void editItem(Item item){
-        Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment);
-        itemDB.updateItemInDB(item, new_item);
-        InventoryFragment inventoryFragment = new InventoryFragment();
-        NavigationManager.switchFragmentWithBack(inventoryFragment, getParentFragmentManager());
+        TagDB tagDB = new TagDB();
+
+        String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
+        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
+
+            @Override
+            public void onSuccess(ArrayList<Tag> tagList) {
+
+                for (String selectedTagName : selectedTagNames) {
+                    for (Tag tag : tagList) {
+                        if (tag.getName().equals(selectedTagName)){
+                            selectedTags.add(tag);
+                        }
+                    }
+                }
+                String userID = googleAuthDB.getUid();
+                Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment, userID);
+                itemDB.updateItemInDB(item, new_item);
+                // clear all temporary pictures
+                clearTempFiles();
+                InventoryFragment inventoryFragment = new InventoryFragment();
+                NavigationManager.switchFragmentWithBack(inventoryFragment, getParentFragmentManager());
+
+            }
+            @Override
+            public void onError(String errorMessage) {
+                // Handle the error, e.g., display an error message
+                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
+            }
+        });
     }
 
     /**
@@ -382,4 +488,28 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         });
     }
 
+    /**
+     * Clears temporary files from the directory obtained from the external files
+     * directory in the Pictures directory.
+     * Logs a message indicating the attempt to clear temporary files.
+     * Deletes all files found in the directory.
+     * Note: Ensure proper permissions to delete files from the directory.
+     */
+
+    private void clearTempFiles(){
+        File storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        if (storageDir != null && storageDir.isDirectory()) {
+            File[] files = storageDir.listFiles();
+            Log.d("Temp files", "Clearing temp files");
+            if (files != null) {
+                for (File file : files) {
+                    boolean deleted = file.delete();
+                    if (!deleted) {
+                        // Handle deletion failure if needed
+                        // You can log or take appropriate action here
+                    }
+                }
+            }
+        }
+    }
 }

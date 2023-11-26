@@ -78,6 +78,7 @@
             android:layout_height="0dp"
             app:layout_constraintBottom_toTopOf="@+id/delete_item_button"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
 
@@ -108,10 +109,10 @@
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="8dp"
                     android:background="@drawable/bg_white_rounded"
-                    android:drawableRight="@android:drawable/arrow_down_float"
                     android:backgroundTint="@color/gray02"
                     android:completionHint="Tag"
                     android:completionThreshold="1"
+                    android:drawableRight="@android:drawable/arrow_down_float"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tag_prompt"
                     tools:ignore="TouchTargetSizeCheck" />
@@ -143,7 +144,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/name_editText" />
 
                 <TextView
-                    android:id="@+id/date_prompt"
+                    android:id="@+id/bio_prompt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -166,7 +167,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.086"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/date_editText"
+                    app:layout_constraintTop_toBottomOf="@+id/bio_editText"
                     tools:ignore="TouchTargetSizeCheck" />
 
                 <TextView
@@ -234,20 +235,20 @@
                     app:layout_constraintTop_toBottomOf="@+id/desc_editText" />
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/date_editText"
+                    android:id="@+id/bio_editText"
                     android:layout_width="297dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="8dp"
-                    android:textSize="16sp"
-                    android:hint="Select a date"
-                    android:gravity="left|center_vertical"
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
+                    android:gravity="left|center_vertical"
+                    android:hint="Select a date"
                     android:textColor="@color/black"
+                    android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/date_prompt"
+                    app:layout_constraintTop_toBottomOf="@+id/bio_prompt"
                     tools:ignore="TouchTargetSizeCheck" />
 
                 <EditText
@@ -260,15 +261,14 @@
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
                     android:hint="Value"
-                    android:maxLength="10"
                     android:inputType="numberDecimal"
+                    android:maxLength="10"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt4" />
 
                 <EditText
                     android:id="@+id/make_editText"
                     android:layout_width="297dp"
-                    android:maxLength="30"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
                     android:layout_marginTop="8dp"
@@ -276,6 +276,7 @@
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
                     android:hint="Make"
+                    android:maxLength="30"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt5" />
 
@@ -288,8 +289,8 @@
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
-                    android:maxLength="30"
                     android:hint="Model"
+                    android:maxLength="30"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt6" />
 
@@ -318,7 +319,6 @@
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
                     android:hint="Comment"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt9" />
 
@@ -335,6 +335,42 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt8" />
 
+                <TextView
+                    android:id="@+id/enter_image_prompt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="Image"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.088"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/comment_editText" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/image_recycler_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toTopOf="@+id/add_img_btn"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.088"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/enter_image_prompt" />
+
+                <ImageButton
+                    android:id="@+id/add_img_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="add button for image"
+                    android:maxWidth="90dp"
+                    android:maxHeight="90dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/add"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/image_recycler_view" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
     </androidx.constraintlayout.widget.ConstraintLayout>

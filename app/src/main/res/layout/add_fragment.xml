@@ -129,7 +129,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/name_editText" />
 
                 <TextView
-                    android:id="@+id/date_prompt"
+                    android:id="@+id/bio_prompt"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -152,7 +152,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.086"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/date_editText" />
+                    app:layout_constraintTop_toBottomOf="@+id/bio_editText" />
 
                 <TextView
                     android:id="@+id/enter_name_prompt5"
@@ -189,7 +189,7 @@
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.087"
+                    app:layout_constraintHorizontal_bias="0.088"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/model_editText" />
 
@@ -210,6 +210,7 @@
                     android:id="@+id/enter_name_prompt9"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     android:text="Comment"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -219,7 +220,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/desc_editText" />
 
                 <androidx.appcompat.widget.AppCompatButton
-                    android:id="@+id/date_editText"
+                    android:id="@+id/bio_editText"
                     android:layout_width="297dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -232,7 +233,7 @@
                     android:ems="10"
                     android:textColor="@color/black"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/date_prompt"
+                    app:layout_constraintTop_toBottomOf="@+id/bio_prompt"
                     tools:ignore="TouchTargetSizeCheck" />
 
                 <EditText
@@ -298,12 +299,10 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="28dp"
                     android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
                     android:background="@drawable/bg_white_rounded"
                     android:backgroundTint="@color/gray02"
                     android:ems="10"
                     android:hint="Comment"
-                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt9" />
 
@@ -319,6 +318,43 @@
                     android:hint="Description"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt8" />
+
+                <TextView
+                    android:id="@+id/enter_image_prompt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:text="Image"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.088"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/comment_editText" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/image_recycler_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toTopOf="@+id/add_img_btn"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.088"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/enter_image_prompt" />
+
+                <ImageButton
+                    android:id="@+id/add_img_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="32dp"
+                    android:adjustViewBounds="true"
+                    android:contentDescription="add button for image"
+                    android:maxWidth="90dp"
+                    android:maxHeight="90dp"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/add"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/image_recycler_view" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
