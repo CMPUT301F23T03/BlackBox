@@ -98,9 +98,9 @@ public class AttachImageFragment extends Fragment {
                     @Override
                     public void onActivityResult(Boolean result) {
                         if (result) {
-                            if (imageUri != null) {
-                                imageUri = cameraImageUri;
+                            if (cameraImageUri != null) {
                                 imageView.setImageURI(cameraImageUri);
+                                imageUri = cameraImageUri;
                                 Log.d("Camera", "Selected URI: " + imageUri);
                             } else {
                                 Log.d("Camera", "No media selected");

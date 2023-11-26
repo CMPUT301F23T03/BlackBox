@@ -138,8 +138,8 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
         displayedUris = new ArrayList<>(uriArrayList);  // Initialize the list
 
         adapter = new ImageRecyclerAdapter(displayedUris);
-        recyclerView.setLayoutManager(new GridLayoutManager(activityContext, 2));
         recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new GridLayoutManager(activityContext, 2));
     }
 
     @Override
