@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         else if (id == R.id.settings){
                             // load tag fragment
-                            NavigationManager.switchFragmentWithoutBack(new TagFragment(), fm);
+                            NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), fm);
                         }
                         return true;
                     }

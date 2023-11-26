@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/profile_button2"
+        android:id="@+id/profile_button"
         android:layout_width="31dp"
         android:layout_height="32dp"
         android:layout_marginStart="32dp"

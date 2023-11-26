@@ -59,7 +59,7 @@ public class TagFragment extends Fragment {
         view =  inflater.inflate(R.layout.tag_fragment, container, false);
 
         // Display profile picture (taken from the Google account)
-        ImageButton profilePicture = view.findViewById(R.id.profile_button2);
+        ImageButton profilePicture = view.findViewById(R.id.profile_button);
         googleAuthDB.displayGoogleProfilePicture(profilePicture, 80, 80, this);
 
         return view;
@@ -124,7 +124,7 @@ public class TagFragment extends Fragment {
         });
 
         // When profile icon is clicked, switch to profile fragment
-        ImageButton profileButton = view.findViewById(R.id.profile_button2);
+        ImageButton profileButton = view.findViewById(R.id.profile_button);
         profileButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
