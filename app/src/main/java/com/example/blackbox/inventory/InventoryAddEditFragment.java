@@ -20,9 +20,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.blackbox.AddEditFragment;
-import com.example.blackbox.AttachImageFragment;
 import com.example.blackbox.ImageRecyclerAdapter;
-import com.example.blackbox.MainActivity;
 import com.example.blackbox.NavigationManager;
 import com.example.blackbox.R;
 import com.example.blackbox.tag.Tag;
@@ -67,7 +65,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
     private AttachImageFragment attachImageFragment = new AttachImageFragment();
     private RecyclerView recyclerView;
     private ArrayList<Uri> displayedUris;
-    ImageRecyclerAdapter adapter;
+    private ImageRecyclerAdapter adapter;
 
 
 

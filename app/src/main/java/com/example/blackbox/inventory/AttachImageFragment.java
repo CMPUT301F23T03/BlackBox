@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.inventory;
 
 import static android.Manifest.permission.READ_MEDIA_IMAGES;
 import android.Manifest;
@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import com.example.blackbox.R;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
