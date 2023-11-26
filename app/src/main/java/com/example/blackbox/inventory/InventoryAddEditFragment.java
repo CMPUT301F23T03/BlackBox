@@ -280,6 +280,8 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
                 String userID = googleAuthDB.getUid();
                 Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment, userID);
                 itemDB.addItemToDB(new_item);
+                // clear all temporary pictures
+                clearTempFiles();
                 NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
             }
             @Override
@@ -314,6 +316,8 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
                 String userID = googleAuthDB.getUid();
                 Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment, userID);
                 itemDB.updateItemInDB(item, new_item);
+                // clear all temporary pictures
+                clearTempFiles();
                 InventoryFragment inventoryFragment = new InventoryFragment();
                 NavigationManager.switchFragmentWithBack(inventoryFragment, getParentFragmentManager());
 
