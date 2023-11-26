@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Spinner;
@@ -23,8 +24,10 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.blackbox.GoogleAuthDB;
 import com.example.blackbox.MainActivity;
 import com.example.blackbox.NavigationManager;
+import com.example.blackbox.ProfileFragment;
 import com.example.blackbox.R;
 import com.example.blackbox.StringFormatter;
 import com.example.blackbox.inventory.filter.Filter;
@@ -76,6 +79,7 @@ public class InventoryFragment extends Fragment {
     private double totalSum = 0.0;
     private ArrayList<Item> selectedItemsList = new ArrayList<>();
     private boolean isLongClick = false;
+    private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
 
     /**
      * Default constructor for the InventoryFragment.
@@ -119,6 +123,11 @@ public class InventoryFragment extends Fragment {
         View ItemFragmentLayout = inflater.inflate(R.layout.inventory_fragment, container, false);
         // enable navigation bar
         ((MainActivity) requireActivity()).toggleBottomNavigationView(true);
+
+
+        // Display profile picture (taken from the Google account)
+        ImageButton profilePicture = ItemFragmentLayout.findViewById(R.id.profile_button);
+        googleAuthDB.displayGoogleProfilePicture(profilePicture, 80, 80, this);
 
         return ItemFragmentLayout;
     }
@@ -182,23 +191,37 @@ public class InventoryFragment extends Fragment {
 
         // listener for data changes in DB
         dbListener =
-                inventoryDB.getInventory()
+                inventoryDB.getInventory().whereEqualTo("user_id", googleAuthDB.getUid())
                 // whenever database is update it is reordered by add date
                 .orderBy("update_date", Query.Direction.DESCENDING)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value,
                                 @Nullable FirebaseFirestoreException e) {
-
-                // update inventory
-                if (value != null && !value.isEmpty()){
-                    handleGetInventory(value, e);
+                if (e != null) {
+                    // An error occurred while fetching the data
+                    // Handle the error here
+                    Log.e("Firestore", "Error getting inventory", e);
                 }
-                else{
-                    itemList.clear();
-                    processUpdate();
+                else {
+                    // update inventory
+                    if (value != null && !value.isEmpty()) {
+                        handleGetInventory(value, e);
+                    } else {
+                        itemList.clear();
+                        processUpdate();
+                    }
                 }
+            }
+        });
 
+        // When profile icon is clicked, switch to profile fragment
+        ImageButton profileButton = view.findViewById(R.id.profile_button);
+        profileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProfileFragment profileFragment = new ProfileFragment();
+                NavigationManager.switchFragmentWithoutBack(profileFragment, getParentFragmentManager());
             }
         });
 
@@ -278,20 +301,15 @@ public class InventoryFragment extends Fragment {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // If the selectedItemsList size is the same as the itemList size, clear the entire list
-                if (selectedItemsList.size() == itemList.size()) {
-                    // Clear the entire DB
-                    inventoryDB.clearInventory();
 
-                } else {
-                    // Iterate through the selected items and delete them
-                    for (Item selectedItem : selectedItemsList) {
-                        // Delete item from Firestore or perform any other deletion logic
-                        inventoryDB.deleteItem(selectedItem);
-                        // Remove the item from the list
-                        itemList.remove(selectedItem);
-                    }
+                // Iterate through the selected items and delete them
+                for (Item selectedItem : selectedItemsList) {
+                    // Delete item from Firestore or perform any other deletion logic
+                    inventoryDB.deleteItem(selectedItem);
+                    // Remove the item from the list
+                    itemList.remove(selectedItem);
                 }
+
                 exitMultiselect();
 
                 // Update the view to reflect the change in selection
@@ -312,6 +330,7 @@ public class InventoryFragment extends Fragment {
                   inventoryAdapter.notifyDataSetChanged();
               }
         });
+
     }
 
     /**
@@ -592,11 +611,11 @@ public class InventoryFragment extends Fragment {
             String comment = doc.getString("comment");
             String dateOfPurchase = doc.getString("purchase_date");
             String dbID = doc.getId();
+            String userID = doc.getString("user_id");
             ArrayList<Tag> tags = new ArrayList<>();
-
             List<String> tagIDs = (List<String>) doc.get("tags");
 
-            Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID);
+            Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID, userID);
             if (tagIDs != null && !tagIDs.isEmpty()) {
                 for (String tagID : tagIDs) {
                     Task<DocumentSnapshot> tagTask = tagDB.getTags().document(tagID).get();
@@ -608,6 +627,7 @@ public class InventoryFragment extends Fragment {
                 }
             }
             itemList.add(item);
+
 
         }
         if (tagTasks.size() > 0){

@@ -32,7 +32,8 @@ public class TagDBTest {
      */
     public static void clearTagDB(TagDB tags) {
         CollectionReference tagRef = tags.getTags();
-        Task<QuerySnapshot> querySnapshotTask = tagRef.get();
+        GoogleAuthDB googleAuthDB = new GoogleAuthDB();
+        Task<QuerySnapshot> querySnapshotTask = tagRef.whereEqualTo("user_id", googleAuthDB.getUid()).get();
         Log.d("Firestore", "Before listener");
 
         // Create a CountDownLatch with an initial count of 1

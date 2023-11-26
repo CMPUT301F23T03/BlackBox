@@ -43,7 +43,7 @@
                 android:backgroundTint="@color/gray02"
                 android:maxLength="21"
                 android:ems="10"
-                android:hint="@string/item_name"
+                android:hint="@string/tag_name"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/enter_name_prompt" />
 
