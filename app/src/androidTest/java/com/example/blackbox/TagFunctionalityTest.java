@@ -145,6 +145,14 @@ public class TagFunctionalityTest {
         onView(withId((R.id.delete_tag_button))).perform(click());
         onView(withText("CONFIRM")).perform(click());
 
+        // wait for deletion to occur
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
+
         onView(withText(tagName)).check(doesNotExist());
 
     }
