@@ -25,6 +25,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.snackbar.Snackbar;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -41,6 +43,7 @@ import java.util.Locale;
  */
 public class AttachImageFragment extends Fragment {
     // UI elements
+    private View view;
     private ImageView imageView;
     private Button cameraButton;
     private Button galleryButton;
@@ -65,7 +68,7 @@ public class AttachImageFragment extends Fragment {
                 .permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
-        View view = inflater.inflate(R.layout.attach_image_fragment, container, false);
+        view = inflater.inflate(R.layout.attach_image_fragment, container, false);
         imageView = view.findViewById(R.id.image_view);
         cameraButton = view.findViewById(R.id.camera_button);
         galleryButton = view.findViewById(R.id.gallery_button);
@@ -154,15 +157,21 @@ public class AttachImageFragment extends Fragment {
         void onImageSelected(Uri imageUri);
     }
 
-    private void confirmAttachment(){
+    private void confirmAttachment() {
         confirmButton.setOnClickListener(v -> {
-            uriArrayList.add(imageUri);
-            if (imageSelectedListener != null) {
-                imageSelectedListener.onImageSelected(imageUri);
+            if (imageView.getDrawable() == null) {
+                // Display Snackbar error message when imageView is empty
+                Snackbar.make(view, "Please select an image first", Snackbar.LENGTH_SHORT).show();
+            } else {
+                uriArrayList.add(imageUri);
+                if (imageSelectedListener != null) {
+                    imageSelectedListener.onImageSelected(imageUri);
+                }
+                getParentFragmentManager().popBackStack();
             }
-            getParentFragmentManager().popBackStack();
         });
     }
+
 
 
     /**
