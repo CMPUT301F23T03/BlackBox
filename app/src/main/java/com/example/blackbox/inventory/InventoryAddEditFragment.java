@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.blackbox.AddEditFragment;
 import com.example.blackbox.AttachImageFragment;
+import com.example.blackbox.GoogleAuthDB;
 import com.example.blackbox.ImageRecyclerAdapter;
 import com.example.blackbox.MainActivity;
 import com.example.blackbox.NavigationManager;

@@ -17,8 +17,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.blackbox.GoogleAuthDB;
 import com.example.blackbox.MainActivity;
 import com.example.blackbox.NavigationManager;
+import com.example.blackbox.ProfileFragment;
 import com.example.blackbox.R;
 import com.example.blackbox.tag.Tag;
 import com.example.blackbox.tag.TagAdapter;
