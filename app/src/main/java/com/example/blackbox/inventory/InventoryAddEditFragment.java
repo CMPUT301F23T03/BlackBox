@@ -119,9 +119,6 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
             }
         });
 
-        // disable navigation bar
-        ((MainActivity) requireActivity()).toggleBottomNavigationView(false);
-
         setupBackButtonListener(view);
 
         // setup a date picker listener

@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.example.blackbox.MainActivity;
 import com.example.blackbox.NavigationManager;
 import com.example.blackbox.R;
 import com.example.blackbox.tag.Tag;
@@ -52,9 +53,9 @@ public class TagFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // enable navigation bar
+        ((MainActivity) requireActivity()).toggleBottomNavigationView(true);
         view =  inflater.inflate(R.layout.tag_fragment, container, false);
-
-
         return view;
     }
     /**
