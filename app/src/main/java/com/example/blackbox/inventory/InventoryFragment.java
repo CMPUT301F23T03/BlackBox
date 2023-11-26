@@ -69,8 +69,6 @@ public class InventoryFragment extends Fragment {
     private Context activityContext;
     InventoryDB inventoryDB;
     TagDB tagDB;
-    InventoryEditFragment inventoryEditFragment = new InventoryEditFragment();
-    InventoryAddFragment inventoryAddFragment = new InventoryAddFragment();
     private TextView totalSumTextView;
     // Add a member variable to store the total sum
     private double totalSum = 0.0;
@@ -214,7 +212,7 @@ public class InventoryFragment extends Fragment {
         // add an item - display add fragment
         addButton = view.findViewById(R.id.add_button);
         addButton.setOnClickListener((v) -> {
-            NavigationManager.switchFragmentWithBack(inventoryAddFragment, getParentFragmentManager());
+            NavigationManager.switchFragmentWithBack(new InventoryAddFragment(), getParentFragmentManager());
         });
 
         // edit item - display edit fragment
@@ -222,7 +220,7 @@ public class InventoryFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (!isLongClick) {
                     // Regular click
-                    inventoryEditFragment = InventoryEditFragment.newInstance(itemList.get(i));
+                    InventoryEditFragment inventoryEditFragment = InventoryEditFragment.newInstance(itemList.get(i));
                     NavigationManager.switchFragmentWithBack(inventoryEditFragment, getParentFragmentManager());
                 } else {
                     toggleSelection(i);

@@ -58,7 +58,6 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
     private String comment;
     private Button dateButton;
     private final String dateFormat = "%d-%02d-%02d";
-
     private String date;
     private Context activityContext;
     private ArrayList<Tag> tags = new ArrayList<>();

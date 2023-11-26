@@ -56,8 +56,9 @@ public class AttachImageFragment extends Fragment {
     // Activity Result Launchers and related variables
     private ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
     private Uri imageUri;
+    private File cameraImageFile;
+    private Uri cameraImageUri;
     public ArrayList<Uri> uriArrayList = new ArrayList<>();
-    private File imageFile;
     private ActivityResultLauncher<Uri> takePicture;
 
     // Listener for image selection
@@ -78,16 +79,17 @@ public class AttachImageFragment extends Fragment {
         pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
             if (uri != null) {
                 imageView.setImageURI(uri);
+                imageUri = uri;
                 Log.d("PhotoPicker", "Selected URI: " + uri);
             } else {
                 Log.d("PhotoPicker", "No media selected");
             }
         });
 
-        // Creating a temporary image file and obtaining its URI
-        imageFile = CreateTempImage();
-        imageUri = FileProvider.getUriForFile(requireContext(),
-                requireContext().getPackageName() + ".provider", imageFile);
+        // Creating a temporary camera image file and obtaining its URI
+        cameraImageFile = CreateTempImage();
+        cameraImageUri = FileProvider.getUriForFile(requireContext(),
+                requireContext().getPackageName() + ".provider", cameraImageFile);
 
         // Activity Result Launcher for capturing an image and store it in side imageFile
         takePicture = registerForActivityResult(
@@ -97,7 +99,8 @@ public class AttachImageFragment extends Fragment {
                     public void onActivityResult(Boolean result) {
                         if (result) {
                             if (imageUri != null) {
-                                imageView.setImageURI(imageUri);
+                                imageUri = cameraImageUri;
+                                imageView.setImageURI(cameraImageUri);
                                 Log.d("Camera", "Selected URI: " + imageUri);
                             } else {
                                 Log.d("Camera", "No media selected");
@@ -139,7 +142,7 @@ public class AttachImageFragment extends Fragment {
                     , REQUEST_CAMERA_PERMISSION);
         }
         cameraButton.setOnClickListener(v -> {
-            takePicture.launch(imageUri);
+            takePicture.launch(cameraImageUri);
         });
     }
 
