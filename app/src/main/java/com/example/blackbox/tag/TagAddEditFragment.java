@@ -122,7 +122,7 @@ public abstract class TagAddEditFragment extends AddEditFragment {
         String userID = googleAuthDB.getUid();
         Tag new_tag = new Tag(name, selectedColor, colorName, desc, userID);
         tagDB.addTagToDB(new_tag);
-        NavigationManager.switchFragmentWithBack(new TagFragment(), getParentFragmentManager());
+        getParentFragmentManager().popBackStack();
     }
 
     /**
@@ -148,7 +148,7 @@ public abstract class TagAddEditFragment extends AddEditFragment {
         String userID = googleAuthDB.getUid();
         Tag new_tag = new Tag(name, selectedColor, colorName, desc, userID);
         tagDB.editTag(tag, new_tag);
-        NavigationManager.switchFragmentWithBack(new TagFragment(), getParentFragmentManager());
+        getParentFragmentManager().popBackStack();
     }
 
     /**
