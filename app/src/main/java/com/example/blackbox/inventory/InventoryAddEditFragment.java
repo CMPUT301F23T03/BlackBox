@@ -3,25 +3,33 @@ package com.example.blackbox.inventory;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.app.AlertDialog;
+import android.net.Uri;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.blackbox.AddEditFragment;
+import com.example.blackbox.AttachImageFragment;
+import com.example.blackbox.ImageRecyclerAdapter;
+import com.example.blackbox.MainActivity;
 import com.example.blackbox.NavigationManager;
 import com.example.blackbox.R;
 import com.example.blackbox.tag.Tag;
 import com.example.blackbox.tag.TagDB;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 
@@ -32,7 +40,7 @@ import java.util.Comparator;
  * This is an abstract class with two subclasses, one relating to adding items
  * and one related to editing items
  */
-public abstract class InventoryAddEditFragment extends AddEditFragment {
+public abstract class InventoryAddEditFragment extends AddEditFragment implements AttachImageFragment.OnImageSelectedListener {
     private EditText itemName;
     private EditText itemValue;
     private EditText itemDescription;
@@ -56,6 +64,13 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     private ArrayList<Tag> tags = new ArrayList<>();
     private TextView tagDropdown;
     ArrayList<Tag> selectedTags = new ArrayList<>();
+    private ImageButton addImgBtn;
+    private AttachImageFragment attachImageFragment = new AttachImageFragment();
+    private RecyclerView recyclerView;
+    private ArrayList<Uri> displayedUris;
+    ImageRecyclerAdapter adapter;
+
+
 
     /**
      * Default constructor for the InventoryAddEditFragment
@@ -104,14 +119,40 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
             }
         });
 
-
         setupBackButtonListener(view);
 
         // setup a date picker listener
         setupDatePickerListener(view);
+        // add image
+        recyclerView = view.findViewById(R.id.image_recycler_view);
+        addImgBtn = view.findViewById(R.id.add_img_btn);
+        addImgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Set the listener on AttachImageFragment
+                attachImageFragment.setOnImageSelectedListener(InventoryAddEditFragment.this);
+                NavigationManager.switchFragmentWithBack(attachImageFragment, getParentFragmentManager());
+            }
+        });
 
+        ArrayList<Uri> uriArrayList = new ArrayList<>(attachImageFragment.uriArrayList);
+        displayedUris = new ArrayList<>(uriArrayList);  // Initialize the list
 
+        adapter = new ImageRecyclerAdapter(displayedUris);
+        recyclerView.setLayoutManager(new GridLayoutManager(activityContext, 2));
+        recyclerView.setAdapter(adapter);
     }
+
+    @Override
+    public void onImageSelected(Uri imageUri) {
+        // Handle the selected image URI here
+        // You can add it to the display list or perform any other actions
+        if (!displayedUris.contains(imageUri)) {
+            displayedUris.add(imageUri);
+            adapter.updateDisplayedUris(displayedUris);  // Update the displayed images in the adapter
+        }
+    }
+
 
 
     /**
@@ -176,6 +217,8 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     public void setupBackButtonListener(View view){
         final Button backButton = view.findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> {
+            // clear all temporary pictures
+            clearTempFiles();
             getParentFragmentManager().popBackStack();
         });
     }
@@ -218,6 +261,8 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     public void add(){
         Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment);
         itemDB.addItemToDB(new_item);
+        // clear all temporary pictures
+        clearTempFiles();
         NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
     }
 
@@ -229,8 +274,9 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
     public void editItem(Item item){
         Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment);
         itemDB.updateItemInDB(item, new_item);
-        InventoryFragment inventoryFragment = new InventoryFragment();
-        NavigationManager.switchFragmentWithBack(inventoryFragment, getParentFragmentManager());
+        // clear all temporary pictures
+        clearTempFiles();
+        NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
     }
 
     /**
@@ -376,4 +422,28 @@ public abstract class InventoryAddEditFragment extends AddEditFragment {
         });
     }
 
+    /**
+     * Clears temporary files from the directory obtained from the external files
+     * directory in the Pictures directory.
+     * Logs a message indicating the attempt to clear temporary files.
+     * Deletes all files found in the directory.
+     * Note: Ensure proper permissions to delete files from the directory.
+     */
+
+    private void clearTempFiles(){
+        File storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        if (storageDir != null && storageDir.isDirectory()) {
+            File[] files = storageDir.listFiles();
+            Log.d("Temp files", "Clearing temp files");
+            if (files != null) {
+                for (File file : files) {
+                    boolean deleted = file.delete();
+                    if (!deleted) {
+                        // Handle deletion failure if needed
+                        // You can log or take appropriate action here
+                    }
+                }
+            }
+        }
+    }
 }

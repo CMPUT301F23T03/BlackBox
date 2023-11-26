@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.example.blackbox.inventory.InventoryFragment;
 import com.example.blackbox.scanBarcode.ScanFragment;
@@ -67,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         );
+
+
     }
     /**
      * Override method called when the app requests permissions at runtime,
@@ -91,5 +94,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
+    // Method to show/hide BottomNavigationView
+    public void toggleBottomNavigationView(boolean isVisible) {
+        if (isVisible) {
+            bottomNavigationView.setVisibility(View.VISIBLE);
+        } else {
+            bottomNavigationView.setVisibility(View.GONE);
+        }
+    }
 }

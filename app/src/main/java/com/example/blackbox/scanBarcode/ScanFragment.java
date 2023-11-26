@@ -8,6 +8,8 @@ import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.blackbox.AttachImageFragment;
+import com.example.blackbox.MainActivity;
 import com.example.blackbox.NavigationManager;
 import com.example.blackbox.R;
 
@@ -23,6 +25,9 @@ public class ScanFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         view =  inflater.inflate(R.layout.scan_fragment, container, false);
+
+        // enable navigation bar
+        ((MainActivity) requireActivity()).toggleBottomNavigationView(true);
 
         // Camera button
         final Button cameraButton = view.findViewById(R.id.button_camera);
