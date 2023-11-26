@@ -291,4 +291,7 @@ public class Item implements Serializable {
         return highestTag;
     }
 
+    public void setUserID(String ID){
+        this.userID = ID;
+    }
 }
