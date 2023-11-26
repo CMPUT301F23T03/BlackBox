@@ -30,6 +30,9 @@ public abstract class AddEditFragment extends Fragment {
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
+        // disable navigation bar
+        ((MainActivity) requireActivity()).toggleBottomNavigationView(false);
+
         View fragmentLayout = inflater.inflate(fragment_id, container, false);
         return fragmentLayout;
     }

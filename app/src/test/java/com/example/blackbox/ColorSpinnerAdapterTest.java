@@ -1,7 +1,8 @@
 package com.example.blackbox;
 import static org.junit.Assert.assertEquals;
 
-import android.graphics.Color;
+import com.example.blackbox.tag.ColorSpinnerAdapter;
+import com.example.blackbox.tag.TagColor;
 
 import org.junit.Before;
 import org.junit.Test;

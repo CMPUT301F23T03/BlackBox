@@ -23,6 +23,8 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.example.blackbox.tag.Tag;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -144,6 +146,14 @@ public class TagFunctionalityTest {
         // delete the item
         onView(withId((R.id.delete_tag_button))).perform(click());
         onView(withText("CONFIRM")).perform(click());
+
+        // wait for deletion to occur
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
 
         onView(withText(tagName)).check(doesNotExist());
 

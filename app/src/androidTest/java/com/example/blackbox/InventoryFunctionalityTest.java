@@ -5,9 +5,7 @@ package com.example.blackbox;
         import static androidx.test.espresso.action.ViewActions.click;
         import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
         import static androidx.test.espresso.assertion.ViewAssertions.matches;
-        import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
         import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-        import static androidx.test.espresso.matcher.ViewMatchers.withChild;
         import static androidx.test.espresso.matcher.ViewMatchers.withId;
         import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
         import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -18,35 +16,22 @@ package com.example.blackbox;
         import static org.hamcrest.CoreMatchers.is;
         import static org.hamcrest.CoreMatchers.not;
 
-        import android.graphics.Color;
-        import android.graphics.drawable.ColorDrawable;
-        import android.graphics.drawable.Drawable;
         import android.util.Log;
-        import android.widget.Switch;
 
         import androidx.test.espresso.Espresso;
-        import androidx.test.espresso.ViewAssertion;
         import androidx.test.espresso.action.ViewActions;
-        import androidx.test.espresso.assertion.ViewAssertions;
-        import androidx.test.espresso.matcher.BoundedMatcher;
         import androidx.test.espresso.matcher.ViewMatchers;
         import androidx.test.ext.junit.rules.ActivityScenarioRule;
         import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-        import org.checkerframework.checker.units.qual.A;
-        import org.hamcrest.Description;
-        import org.hamcrest.Matcher;
-        import org.hamcrest.Matchers;
-        import org.hamcrest.TypeSafeMatcher;
+        import com.example.blackbox.inventory.Item;
+        import com.example.blackbox.tag.Tag;
+
         import org.junit.Rule;
         import org.junit.Test;
         import org.junit.runner.RunWith;
 
         import java.util.ArrayList;
-        import java.util.Arrays;
-        import java.util.Collections;
-        import java.util.Date;
-        import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
 public class InventoryFunctionalityTest {
@@ -237,14 +222,21 @@ public class InventoryFunctionalityTest {
         // fill information
         onView(withId(R.id.name_editText)).perform(ViewActions.typeText("Random Test"));
         onView(withId(R.id.value_editText)).perform(ViewActions.replaceText(String.valueOf(150)));
-
         // add item
         onView(withId(R.id.small_save_button)).perform(click());
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
         // open the newly added item
         onData(is(instanceOf(Item.class))).inAdapterView(withId(R.id.item_list)).atPosition(0).perform(click());
-        // change the name and value
+        // change the name
         onView(withId(R.id.name_editText)).perform(ViewActions.clearText());
         onView(withId(R.id.name_editText)).perform(ViewActions.typeText(name));
+        // change the value
+        onView(withId(R.id.value_editText)).perform(ViewActions.scrollTo());
         onView(withId(R.id.value_editText)).perform(ViewActions.clearText());
         onView(withId(R.id.value_editText)).perform(ViewActions.typeText(String.valueOf(estimatedValue)));
         // update item
@@ -575,6 +567,13 @@ public class InventoryFunctionalityTest {
 
         // Click the delete button
         Espresso.onView(ViewMatchers.withId(R.id.inventory_delete_button)).perform(ViewActions.click());
+
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
 
         // Check if the items are deleted
         onView(withText(name)).check(doesNotExist());

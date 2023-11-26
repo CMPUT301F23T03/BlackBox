@@ -71,7 +71,7 @@ loadScripts(document, 'script');</script>
 <h1 title="Class TagDB" class="title">Class TagDB</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance">com.example.blackbox.TagDB</div>
+<div class="inheritance">com.example.blackbox.tag.TagDB</div>
 </div>
 <section class="class-description" id="class-description">
 <hr>
@@ -127,29 +127,29 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addTagToDB(com.example.blackbox.Tag)" class="member-name-link">addTagToDB</a><wbr>(<a href="Tag.html" title="class in com.example.blackbox">Tag</a>&nbsp;tag)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#addTagToDB(com.example.blackbox.tag.Tag)" class="member-name-link">addTagToDB</a><wbr>(<a href="Tag.html" title="class in com.example.blackbox">Tag</a>&nbsp;tag)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Adds a new tag to the 'tags' collection in the Firestore database.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#deleteTag(com.example.blackbox.Tag)" class="member-name-link">deleteTag</a><wbr>(<a href="Tag.html" title="class in com.example.blackbox">Tag</a>&nbsp;tag)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#deleteTag(com.example.blackbox.tag.Tag)" class="member-name-link">deleteTag</a><wbr>(<a href="Tag.html" title="class in com.example.blackbox">Tag</a>&nbsp;tag)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Delete a specified tag from the database</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#deleteTagFromItems(com.example.blackbox.Tag,com.google.android.gms.tasks.Task)" class="member-name-link">deleteTagFromItems</a><wbr>(<a href="Tag.html" title="class in com.example.blackbox">Tag</a>&nbsp;tag,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#deleteTagFromItems(com.example.blackbox.tag.Tag,com.google.android.gms.tasks.Task)" class="member-name-link">deleteTagFromItems</a><wbr>(<a href="Tag.html" title="class in com.example.blackbox">Tag</a>&nbsp;tag,
  com.google.android.gms.tasks.Task&lt;com.google.firebase.firestore.QuerySnapshot&gt;&nbsp;task)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Delete a specified tag from a list of items provided as a Query Snapshot</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#editTag(com.example.blackbox.Tag,com.example.blackbox.Tag)" class="member-name-link">editTag</a><wbr>(<a href="Tag.html" title="class in com.example.blackbox">Tag</a>&nbsp;oldTag,
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#editTag(com.example.blackbox.tag.Tag,com.example.blackbox.tag.Tag)" class="member-name-link">editTag</a><wbr>(<a href="Tag.html" title="class in com.example.blackbox">Tag</a>&nbsp;oldTag,
  <a href="Tag.html" title="class in com.example.blackbox">Tag</a>&nbsp;newTag)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Updates a tag in the 'tags' collection in the Firestore database.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAllTags(com.example.blackbox.TagDB.OnGetTagsCallback)" class="member-name-link">getAllTags</a><wbr>(<a href="TagDB.OnGetTagsCallback.html" title="interface in com.example.blackbox">TagDB.OnGetTagsCallback</a>&nbsp;callback)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAllTags(com.example.blackbox.tag.TagDB.OnGetTagsCallback)" class="member-name-link">getAllTags</a><wbr>(<a href="TagDB.OnGetTagsCallback.html" title="interface in com.example.blackbox">TagDB.OnGetTagsCallback</a>&nbsp;callback)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>com.google.firebase.firestore.CollectionReference</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getTags()" class="member-name-link">getTags</a>()</code></div>
@@ -212,7 +212,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="addTagToDB(com.example.blackbox.Tag)">
+<section class="detail" id="addTagToDB(com.example.blackbox.tag.Tag)">
 <h3>addTagToDB</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">addTagToDB</span><wbr><span class="parameters">(<a href="Tag.html" title="class in com.example.blackbox">Tag</a>&nbsp;tag)</span></div>
 <div class="block">Adds a new tag to the 'tags' collection in the Firestore database.</div>
@@ -223,7 +223,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="editTag(com.example.blackbox.Tag,com.example.blackbox.Tag)">
+<section class="detail" id="editTag(com.example.blackbox.tag.Tag,com.example.blackbox.tag.Tag)">
 <h3>editTag</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">editTag</span><wbr><span class="parameters">(<a href="Tag.html" title="class in com.example.blackbox">Tag</a>&nbsp;oldTag,
  <a href="Tag.html" title="class in com.example.blackbox">Tag</a>&nbsp;newTag)</span></div>
@@ -236,7 +236,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="deleteTag(com.example.blackbox.Tag)">
+<section class="detail" id="deleteTag(com.example.blackbox.tag.Tag)">
 <h3>deleteTag</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">deleteTag</span><wbr><span class="parameters">(<a href="Tag.html" title="class in com.example.blackbox">Tag</a>&nbsp;tag)</span></div>
 <div class="block">Delete a specified tag from the database</div>
@@ -247,7 +247,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="deleteTagFromItems(com.example.blackbox.Tag,com.google.android.gms.tasks.Task)">
+<section class="detail" id="deleteTagFromItems(com.example.blackbox.tag.Tag,com.google.android.gms.tasks.Task)">
 <h3>deleteTagFromItems</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">deleteTagFromItems</span><wbr><span class="parameters">(<a href="Tag.html" title="class in com.example.blackbox">Tag</a>&nbsp;tag,
  com.google.android.gms.tasks.Task&lt;com.google.firebase.firestore.QuerySnapshot&gt;&nbsp;task)</span></div>
@@ -260,7 +260,7 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
-<section class="detail" id="getAllTags(com.example.blackbox.TagDB.OnGetTagsCallback)">
+<section class="detail" id="getAllTags(com.example.blackbox.tag.TagDB.OnGetTagsCallback)">
 <h3>getAllTags</h3>
 <div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">getAllTags</span><wbr><span class="parameters">(<a href="TagDB.OnGetTagsCallback.html" title="interface in com.example.blackbox">TagDB.OnGetTagsCallback</a>&nbsp;callback)</span></div>
 </section>
