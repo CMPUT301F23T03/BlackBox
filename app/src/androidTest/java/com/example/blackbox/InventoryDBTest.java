@@ -9,6 +9,7 @@ import static org.junit.Assert.fail;
 
 import android.util.Log;
 
+import com.example.blackbox.authentication.GoogleAuthDB;
 import com.example.blackbox.inventory.InventoryDB;
 import com.example.blackbox.inventory.Item;
 import com.example.blackbox.tag.Tag;

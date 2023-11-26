@@ -1,5 +1,6 @@
 package com.example.blackbox;
 
+import com.example.blackbox.authentication.GoogleAuthDB;
 import com.example.blackbox.tag.Tag;
 import com.example.blackbox.tag.TagDB;
 import com.google.android.gms.tasks.Task;

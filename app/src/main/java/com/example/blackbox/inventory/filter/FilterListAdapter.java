@@ -10,7 +10,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.blackbox.R;
-import com.example.blackbox.StringFormatter;
+import com.example.blackbox.utils.StringFormatter;
 import com.example.blackbox.inventory.Item;
 import com.example.blackbox.inventory.ItemList;
 

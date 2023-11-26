@@ -15,11 +15,11 @@ import android.util.Log;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.blackbox.authentication.GoogleAuthDB;
 import com.example.blackbox.inventory.InventoryDB;
 import com.example.blackbox.inventory.Item;
 import com.example.blackbox.tag.Tag;
 import com.example.blackbox.tag.TagDB;
-import com.google.firebase.firestore.CollectionReference;
 
 import org.junit.Assert;
 import org.junit.Rule;

@@ -6,8 +6,9 @@ import static org.junit.Assert.fail;
 
 import android.util.Log;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-
+import com.example.blackbox.authentication.GoogleAuthDB;
+import com.example.blackbox.profile.Profile;
+import com.example.blackbox.profile.ProfileDB;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
@@ -16,7 +17,6 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.ArrayList;

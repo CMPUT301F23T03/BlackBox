@@ -1,9 +1,10 @@
-package com.example.blackbox;
+package com.example.blackbox.profile;
 
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
+import com.example.blackbox.profile.Profile;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
