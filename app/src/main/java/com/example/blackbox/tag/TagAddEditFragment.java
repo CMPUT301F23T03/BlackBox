@@ -28,6 +28,7 @@ public abstract class TagAddEditFragment extends AddEditFragment {
     private String colorName;
     private Spinner spinner;
     private ColorSpinnerAdapter spinnerAdapter;
+    private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
 
     /**
      * Default constructor for the TagAddEditFragment.
@@ -117,7 +118,8 @@ public abstract class TagAddEditFragment extends AddEditFragment {
      */
     @Override
     public void add(){
-        Tag new_tag = new Tag(name, selectedColor, colorName, desc);
+        String userID = googleAuthDB.getUid();
+        Tag new_tag = new Tag(name, selectedColor, colorName, desc, userID);
         tagDB.addTagToDB(new_tag);
         NavigationManager.switchFragmentWithBack(new TagFragment(), getParentFragmentManager());
     }
@@ -142,7 +144,8 @@ public abstract class TagAddEditFragment extends AddEditFragment {
      *      The tag to be replaced
      */
     public void editTag(Tag tag){
-        Tag new_tag = new Tag(name, selectedColor, colorName, desc);
+        String userID = googleAuthDB.getUid();
+        Tag new_tag = new Tag(name, selectedColor, colorName, desc, userID);
         tagDB.editTag(tag, new_tag);
         NavigationManager.switchFragmentWithBack(new TagFragment(), getParentFragmentManager());
     }

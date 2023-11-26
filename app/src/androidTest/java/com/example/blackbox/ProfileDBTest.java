@@ -1,17 +1,13 @@
 package com.example.blackbox;
 
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import android.util.Log;
 
-import com.example.blackbox.inventory.InventoryDB;
-import com.example.blackbox.inventory.Item;
-import com.example.blackbox.tag.Tag;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
@@ -20,25 +16,28 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
-public class InventoryDBTest {
+/**
+ * The ProfileDBTest class contains unit tests for the ProfileDB class methods.
+ * Users MUST BE logged in for the tests to pass
+ */
+public class ProfileDBTest {
+    private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
 
-    private final Tag basicTag = new Tag("Name", 1, "Color", "Description");
-    private final ArrayList<Tag> tag_list = new ArrayList<>();
     /**
-     * Deletes all items in the inventory DB
-     * @param inventoryDB this is an InventoryDB object
+     * Deletes all items in the test profile DB.
+     *
+     * @param profileDB The ProfileDB object representing the test profile database.
      */
-    public static void clearInventoryDB(InventoryDB inventoryDB) {
-        CollectionReference inventoryRef = inventoryDB.getInventory();
-        GoogleAuthDB googleAuthDB = new GoogleAuthDB();
-        Task<QuerySnapshot> querySnapshotInventory = inventoryRef.whereEqualTo("user_id", googleAuthDB.getUid()).get();
+    public static void clearProfileDB(ProfileDB profileDB) {
+        CollectionReference profileRef = profileDB.getProfileRef();
+        Task<QuerySnapshot> querySnapshotInventory = profileRef.get();
         Log.d("Firestore", "Before listener");
 
         // Create a CountDownLatch with an initial count of 1
@@ -49,7 +48,7 @@ public class InventoryDBTest {
             List<Task<Void>> deletedItems = new ArrayList<>();
             for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                 // Delete each document in the collection
-                deletedItems.add(inventoryRef.document(documentSnapshot.getId()).delete());
+                deletedItems.add(profileRef.document(documentSnapshot.getId()).delete());
             }
 
             // Wait for all delete tasks to complete
@@ -68,46 +67,23 @@ public class InventoryDBTest {
     }
 
     /**
-     * Deletes all items in the inventory DB
+     * Deletes all items in the main profile DB
      */
-    public static void clearInventoryDB(){
-        InventoryDB inventoryDB = new InventoryDB();
-        clearInventoryDB(inventoryDB);
-    }
-
-
-    /**
-     * Test adding an item
-     */
-    @Test
-    public void testAddItem(){
-        InventoryDB inventoryDB = new InventoryDB("test database");
-        tag_list.add(basicTag);
-        Item basicItem = new Item("Name",  tag_list, "2023-08-11", Double.valueOf(120), "12", "12", "12321", "Hi", "no");
-        inventoryDB.addItemToDB(basicItem);
-        CollectionReference inventory = inventoryDB.getInventory();
-        Query query = inventory.whereEqualTo("name", basicItem.getName());
-        Task<QuerySnapshot> task = query.get();
-        try {
-            QuerySnapshot querySnapshot = Tasks.await(task);
-            assertFalse(querySnapshot.isEmpty());
-        } catch (Exception e) {
-            Log.d("Firestore", "Exception Encountered");
-        }
-        clearInventoryDB(inventoryDB);
+    public static void clearProfileDB(){
+        ProfileDB profileDB = new ProfileDB();
+        clearProfileDB(profileDB);
     }
 
     /**
-     * Test editing an item
+     * Test editing profile's name and bio
      */
     @Test
-    public void testEditItem(){
-        InventoryDB inventoryDB = new InventoryDB("test database");
-        tag_list.add(basicTag);
-        Item basicItem = new Item("Name",  tag_list, "2023-08-11", Double.valueOf(120), "12", "12", "12321", "Hi", "no");
-        inventoryDB.addItemToDB(basicItem);
-        CollectionReference inventory = inventoryDB.getInventory();
-        Query query = inventory.whereEqualTo("name", basicItem.getName());
+    public void testEditProfile(){
+        ProfileDB profileDB = new ProfileDB("profile_test");
+        Profile newProfile = new Profile(googleAuthDB.getUid(), "Micheal Buro", "I love OpenGL", googleAuthDB.getEmail());
+        profileDB.addEditProfile(newProfile);
+        CollectionReference profileRef = profileDB.getProfileRef();
+        Query query = profileRef.whereEqualTo("name", newProfile.getName());
         Task<QuerySnapshot> task = query.get();
         QuerySnapshot querySnapshot;
         try {
@@ -118,10 +94,9 @@ public class InventoryDBTest {
                 itemID = doc.getId();
             }
             if (itemID != null) {
-                basicItem.setID(itemID);
-                Item newItem = new Item("Name2",  tag_list, "2023-08-11", Double.valueOf(120), "12", "12", "12321", "Hi", "no");
-                inventoryDB.updateItemInDB(basicItem, newItem);
-                Query query2 = inventory.whereEqualTo("name", basicItem.getName());
+                Profile basicProfile = new Profile(googleAuthDB.getUid(), "Name2", "I love OpenGL", googleAuthDB.getEmail());
+                profileDB.addEditProfile(basicProfile);
+                Query query2 = profileRef.whereEqualTo("name", newProfile.getName());
                 Task<QuerySnapshot> task2 = query2.get();
                 QuerySnapshot querySnapshot2;
                 try {
@@ -131,7 +106,7 @@ public class InventoryDBTest {
                 catch (Exception e){
                     fail("Firestore Query Failed");
                 }
-                Query query3 = inventory.whereEqualTo("name", newItem.getName());
+                Query query3 = profileRef.whereEqualTo("name", basicProfile.getName());
                 Task<QuerySnapshot> task3 = query3.get();
                 QuerySnapshot querySnapshot3;
                 try {
@@ -148,12 +123,6 @@ public class InventoryDBTest {
         } catch (Exception e) {
             fail("Firestore Query Failed");
         }
-        clearInventoryDB(inventoryDB);
-    }
-
-    /**
-     *
-     */
-    public static void checkItemTags(){
+        clearProfileDB(profileDB);
     }
 }
