@@ -166,6 +166,9 @@ public class AttachImageFragment extends Fragment {
             if (imageView.getDrawable() == null) {
                 // Display Snackbar error message when imageView is empty
                 Snackbar.make(view, "Please select an image first", Snackbar.LENGTH_SHORT).show();
+            } else if (isUriDuplicate(uriArrayList, imageUri)) {
+                // Check for duplicates before adding
+                Snackbar.make(view, "Image already added", Snackbar.LENGTH_SHORT).show();
             } else {
                 uriArrayList.add(imageUri);
                 if (imageSelectedListener != null) {
@@ -174,6 +177,16 @@ public class AttachImageFragment extends Fragment {
                 getParentFragmentManager().popBackStack();
             }
         });
+    }
+
+    // Function to check if a URI already exists in the ArrayList
+    private static boolean isUriDuplicate(ArrayList<Uri> uriList, Uri uriToCheck) {
+        for (Uri uri : uriList) {
+            if (uri.equals(uriToCheck)) {
+                return true; // URI already exists in the list
+            }
+        }
+        return false; // URI does not exist in the list
     }
 
 
