@@ -1,5 +1,6 @@
 package com.example.blackbox;
 
+import com.example.blackbox.authentication.GoogleAuthDB;
 import com.example.blackbox.tag.Tag;
 import com.example.blackbox.tag.TagDB;
 import com.google.android.gms.tasks.Task;
@@ -23,16 +24,16 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 public class TagDBTest {
-    private final Tag basicTag = new Tag("Name", 1, "Color", "Description");
+    private Tag basicTag = new Tag("Name", 1, "Color", "Description");
 
     /**
      * This method synchronously deletes all tags from a specified collection
      * @param tags
      *      The database manager to delete with
      */
-    public static void clearTagDB(TagDB tags) {
+    public static void clearTagDB(TagDB tags, String userID) {
         CollectionReference tagRef = tags.getTags();
-        Task<QuerySnapshot> querySnapshotTask = tagRef.get();
+        Task<QuerySnapshot> querySnapshotTask = tagRef.whereEqualTo("user_id", userID).get();
         Log.d("Firestore", "Before listener");
 
         // Create a CountDownLatch with an initial count of 1
@@ -61,13 +62,21 @@ public class TagDBTest {
         }
     }
 
+    public static void clearTagDB(String userID){
+        TagDB tags = new TagDB();
+        clearTagDB(tags, userID);
+    }
+
     public static void clearTagDB(){
         TagDB tags = new TagDB();
-        clearTagDB(tags);
+        String userID = new GoogleAuthDB().getUid();
+        clearTagDB(tags, userID);
     }
     @Test
     public void testAdd(){
+        String userID = new GoogleAuthDB().getUid();
         TagDB tagDB = new TagDB("test collection");
+        basicTag.setUserID(userID);
         tagDB.addTagToDB(basicTag);
         CollectionReference tags = tagDB.getTags();
         Query query = tags.whereEqualTo("name", basicTag.getName());
@@ -78,12 +87,14 @@ public class TagDBTest {
         } catch (Exception e) {
             Log.d("Firestore", "Exception Encountered");
         }
-        clearTagDB(tagDB);
+        clearTagDB(tagDB, userID);
     }
 
     @Test
     public void testEdit(){
+        String userID = new GoogleAuthDB().getUid();
         TagDB tagDB = new TagDB("test collection");
+        basicTag.setUserID(userID);
         tagDB.addTagToDB(basicTag);
         CollectionReference tags = tagDB.getTags();
         Query query = tags.whereEqualTo("name", basicTag.getName());
@@ -127,6 +138,6 @@ public class TagDBTest {
         } catch (Exception e) {
             fail("Firestore Query Failed");
         }
-        clearTagDB(tagDB);
+        clearTagDB(tagDB, userID);
     }
 }

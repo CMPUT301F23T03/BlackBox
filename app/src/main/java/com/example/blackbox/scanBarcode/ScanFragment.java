@@ -9,7 +9,7 @@ import android.widget.Button;
 import androidx.fragment.app.Fragment;
 
 import com.example.blackbox.MainActivity;
-import com.example.blackbox.NavigationManager;
+import com.example.blackbox.utils.NavigationManager;
 import com.example.blackbox.R;
 
 /**

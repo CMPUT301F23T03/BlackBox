@@ -15,7 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
 import com.example.blackbox.R;
-import com.example.blackbox.StringFormatter;
+import com.example.blackbox.utils.StringFormatter;
 
 import java.util.ArrayList;
 

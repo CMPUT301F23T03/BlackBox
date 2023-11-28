@@ -32,6 +32,7 @@ public class Item implements Serializable {
     private boolean isSelected;
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private String userID;
 
     /**
      * Constructor of an Item object
@@ -59,7 +60,34 @@ public class Item implements Serializable {
     }
 
     /**
-     * Constructor of an Item object with an ID
+     * Constructor of an Item object with an userID
+     *
+     * @param  name  the name of the item
+     * @param  tags stores a list of tags assigned to the item
+     * @param  dateOfPurchase the date of purchase/acquisition of the  item
+     * @param  estimatedValue the estimated value of the item
+     * @param  make the make of the item
+     * @param  model the model of the item
+     * @param  serialNumber the serial number of the item (if applicable)
+     * @param  description the description of the item
+     * @param  comment the comment on the item
+     * @param  userID the id of the item in the database
+     */
+    public Item(String name, ArrayList<Tag> tags, String dateOfPurchase, Double estimatedValue, String make, String model, String serialNumber, String description, String comment, String userID) {
+        this.name = name;
+        this.tags = tags;
+        this.dateOfPurchase = dateOfPurchase;
+        this.estimatedValue = estimatedValue;
+        this.make = make;
+        this.model = model;
+        this.serialNumber = serialNumber;
+        this.description = description;
+        this.comment = comment;
+        this.userID = userID;
+    }
+
+    /**
+     * Constructor of an Item object with an ID and an user ID
      *
      * @param  name  the name of the item
      * @param  tags stores a list of tags assigned to the item
@@ -71,8 +99,9 @@ public class Item implements Serializable {
      * @param  description the description of the item
      * @param  comment the comment on the item
      * @param  ID the id of the item in the database
+     * @param  userID the id of the user that owns the item
      */
-    public Item(String name, ArrayList<Tag> tags, String dateOfPurchase, Double estimatedValue, String make, String model, String serialNumber, String description, String comment, String ID) {
+    public Item(String name, ArrayList<Tag> tags, String dateOfPurchase, Double estimatedValue, String make, String model, String serialNumber, String description, String comment, String ID, String userID) {
         this.name = name;
         this.tags = tags;
         this.dateOfPurchase = dateOfPurchase;
@@ -83,6 +112,7 @@ public class Item implements Serializable {
         this.description = description;
         this.comment = comment;
         this.ID = ID;
+        this.userID = userID;
     }
 
     /**
@@ -209,6 +239,10 @@ public class Item implements Serializable {
         this.ID = ID;
     }
 
+    public String getUserID() {
+        return userID;
+    }
+
     public Date getDateUpdated() {
         return dateUpdated;
     }
@@ -257,4 +291,7 @@ public class Item implements Serializable {
         return highestTag;
     }
 
+    public void setUserID(String ID){
+        this.userID = ID;
+    }
 }

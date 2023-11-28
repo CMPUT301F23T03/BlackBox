@@ -10,9 +10,12 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.example.blackbox.authentication.GoogleAuthDB;
 import com.example.blackbox.inventory.InventoryFragment;
+import com.example.blackbox.profile.ProfileFragment;
 import com.example.blackbox.scanBarcode.ScanFragment;
 import com.example.blackbox.tag.TagFragment;
+import com.example.blackbox.utils.NavigationManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
@@ -21,6 +24,7 @@ import com.google.android.material.navigation.NavigationBarView;
  */
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
+    GoogleAuthDB googleAuthDB;
 
     /**
      * Called when the activity is created. Initializes the main layout and sets up the BottomNavigationView.
@@ -31,6 +35,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Create a profile from Google Sign-In
+        googleAuthDB = new GoogleAuthDB();
+        googleAuthDB.createProfile();
 
         final FragmentManager fm = getSupportFragmentManager();
 

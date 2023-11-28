@@ -46,7 +46,7 @@ public class InventoryDB {
     }
 
     /**
-     * Initializes the Firestore database with a provided colletion name
+     * Initializes the Firestore database with a provided collection name
      * Used for testing
      * @param collection_name name of the collection to be created
      */
@@ -182,11 +182,14 @@ public class InventoryDB {
         data.put("purchase_date", item.getDateOfPurchase());
         item.setDateUpdated(Calendar.getInstance().getTime());
         data.put("update_date", item.getStringDateUpdated());
+        data.put("user_id", item.getUserID());
 
         // Convert the list of tags to a list of tag IDs
         List<String> tagIDs = new ArrayList<>();
-        for (Tag tag : item.getTags()) {
-            tagIDs.add(tag.getDataBaseID());
+        if (item.getTags() != null) {
+            for (Tag tag : item.getTags()) {
+                tagIDs.add(tag.getDataBaseID());
+            }
         }
         data.put("tags", tagIDs);
 
