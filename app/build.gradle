@@ -40,6 +40,7 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.14.3'
     implementation platform('com.google.firebase:firebase-bom:32.5.0')
     implementation("com.google.firebase:firebase-firestore")
+    implementation 'com.google.firebase:firebase-appcheck:1.0.6'
     implementation 'com.google.firebase:firebase-storage:20.0.0'
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.gms:play-services-auth:20.7.0")

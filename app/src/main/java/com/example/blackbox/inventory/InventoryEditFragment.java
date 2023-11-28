@@ -47,12 +47,15 @@ public class InventoryEditFragment extends InventoryAddEditFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        setupFragment(view);
         // get the index of item to be edited
         item = (Item) getArguments().getSerializable("item");
+        // TODO: Get images using imageId, currently, successfully downloaded the image from the data bast,
+        //  however, cannot update the view using the adapter (bug)
+        itemDB.getImagesByItemId(item.getID(), requireContext(), displayedUris, adapter);
 
-        setupFragment(view);
         adjustFields(item);
+        adapter.updateDisplayedUris(displayedUris);
 
         // save an edited item by clicking the small add button
         Button small_save_button = view.findViewById(R.id.small_save_button);
@@ -69,6 +72,8 @@ public class InventoryEditFragment extends InventoryAddEditFragment {
         });
 
     }
+
+
     /**
      * Display a confirmation dialog for deleting an item
      */

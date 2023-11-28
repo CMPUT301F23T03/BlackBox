@@ -1,10 +1,14 @@
 package com.example.blackbox.inventory;
 
+import android.content.Context;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.FileProvider;
 
+import com.example.blackbox.ImageRecyclerAdapter;
 import com.example.blackbox.tag.Tag;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -17,10 +21,14 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -30,7 +38,9 @@ public class InventoryDB {
     private CollectionReference inventory;
     private CollectionReference images;
     private StorageReference imagesStorageReference;
+    private String itemId; // collection id of the item in inventory
     private FirebaseFirestore db;
+    private FirebaseStorage storage;
 
     /**
      * Initializes the Firestore database and the 'inventory' collection reference.
@@ -41,7 +51,7 @@ public class InventoryDB {
         images = db.collection("images");
 
         // Initialize Firebase Storage
-        FirebaseStorage storage = FirebaseStorage.getInstance();
+        storage = FirebaseStorage.getInstance();
         imagesStorageReference = storage.getReference().child("images");
     }
 
@@ -80,7 +90,24 @@ public class InventoryDB {
      */
     public void addItemToDB(Item item) {
         Map<String, Object> data = generateItemHashMap(item);
-        inventory.add(data);
+        // Generate a custom itemId
+        itemId = inventory.document().getId();
+        // Add the item with the custom itemId to Firestore
+        inventory.document(itemId).set(data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        // Item added successfully
+                        Log.d("Success", "Item added to Firestore with itemId: " + itemId);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle failure
+                        Log.e("Error", "Failed to add item to Firestore: " + e.getMessage());
+                    }
+                });
     }
 
     /**
@@ -136,8 +163,8 @@ public class InventoryDB {
     private void addImageUrlToFirestore(Uri downloadUri) {
         // Create a map to store the image URL
         Map<String, Object> imageData = new HashMap<>();
+        imageData.put("itemId", itemId); // attach image to item
         imageData.put("imageUrl", downloadUri.toString()); // Convert Uri to String
-
         // Add the image URL to Firestore
         images.add(imageData)
                 .addOnSuccessListener(new OnSuccessListener() {
@@ -155,14 +182,84 @@ public class InventoryDB {
     }
 
     /**
+     * Retrieves images associated with a specific itemId from the Firestore 'images' collection
+     * and adds the URIs of newly created local files to the displayedUris ArrayList.
+     *
+     * @param itemId        The ID of the item for which images need to be retrieved.
+     * @param context       The Context of the application/activity.
+     * @param displayedUris The ArrayList of URIs to which the URIs of new local files will be added.
+     *//**
+     * Retrieves images associated with a specific itemId from the Firestore 'images' collection.
+     *
+     * @param itemId The ID of the item for which images need to be retrieved.
+     */
+    public void getImagesByItemId(String itemId, Context context,
+                                  ArrayList<Uri> displayedUris, ImageRecyclerAdapter adapter) {
+        // Query the 'images' collection for documents with matching itemId
+        images.whereEqualTo("itemId", itemId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        String imageUrl = document.getString("imageUrl");
+                        if (imageUrl != null) {
+                            int startIndex = imageUrl.indexOf("images%2F")+ 9;
+                            int endIndex = imageUrl.indexOf("?alt=media");
+                            // Create unique file names for each image
+                            String imageFileName = imageUrl.substring(startIndex, endIndex);
+                            File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                            File imageFile = new File(storageDir, imageFileName + ".jpg");
+
+                            Log.d("Number of pictures", String.valueOf(displayedUris.size()));
+
+                            // Download image using its URL
+                            downloadImageFromUrl(imageUrl, imageFile,
+                                    context, displayedUris, adapter);
+                        }
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Log.e("Firestore", "Failed to query images collection: " + e.getMessage())
+                );
+    }
+    /**
+     * Downloads an image from Firebase Storage using its URL and saves it to a specified file.
+     *
+     * @param imageUrl  The URL of the image to be downloaded.
+     * @param imageFile The File object where the downloaded image will be saved.
+     */
+    private void downloadImageFromUrl(String imageUrl, File imageFile, Context context,
+                                      ArrayList<Uri> displayedUris, ImageRecyclerAdapter adapter) {
+        StorageReference storageRef = storage.getReferenceFromUrl(imageUrl);
+
+        storageRef.getFile(imageFile)
+                .addOnSuccessListener(taskSnapshot -> {
+                    // Image downloaded successfully
+                    Log.d("Firebase Storage", "Image downloaded successfully to: " + imageFile.getAbsolutePath());
+                    // Handle the downloaded image (e.g., display or further processing)
+                    // Get the URI of the newly created local file
+                    Uri localUri = FileProvider.getUriForFile(context,
+                            context.getPackageName() + ".provider", imageFile);
+                    // Append the URI to displayedUris ArrayList
+                    displayedUris.add(localUri);
+                    Log.d("URI", localUri.toString());
+                    adapter.updateDisplayedUris(displayedUris);
+                })
+                .addOnFailureListener(e ->
+                        Log.e("Firebase Storage", "Failed to download image: " + e.getMessage())
+                );
+
+    }
+
+    /**
      * Updates an item in the Firestore database with new values
      *
      * @param old_item  The item to be replaced.
      * @param new_item  The item from which the new values should come.
      */
     public void updateItemInDB(Item old_item, Item new_item) {
+        itemId = old_item.getID();
         Map<String, Object> data = generateItemHashMap(new_item);
-        inventory.document(old_item.getID()).set(data);
+        inventory.document(itemId).set(data);
     }
 
     /**
@@ -203,11 +300,61 @@ public class InventoryDB {
      */
     public void deleteItem(Item item){
         if (item.getID() != null) {
-            inventory.document(item.getID()).delete();
+            itemId = item.getID();
+            inventory.document(itemId).delete();
+            deleteImagesByItemId(itemId);
             Log.d("Firestore", "Item deleted Successfully");
         }
         else{
             Log.d("Firestore", "Deletion failed, item has no ID specified");
+        }
+    }
+
+    /**
+     * Deletes images associated with a specific itemId from the 'images' collection and Firebase Storage.
+     *
+     * @param itemId The ID of the item for which images need to be deleted.
+     */
+    private void deleteImagesByItemId(String itemId) {
+        // Query the 'images' collection for documents with matching itemId
+        images.whereEqualTo("itemId", itemId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        deleteImageDocumentAndStorage(document);
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Log.e("Firestore", "Failed to query images collection: " + e.getMessage())
+                );
+    }
+
+    /**
+     * Deletes an image document from Firestore and the associated image from Firebase Storage.
+     *
+     * @param document The QueryDocumentSnapshot representing the image document to be deleted.
+     */
+    private void deleteImageDocumentAndStorage(QueryDocumentSnapshot document) {
+        String imageUrl = document.getString("imageUrl");
+        if (imageUrl != null) {
+            // Delete the image document from Firestore
+            document.getReference().delete()
+                    .addOnSuccessListener(aVoid ->
+                            Log.d("Firestore", "Image document deleted successfully")
+                    )
+                    .addOnFailureListener(e ->
+                            Log.e("Firestore", "Failed to delete image document: " + e.getMessage())
+                    );
+
+            // Delete the image from Firebase Storage
+            StorageReference storageRef = storage.getReferenceFromUrl(imageUrl);
+            storageRef.delete()
+                    .addOnSuccessListener(aVoid ->
+                            Log.d("Firebase Storage", "Image deleted successfully")
+                    )
+                    .addOnFailureListener(e ->
+                            Log.e("Firebase Storage", "Failed to delete image from Storage: " + e.getMessage())
+                    );
         }
     }
 

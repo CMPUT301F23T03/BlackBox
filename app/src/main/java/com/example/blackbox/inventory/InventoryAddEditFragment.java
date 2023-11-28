@@ -53,7 +53,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
     private String name;
     private Double val;
     private String desc;
-    private InventoryDB itemDB;
+    protected InventoryDB itemDB;
     private String make;
     private String model;
     private String serialNumber;
@@ -68,8 +68,8 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
     private ImageButton addImgBtn;
     private AttachImageFragment attachImageFragment = new AttachImageFragment();
     private RecyclerView recyclerView;
-    private ArrayList<Uri> displayedUris;
-    private ImageRecyclerAdapter adapter;
+    protected ArrayList<Uri> displayedUris;
+    protected ImageRecyclerAdapter adapter;
 
 
     private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
@@ -317,6 +317,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
                 String userID = googleAuthDB.getUid();
                 Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment, userID);
                 itemDB.updateItemInDB(item, new_item);
+//                itemDB.updateImagesInDB(displayedUris); TODO
                 // clear all temporary pictures
                 clearTempFiles();
                 InventoryFragment inventoryFragment = new InventoryFragment();
@@ -383,6 +384,8 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
             }
             tagDropdown.setText(TextUtils.join(", ", selectedTagNames));
         }
+
+        // TODO: show images from displayedUris when edited here
     }
 
     private void showTagSelectionDialog() {
