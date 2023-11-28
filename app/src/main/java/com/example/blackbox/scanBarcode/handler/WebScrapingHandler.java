@@ -4,13 +4,12 @@ import android.media.ToneGenerator;
 import android.util.Log;
 import android.util.SparseArray;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.FragmentManager;
 
 import com.example.blackbox.inventory.InventoryAddFragment;
 import com.example.blackbox.inventory.Item;
-import com.example.blackbox.NavigationManager;
+import com.example.blackbox.utils.NavigationManager;
 import com.google.android.gms.vision.barcode.Barcode;
 
 import org.jsoup.Jsoup;

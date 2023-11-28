@@ -24,12 +24,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.blackbox.GoogleAuthDB;
+import com.example.blackbox.authentication.GoogleAuthDB;
 import com.example.blackbox.MainActivity;
-import com.example.blackbox.NavigationManager;
-import com.example.blackbox.ProfileFragment;
+import com.example.blackbox.utils.NavigationManager;
+import com.example.blackbox.profile.ProfileFragment;
 import com.example.blackbox.R;
-import com.example.blackbox.StringFormatter;
+import com.example.blackbox.utils.StringFormatter;
 import com.example.blackbox.inventory.filter.Filter;
 import com.example.blackbox.inventory.filter.FilterDialog;
 import com.example.blackbox.inventory.filter.FilterListAdapter;

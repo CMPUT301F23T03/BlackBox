@@ -113,4 +113,8 @@ public class Tag implements Serializable {
     public void setID(String ID){
         this.dataBaseID = ID;
     }
+
+    public void setUserID(String ID){
+        this.userID = ID;
+    }
 }
