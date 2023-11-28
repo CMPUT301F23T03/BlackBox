@@ -136,6 +136,11 @@ public class AttachImageFragment extends Fragment {
         return imageFile;
     }
 
+    /**
+     * Initializes the camera functionality if the CAMERA permission is granted.
+     * If the permission is not granted, requests the CAMERA permission.
+     * Sets an OnClickListener on the cameraButton to launch the takePicture action.
+     */
     private void initializeCamera(){
         if (ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -147,6 +152,11 @@ public class AttachImageFragment extends Fragment {
         });
     }
 
+    /**
+     * Initializes the gallery functionality if the READ_MEDIA_IMAGES permission is granted.
+     * If the permission is not granted, requests the READ_MEDIA_IMAGES permission.
+     * Sets an OnClickListener on the galleryButton to launch the pickMedia action.
+     */
     private void initializeGallery(){
         if (ContextCompat.checkSelfPermission(requireContext(), READ_MEDIA_IMAGES)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -161,6 +171,14 @@ public class AttachImageFragment extends Fragment {
         void onImageSelected(Uri imageUri);
     }
 
+    /**
+     * Handles confirmation of attachment by setting an OnClickListener on the confirmButton.
+     * Displays Snackbar error messages for various scenarios:
+     * - If imageView is empty, prompts to select an image.
+     * - If the selected image is already added, displays a message indicating the image is already added.
+     * Adds the imageUri to the uriArrayList if it's not a duplicate.
+     * Notifies the imageSelectedListener about the selected image and navigates back from the fragment.
+     */
     private void confirmAttachment() {
         confirmButton.setOnClickListener(v -> {
             if (imageView.getDrawable() == null) {

@@ -10,6 +10,7 @@ import com.google.android.gms.vision.barcode.Barcode;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+// TODO: Can be used for future upgrade if have enough time
 public class DatabaseHandler implements CustomHandler{
     private CustomHandler nextCustomHandler;
     private CollectionReference inventory;
