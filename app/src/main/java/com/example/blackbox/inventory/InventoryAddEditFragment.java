@@ -106,7 +106,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
         itemMake = view.findViewById(R.id.make_editText);
         itemModel = view.findViewById(R.id.model_editText);
         itemComment = view.findViewById(R.id.comment_editText);
-        itemSerialNumber = view.findViewById(R.id.serial_number_editText);;
+        itemSerialNumber = view.findViewById(R.id.serial_number_editText);
 
         tagDropdown = view.findViewById(R.id.tag_dropdown);
         tagDropdown.setOnClickListener(new View.OnClickListener() {
@@ -258,6 +258,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
     public void add(){
         Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment);
         itemDB.addItemToDB(new_item);
+        itemDB.addImagesToDB(displayedUris);
         // clear all temporary pictures
         clearTempFiles();
         NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());

@@ -1,16 +1,21 @@
 package com.example.blackbox.inventory;
 
+import android.net.Uri;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.example.blackbox.tag.Tag;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,6 +28,8 @@ import java.util.Map;
  */
 public class InventoryDB {
     private CollectionReference inventory;
+    private CollectionReference images;
+    private StorageReference imagesStorageReference;
     private FirebaseFirestore db;
 
     /**
@@ -31,6 +38,11 @@ public class InventoryDB {
     public InventoryDB() {
         db = FirebaseFirestore.getInstance();
         inventory = db.collection("inventory");
+        images = db.collection("images");
+
+        // Initialize Firebase Storage
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        imagesStorageReference = storage.getReference().child("images");
     }
 
     /**
@@ -69,6 +81,77 @@ public class InventoryDB {
     public void addItemToDB(Item item) {
         Map<String, Object> data = generateItemHashMap(item);
         inventory.add(data);
+    }
+
+    /**
+     * Adds a new images to the 'images' collection in the Firestore database.
+     *
+     * @param imageList The Uri objects to be added to the database.
+     */
+    public void addImagesToDB(ArrayList<Uri> imageList) {
+        for (Uri imageUri : imageList) {
+            uploadImageToStorage(imageUri);
+        }
+    }
+
+    /**
+     * Uploads an image to Firebase Storage.
+     *
+     * @param imageUri The Uri object representing the image to be uploaded.
+     */
+    private void uploadImageToStorage(Uri imageUri) {
+        // Create a reference to store images in Firebase Storage with a unique name
+        String imageName = System.currentTimeMillis() + "_" + imageUri.getLastPathSegment();
+        StorageReference imageRef = imagesStorageReference.child(imageName);
+
+        // Upload the file to Firebase Storage
+        imageRef.putFile(imageUri)
+                .addOnSuccessListener(new OnSuccessListener() {
+                    @Override
+                    public void onSuccess(Object o) {
+                        // Get the download URL of the uploaded image
+                        imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri downloadUri) {
+                                // Image uploaded successfully, now add its URL to Firestore
+                                addImageUrlToFirestore(downloadUri);
+                            }
+                        });
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        // Handle unsuccessful uploads
+                        Log.d("Fail image upload", "Failed to upload image to Storage: " + e.getMessage());
+                    }
+                });
+    }
+
+    /**
+     * Adds an image URL to the 'images' collection in the Firestore database.
+     *
+     * @param downloadUri The download Uri representing the image URL.
+     */
+    private void addImageUrlToFirestore(Uri downloadUri) {
+        // Create a map to store the image URL
+        Map<String, Object> imageData = new HashMap<>();
+        imageData.put("imageUrl", downloadUri.toString()); // Convert Uri to String
+
+        // Add the image URL to Firestore
+        images.add(imageData)
+                .addOnSuccessListener(new OnSuccessListener() {
+                    @Override
+                    public void onSuccess(Object o) {
+                        Log.d("Success image add", "Image URL added to Firestore: " + downloadUri.toString());
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Fail image add", "Failed to add image URL to Firestore: " + e.getMessage());
+                    }
+                });
     }
 
     /**
