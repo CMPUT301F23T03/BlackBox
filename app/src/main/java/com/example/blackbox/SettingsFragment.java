@@ -1,5 +1,9 @@
 package com.example.blackbox;
 
+import static android.content.Intent.getIntent;
+import static android.content.Intent.parseUri;
+import static androidx.core.app.ActivityCompat.recreate;
+
 import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
@@ -151,13 +155,14 @@ public class SettingsFragment extends Fragment {
                     // Enable dark mode
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
                     // reload fragment
-                    NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), getParentFragmentManager());
+//                    NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), getParentFragmentManager());
                 } else {
                     // Disable dark mode
                     AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
                     // reload fragment
-                    NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), getParentFragmentManager());
+//                    NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), getParentFragmentManager());
                 }
+                MainActivity mainActivity = (MainActivity) getActivity();
             }
         });
 
@@ -194,7 +199,6 @@ public class SettingsFragment extends Fragment {
                 }
             }
         });
-        confirmationPopup.show(getParentFragmentManager(), "DELETE_TAG");
     }
 
     private void resetInventory(){
