@@ -158,7 +158,7 @@ public abstract class TagAddEditFragment extends AddEditFragment {
      */
     public void deleteTag(Tag tag){
         tagDB.deleteTag(tag);
-        NavigationManager.switchFragmentWithBack(new TagFragment(), getParentFragmentManager());
+        getParentFragmentManager().popBackStack();
     }
 
 

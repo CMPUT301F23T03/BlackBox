@@ -70,7 +70,7 @@ public class InventoryFunctionalityTest {
 
         // Mock data for testing
         // Switch to the tag fragment
-        onView(withId(R.id.settings)).perform(click());
+        TagFunctionalityTest.navigateToTags();
 
         // Click on the "Add" button to add a new tag.
         onView(withId(R.id.add_tag_button)).perform(click());
@@ -115,7 +115,7 @@ public class InventoryFunctionalityTest {
         onView(withId(R.id.small_save_button)).perform(click());
 
         // Switch back to the item fragment screen
-        onView(withId(R.id.inventory)).perform(click());
+        TagFunctionalityTest.navigateFromTagsToItems();
 
         // Click on the "Add" button to add a new item
         onView(withId(R.id.add_button)).perform(click());
