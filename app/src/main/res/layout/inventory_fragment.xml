@@ -17,13 +17,11 @@
         app:layout_anchorGravity="center"
         tools:context=".MainActivity">
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/add_button"
             android:layout_width="295dp"
             android:layout_height="61dp"
-            android:backgroundTint="@color/primary"
             android:text="@string/add_button"
-            android:textColor="@android:color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -122,7 +120,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.883" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/sort_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -156,6 +154,7 @@
             android:layout_marginStart="32dp"
             android:layout_marginTop="56dp"
             android:background="@drawable/rounded_corner"
+            android:backgroundTint="?colorPrimary"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
@@ -167,7 +166,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="16dp"
             android:background="@drawable/bg_white_rounded"
-            android:backgroundTint="@color/gray02"
+            android:backgroundTint="?attr/colorContainer"
             android:queryBackground="@color/primary"
             android:queryHint="Search"
             app:layout_constraintStart_toStartOf="parent"
