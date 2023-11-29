@@ -1,7 +1,9 @@
 package com.example.blackbox;
 
+import android.app.UiModeManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,11 +11,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 
 import com.example.blackbox.authentication.GoogleAuthDB;
@@ -44,6 +49,8 @@ public class SettingsFragment extends Fragment {
     ImageButton profilePicture;
     Context activityContext;
     String selectedLanguage;
+    ToggleButton darkModeButton;
+
     private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
 
 
@@ -130,8 +137,44 @@ public class SettingsFragment extends Fragment {
         resetInventoryLayout.setOnClickListener(v -> {
             showResetPopup();
         });
+        // setup dark mode button
+        darkModeButton = view.findViewById(R.id.dark_mode_button);
+        // check if dark mode is active
+        if (isDarkModeActive()){
+            darkModeButton.setChecked(true);
+        }
+
+        darkModeButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // Enable dark mode
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                    // reload fragment
+                    NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), getParentFragmentManager());
+                } else {
+                    // Disable dark mode
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                    // reload fragment
+                    NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), getParentFragmentManager());
+                }
+            }
+        });
 
     }
+
+    /**
+     * Checks whether dark mode is active
+     * @return
+     *      a boolean, True if dark mode is active, false otherwise.
+     */
+    private boolean isDarkModeActive() {
+        int currentNightMode = getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK;
+        return currentNightMode == Configuration.UI_MODE_NIGHT_YES;
+    }
+
+
     /**
      * Display a confirmation dialog for resetting inventory
      */
