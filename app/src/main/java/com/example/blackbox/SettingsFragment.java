@@ -199,6 +199,7 @@ public class SettingsFragment extends Fragment {
                 }
             }
         });
+        confirmationPopup.show(getParentFragmentManager(), "DELETE_TAG");
     }
 
     private void resetInventory(){
