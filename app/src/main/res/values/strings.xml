@@ -3,7 +3,7 @@
     <string name="add_button">Add an item</string>
     <string name="app">BlackBox 💵</string>
     <string name="add_tag">Add Tag</string>
-    <string name="are_you_sure_you_would_nlike_to_delete_this">Are you sure you would \nlike to delete this?</string>
+    <string name="are_you_sure_you_would_nlike_to_delete_this">Are you sure you would like to delete this?</string>
     <string name="total_sum_format">Total: $%.2f</string>
     <string name="enter_new_name">Enter new name</string>
     <string name="color">Color</string>

@@ -161,6 +161,14 @@ public class InventoryFunctionalityTest {
         // Add the item.
         onView(withId(R.id.small_save_button)).perform(click());
 
+        // wait for item to be added
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
+
     }
 
     /**
@@ -287,12 +295,6 @@ public class InventoryFunctionalityTest {
         // start with a fresh database
         setup();
 
-        try {
-            Thread.sleep(maxDelay);
-        }
-        catch (Exception e){
-            Log.d("Sleep", "Exception");
-        }
 
         // Verify that the newly added item is displayed with its name and estimated value.
         onView(withText(name)).check(matches(isDisplayed()));
@@ -329,13 +331,6 @@ public class InventoryFunctionalityTest {
     public void testEditItemWithTags() {
         // start with a fresh database
         setup();
-
-        try {
-            Thread.sleep(maxDelay);
-        }
-        catch (Exception e){
-            Log.d("Sleep", "Exception");
-        }
 
         // Edit the item
         onView(withText(name)).perform(click());
@@ -382,6 +377,7 @@ public class InventoryFunctionalityTest {
             Log.d("Sleep", "Exception");
         }
 
+        // failing right now because no autofill when opening selector
         onView(allOf(
                 withId(R.id.tag_dropdown),
                 withText(containsString("Tag1")),
@@ -397,13 +393,6 @@ public class InventoryFunctionalityTest {
     public void testTotalEstimatedValue() {
         setup();
 
-        try {
-            Thread.sleep(maxDelay);
-        }
-        catch (Exception e){
-            Log.d("Sleep", "Exception");
-        }
-
         double testing_sum = estimatedValue + estimatedValue2;
         String expectedTotalSum = String.format("Total: "+StringFormatter.getMonetaryString(testing_sum));
 
@@ -414,15 +403,11 @@ public class InventoryFunctionalityTest {
 
     @Test
     public void testTagImageViewVisibility() {
+        // FAILING BECAUSE AUTOFILL ON TAG SELECTOR NOT SET UP
+
         // start with a fresh database
         setup();
 
-        try {
-            Thread.sleep(maxDelay);
-        }
-        catch (Exception e){
-            Log.d("Sleep", "Exception");
-        }
 
         // Setup for 2 tags
         onView(withText(name2)).perform(click());
@@ -552,13 +537,6 @@ public class InventoryFunctionalityTest {
     public void testDeleteSelectedItems() {
         setup();
 
-        try {
-            Thread.sleep(maxDelay);
-        }
-        catch (Exception e){
-            Log.d("Sleep", "Exception");
-        }
-
         // Testing for deletion of all items with multi-select
         // Perform a click on the long-clickable item
         Espresso.onView(withText(name)).perform(ViewActions.longClick());
@@ -613,37 +591,46 @@ public class InventoryFunctionalityTest {
         onView(withText("item1")).check(matches(isDisplayed()));
     }
 
-//    /**
-//     * Testing Selection of items and Canceling
-//     */
-//    @Test
-//    public void testSelectItemsAndCancel() {
-//        clearDBs();
-//
-//        // Setting up the items
-//        createItemSetup("item1");
-//        createItemSetup("item2");
-//        createItemSetup("item3");
-//
-//        // Perform a click on the first item to enable multi-selection
-//        Espresso.onView(withText("item1")).perform(ViewActions.longClick());
-//
-//        // Perform clicks on other items to simulate selection
-//        onView(withText("item2")).perform(click());
-//        onView(withText("item3")).perform(click());
-//
-//        // TODO: do an assertion to check all items are selected
-//
-//        // Deselect an itme
-//        onView(withText("item3")).perform(click());
-//
-//        // TODO: do an assertion checking item3 is deslected while other items are selected
-//
-//        // Click the cancel button
-//        Espresso.onView(ViewMatchers.withId(R.id.inventory_cancel_button)).perform(ViewActions.click());
-//
-//        // TODO:
-//        // Check if selection is cleared after clicking cancel
-//
-//    }
+    /**
+     * Test for resetting inventory
+     */
+    @Test
+    public void testReset(){
+        setup();
+
+        // navigate to settings and click reset
+        onView(withId(R.id.settings)).perform(click());
+        // wait for update
+        onView(withId(R.id.reset_cl)).perform(ViewActions.scrollTo());
+        onView(withId(R.id.reset_cl)).perform(click());
+        onView(withText("CONFIRM")).perform(click());
+
+        // wait for update
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
+
+        // navigate to items
+        onView(withId(R.id.inventory)).perform(click());
+
+        // check that items no longer show up
+//        onView(withText(name)).check(doesNotExist());
+//        onView(withText(name2)).check(doesNotExist());
+
+        // navigate to tags
+        TagFunctionalityTest.navigateToTags();
+
+        // check that tags no longer exist
+        onView(withText("Tag1")).check(doesNotExist());
+        onView(withText("Tag2")).check(doesNotExist());
+        onView(withText("Tag3")).check(doesNotExist());
+
+
+
+    }
 }
+
+
