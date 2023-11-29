@@ -1,10 +1,13 @@
 package com.example.blackbox;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -26,6 +29,8 @@ public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     GoogleAuthDB googleAuthDB;
 
+    String currentFragment;
+
     /**
      * Called when the activity is created. Initializes the main layout and sets up the BottomNavigationView.
      *
@@ -33,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -45,7 +53,18 @@ public class MainActivity extends AppCompatActivity {
         // load home page
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.inventory);
-        NavigationManager.switchFragmentWithBack(new InventoryFragment(), fm);
+
+        // Initialize or restore the current fragment
+        if (savedInstanceState != null){
+            if (savedInstanceState.get("fragmentTag") == "Settings"){
+                NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), fm);
+                currentFragment = "Settings";
+            }
+        }
+        else{
+            NavigationManager.switchFragmentWithoutBack(new InventoryFragment(), fm);
+            currentFragment = "Inventory";
+        }
 
         // set a listener to handle item selection in the BottomNavigationView
         bottomNavigationView.setOnItemSelectedListener(
@@ -56,21 +75,27 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("ItemId", String.format("%d",id));
                         if (id == R.id.inventory){
                             // load inventory fragment
+                            currentFragment = "Inventory";
                             NavigationManager.switchFragmentWithoutBack(new InventoryFragment(), fm);
                         }
                         else if (id == R.id.expenses){
+                            currentFragment = "Expenses";
                             NavigationManager.switchFragmentWithoutBack( new ExpenseFragment(), fm);
                         }
                         else if (id == R.id.scan){
                             // load scan fragment
+                            currentFragment = "Scan";
                             NavigationManager.switchFragmentWithoutBack(new ScanFragment(), fm);
                         }
                         else if (id == R.id.profile){
+                            currentFragment = "Profile";
                             NavigationManager.switchFragmentWithoutBack(new ProfileFragment(), fm);
                         }
                         else if (id == R.id.settings){
                             // load tag fragment
-                            NavigationManager.switchFragmentWithoutBack(new TagFragment(), fm);
+                            currentFragment = "Settings";
+                            NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), fm);
+
                         }
                         return true;
                     }
@@ -79,6 +104,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
+
     /**
      * Override method called when the app requests permissions at runtime,
      * and the user responds to the permission request.
@@ -109,5 +136,11 @@ public class MainActivity extends AppCompatActivity {
         } else {
             bottomNavigationView.setVisibility(View.GONE);
         }
+    }
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Save relevant data to the outState bundle
+        outState.putString("fragmentTag", currentFragment);
     }
 }

@@ -110,7 +110,7 @@ public class UserAccountTest {
         clearDBs();
 
         // navigate to tags page
-        onView(withId(R.id.settings)).perform(click());
+        TagFunctionalityTest.navigateToTags();
 
         // create an tag to add
         basicTag.setUserID(getUserID());
@@ -171,7 +171,7 @@ public class UserAccountTest {
         clearDBs(testUID);
 
         // navigate to tags page
-        onView(withId(R.id.settings)).perform(click());
+        TagFunctionalityTest.navigateToTags();
         // create an tag to add
         basicTag.setUserID(testUID);
         // add the tag to the other database

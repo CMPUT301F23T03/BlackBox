@@ -13,7 +13,7 @@
         android:layout_marginEnd="24dp"
         android:layout_marginBottom="8dp"
         android:background="@drawable/rounded_square"
-        android:backgroundTint="@color/gray02"
+        android:backgroundTint="?attr/colorContainer"
         android:text="Delete Tag"
         android:textColor="@color/warning"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -45,7 +45,7 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bg_white_rounded"
-                android:backgroundTint="@color/gray02"
+                android:backgroundTint="?attr/colorContainer"
                 android:ems="10"
                 android:hint="@string/tag_name"
                 android:maxLength="21"
@@ -98,7 +98,7 @@
                 android:layout_marginStart="32dp"
                 android:layout_marginTop="8dp"
                 android:background="@drawable/bg_white_rounded"
-                android:backgroundTint="@color/gray02"
+                android:backgroundTint="?attr/colorContainer"
                 android:ems="10"
                 android:hint="Description"
                 app:layout_constraintStart_toStartOf="parent"
@@ -153,12 +153,11 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/save_tag_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:backgroundTint="@color/primary"
             android:text="Save"
             android:textColor="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"

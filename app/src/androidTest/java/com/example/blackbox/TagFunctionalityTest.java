@@ -56,12 +56,29 @@ public class TagFunctionalityTest {
     }
 
     /**
-     * This test checks if the activity is accessible by clicking the bottom right icon
+     * Navigate from any fragment with the bottom nav bar to the settings page
+     */
+    public static void navigateToTags(){
+        onView(withId(R.id.settings)).perform(click());
+        onView(withId(R.id.tags_cl)).perform(click());
+    }
+
+    /**
+     * Navigate from the tags fragment to the items fragment
+     */
+    public static void navigateFromTagsToItems(){
+        onView(withId(R.id.tag_back_button)).perform(click());
+        onView(withId(R.id.inventory)).perform(click());
+    }
+
+
+    /**
+     * This test checks is accessible
      */
     @Test
     public void testSwitchActivity(){
         onView(withId(R.id.tag_fragment)).check(doesNotExist());
-        onView(withId(R.id.settings)).perform(click());
+        navigateToTags();
         onView(withId(R.id.tag_fragment)).check(matches(isDisplayed()));
     }
 
@@ -75,7 +92,7 @@ public class TagFunctionalityTest {
         // start with a fresh database
         clearDBs();
         // navigate to view
-        onView(withId(R.id.settings)).perform(click());
+        navigateToTags();
         // click on addItem
         onView(withId(R.id.add_tag_button)).perform(click());
         // fill information
@@ -101,7 +118,7 @@ public class TagFunctionalityTest {
         // start with a fresh database
         clearDBs();
         // navigate to view
-        onView(withId(R.id.settings)).perform(click());
+        navigateToTags();
         // click on addItem
         onView(withId(R.id.add_tag_button)).perform(click());
         // fill information
@@ -131,7 +148,7 @@ public class TagFunctionalityTest {
         // start with a fresh database
         clearDBs();
         // navigate to view
-        onView(withId(R.id.settings)).perform(click());
+        navigateToTags();
         // click on addItem
         onView(withId(R.id.add_tag_button)).perform(click());
         // fill information
@@ -165,7 +182,7 @@ public class TagFunctionalityTest {
     @Test
     public void testBackButton() {
         // navigate to view
-        onView(withId(R.id.settings)).perform(click());
+        navigateToTags();
         // click on addItem
         onView(withId(R.id.add_tag_button)).perform(click());
         // click on backButton
@@ -182,8 +199,8 @@ public class TagFunctionalityTest {
         // start with a fresh database
         clearDBs();
         // navigate to tag page
-        onView(withId(R.id.settings)).perform(click());
-        // click on addItem
+        navigateToTags();
+        // click on addTag
         onView(withId(R.id.add_tag_button)).perform(click());
         // fill information
         onView(withId(R.id.name_editText)).perform(ViewActions.typeText(tagName));
@@ -191,7 +208,7 @@ public class TagFunctionalityTest {
         onView(withId(R.id.small_save_button)).perform(click());
 
         // navigate to inventory page
-        onView(withId(R.id.inventory)).perform(click());
+        navigateFromTagsToItems();
         // add an item with new tag
         onView(withId(R.id.add_button)).perform(click());
         onView(withId(R.id.tag_dropdown)).perform(click());
@@ -218,7 +235,7 @@ public class TagFunctionalityTest {
 
 
         // navigate back to tag page and delete tag
-        onView(withId(R.id.settings)).perform(click());
+        navigateToTags();
         onView(withText(tagName)).perform(click());
         onView(withId(R.id.delete_tag_button)).perform(click());
         onView(withText("CONFIRM")).perform(click());
@@ -234,7 +251,7 @@ public class TagFunctionalityTest {
 
 
         //navigate back to item and check that tag is no longer attached
-        onView(withId(R.id.inventory)).perform(click());
+        navigateFromTagsToItems();
         onView(withText(itemName)).perform(click());
         onView(withText(tagName)).check(doesNotExist());
 
