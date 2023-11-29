@@ -18,6 +18,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Spinner;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -116,6 +117,7 @@ public class SettingsFragment extends Fragment {
         logOutLayout = view.findViewById(R.id.logout_cl);
         logOutLayout.setOnClickListener(v -> {
             googleAuthDB.logOut();
+            Toast.makeText(activityContext, "Logged Out", Toast.LENGTH_SHORT).show();
             Intent i = new Intent(activityContext, GoogleSignInActivity.class);
             startActivity(i);
         });
