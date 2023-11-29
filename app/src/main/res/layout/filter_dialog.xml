@@ -249,7 +249,7 @@
             android:layout_height="wrap_content"
             android:text="Cancel"
             android:textStyle="bold"
-            android:textColor="@color/red"
+            android:textColor="@color/warning"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             />
@@ -262,7 +262,7 @@
             android:layout_height="wrap_content"
             android:text="Apply Changes"
             android:textStyle="bold"
-            android:textColor="@color/blue"
+            android:textColor="?colorPrimary"
 
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
