@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.utils;
 
 import android.text.Editable;
 import android.text.TextWatcher;

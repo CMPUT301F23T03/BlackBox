@@ -26,6 +26,7 @@ package com.example.blackbox;
 
         import com.example.blackbox.inventory.Item;
         import com.example.blackbox.tag.Tag;
+        import com.example.blackbox.utils.StringFormatter;
 
         import org.junit.Rule;
         import org.junit.Test;

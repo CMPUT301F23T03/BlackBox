@@ -2,7 +2,7 @@ package com.example.blackbox.tag;
 
 import android.util.Log;
 
-import com.example.blackbox.GoogleAuthDB;
+import com.example.blackbox.authentication.GoogleAuthDB;
 import com.example.blackbox.inventory.InventoryDB;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
