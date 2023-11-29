@@ -99,6 +99,7 @@ public class ProfileFragment extends Fragment{
             @Override
             public void onClick(View view) {
                 googleAuthDB.logOut();
+                Toast.makeText(activityContext, "Logged Out", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(activityContext, GoogleSignInActivity.class);
                 startActivity(i);
             }
@@ -111,7 +112,6 @@ public class ProfileFragment extends Fragment{
             public void onClick(View view) {
                 ProfileEditFragment profileEditFragment = new ProfileEditFragment();
                 NavigationManager.switchFragmentWithBack(profileEditFragment, getParentFragmentManager());
-                Toast.makeText(activityContext, "LET'S EDIT", Toast.LENGTH_SHORT).show();
             }
         });
     }

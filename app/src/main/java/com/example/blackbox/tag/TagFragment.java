@@ -55,12 +55,8 @@ public class TagFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // enable navigation bar
-        ((MainActivity) requireActivity()).toggleBottomNavigationView(true);
+        ((MainActivity) requireActivity()).toggleBottomNavigationView(false);
         view =  inflater.inflate(R.layout.tag_fragment, container, false);
-
-        // Display profile picture (taken from the Google account)
-        ImageButton profilePicture = view.findViewById(R.id.profile_button2);
-        googleAuthDB.displayGoogleProfilePicture(profilePicture, 80, 80, this);
 
         return view;
     }
@@ -124,12 +120,11 @@ public class TagFragment extends Fragment {
         });
 
         // When profile icon is clicked, switch to profile fragment
-        ImageButton profileButton = view.findViewById(R.id.profile_button2);
-        profileButton.setOnClickListener(new View.OnClickListener() {
+        Button backButton = view.findViewById(R.id.tag_back_button);
+        backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ProfileFragment profileFragment = new ProfileFragment();
-                NavigationManager.switchFragmentWithoutBack(profileFragment, getParentFragmentManager());
+                getParentFragmentManager().popBackStack();
             }
         });
 

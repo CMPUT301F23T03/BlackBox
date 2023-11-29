@@ -25,7 +25,8 @@
                     android:id="@+id/imageView5"
                     android:layout_width="0dp"
                     android:layout_height="250dp"
-                    android:src="@drawable/top_background"
+                    android:backgroundTint="?attr/colorPrimary"
+                    android:background="@drawable/top_background"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -81,12 +82,11 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/edit_profile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="44dp"
-                    android:backgroundTint="#008080"
                     android:background="@android:color/transparent"
                     android:text="Edit"
                     app:layout_constraintEnd_toStartOf="@+id/profile_header"
@@ -94,12 +94,11 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/logout_profile"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="44dp"
-                    android:backgroundTint="#008080"
                     android:background="@android:color/transparent"
                     android:text="Logout"
                     app:layout_constraintEnd_toEndOf="parent"
