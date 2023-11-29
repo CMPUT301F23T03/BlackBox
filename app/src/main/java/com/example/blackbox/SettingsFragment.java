@@ -55,7 +55,6 @@ public class SettingsFragment extends Fragment {
     Context activityContext;
     String selectedLanguage;
     ToggleButton darkModeButton;
-
     private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
 
 
@@ -149,24 +148,39 @@ public class SettingsFragment extends Fragment {
         if (isDarkModeActive()){
             darkModeButton.setChecked(true);
         }
+        else {
+            darkModeButton.setChecked(false);
+        }
 
-        darkModeButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // Enable dark mode
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                    // reload fragment
+        darkModeButton.setOnClickListener(v -> {
+            if (darkModeButton.isChecked()) {
+                // Enable dark mode
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                // reload fragment
 //                    NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), getParentFragmentManager());
-                } else {
-                    // Disable dark mode
-                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                    // reload fragment
+            } else {
+                // Disable dark mode
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                // reload fragment
 //                    NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), getParentFragmentManager());
-                }
-                MainActivity mainActivity = (MainActivity) getActivity();
             }
         });
+//        darkModeButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+//            @Override
+//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+//                if (isChecked) {
+//                    // Enable dark mode
+//                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+//                    // reload fragment
+////                    NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), getParentFragmentManager());
+//                } else {
+//                    // Disable dark mode
+//                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+//                    // reload fragment
+////                    NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), getParentFragmentManager());
+//                }
+//            }
+//        });
 
     }
 
@@ -281,5 +295,6 @@ public class SettingsFragment extends Fragment {
             }
         });
     }
+
 
 }
