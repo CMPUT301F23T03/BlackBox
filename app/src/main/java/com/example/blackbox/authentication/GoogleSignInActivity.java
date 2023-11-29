@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.blackbox;
+package com.example.blackbox.authentication;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -26,6 +26,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.blackbox.MainActivity;
+import com.example.blackbox.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;

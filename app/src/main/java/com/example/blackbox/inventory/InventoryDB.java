@@ -103,8 +103,10 @@ public class InventoryDB {
 
         // Convert the list of tags to a list of tag IDs
         List<String> tagIDs = new ArrayList<>();
-        for (Tag tag : item.getTags()) {
-            tagIDs.add(tag.getDataBaseID());
+        if (item.getTags() != null) {
+            for (Tag tag : item.getTags()) {
+                tagIDs.add(tag.getDataBaseID());
+            }
         }
         data.put("tags", tagIDs);
 

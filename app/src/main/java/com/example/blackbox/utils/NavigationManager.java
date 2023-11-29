@@ -1,8 +1,11 @@
-package com.example.blackbox;
+package com.example.blackbox.utils;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.example.blackbox.R;
+
 /**
  * The `NavigationManager` class provides a utility method for swapping out the currently displayed fragment
  * with a new one. The `switchFragment` method takes a `Fragment` and a `FragmentManager` as parameters,

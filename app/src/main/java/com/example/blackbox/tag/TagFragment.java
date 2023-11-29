@@ -2,7 +2,6 @@ package com.example.blackbox.tag;
 
 
 import android.content.Context;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,16 +16,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.example.blackbox.GoogleAuthDB;
+import com.example.blackbox.authentication.GoogleAuthDB;
 import com.example.blackbox.MainActivity;
-import com.example.blackbox.NavigationManager;
-import com.example.blackbox.ProfileFragment;
+import com.example.blackbox.utils.NavigationManager;
+import com.example.blackbox.profile.ProfileFragment;
 import com.example.blackbox.R;
-import com.example.blackbox.tag.Tag;
-import com.example.blackbox.tag.TagAdapter;
-import com.example.blackbox.tag.TagAddFragment;
-import com.example.blackbox.tag.TagDB;
-import com.example.blackbox.tag.TagEditFragment;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;

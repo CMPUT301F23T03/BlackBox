@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.profile;
 
 import android.net.Uri;
 

@@ -1,17 +1,14 @@
-package com.example.blackbox;
+package com.example.blackbox.authentication;
 
-import android.content.Context;
 import android.net.Uri;
-import android.util.Log;
 import android.widget.ImageButton;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
+import com.example.blackbox.profile.Profile;
+import com.example.blackbox.profile.ProfileDB;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
