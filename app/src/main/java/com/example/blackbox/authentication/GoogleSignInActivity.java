@@ -179,7 +179,7 @@ public class GoogleSignInActivity extends Activity {
             startActivity(i);
         } else {
             // User is signed out
-            Toast.makeText(this, "No user", Toast.LENGTH_SHORT).show();
+            Log.d("Auth", "No user");
         }
     }
 }
