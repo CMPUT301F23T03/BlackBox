@@ -104,9 +104,7 @@ public class InventoryListAdapter extends ArrayAdapter {
 
         }
 
-        //TODO
-        // NOTE THIS IS JUST FOR TESTING IMPLEMENTATION WILL BE CHANGED IN THE FUTURE
-        // Set the background color baxsed on item selection
+        // Highlights the item to show it's selected in multi-selection
         int backgroundColor = item.isSelected() ?
                 ContextCompat.getColor(context, android.R.color.holo_blue_light) :
                 Color.TRANSPARENT;
