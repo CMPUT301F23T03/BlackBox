@@ -84,8 +84,6 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
     protected ArrayList<Uri> displayedUris;       // List of URIs of displayed images
     protected ImageRecyclerAdapter adapter;        // Adapter for populating images in RecyclerView
 
-
-
     private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
 
 
@@ -142,14 +140,11 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
         // add image
         recyclerView = view.findViewById(R.id.image_recycler_view);
         addImgBtn = view.findViewById(R.id.add_img_btn);
-        addImgBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Set the listener on AttachImageFragment
-                attachImageFragment.setOnImageSelectedListener(InventoryAddEditFragment.this);
-                Log.d("Attach image", "Going to fragment");
-                NavigationManager.switchFragmentWithBack(attachImageFragment, getParentFragmentManager());
-            }
+        addImgBtn.setOnClickListener(v -> {
+            // Set the listener on AttachImageFragment
+            attachImageFragment.setOnImageSelectedListener(InventoryAddEditFragment.this);
+            Log.d("Attach image", "Going to fragment");
+            NavigationManager.switchFragmentWithBack(attachImageFragment, getParentFragmentManager());
         });
 
         displayedUris = attachImageFragment.getUriArrayList();
@@ -164,7 +159,6 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
         // Handle the selected image URI here
         // You can add it to the display list or perform any other actions
         if (!displayedUris.contains(imageUri)) {
-            Log.d("Attach image", "Selecting image");
             displayedUris.add(imageUri);
             adapter.updateDisplayedUris(displayedUris);  // Update the displayed images in the adapter
         }
@@ -331,7 +325,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
                 String userID = googleAuthDB.getUid();
                 Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment, userID);
                 itemDB.updateItemInDB(item, new_item);
-//                itemDB.updateImagesInDB(displayedUris); TODO
+                itemDB.updateImagesInDB(item, displayedUris);
                 // clear all temporary pictures
                 clearTempFiles();
                 NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());

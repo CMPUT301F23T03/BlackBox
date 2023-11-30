@@ -1,6 +1,8 @@
 package com.example.blackbox.inventory;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
@@ -10,10 +12,14 @@ import androidx.annotation.Nullable;
 import com.example.blackbox.DeletePopupFragment;
 import com.example.blackbox.R;
 
+import java.util.ArrayList;
+
 /**
  * A Fragment responsible for editing an inventory item's details.
  */
 public class InventoryEditFragment extends InventoryAddEditFragment {
+
+    private boolean isFirstCreation = true;
 
     /**
      * Default constructor for the InventoryEditFragment.
@@ -38,6 +44,7 @@ public class InventoryEditFragment extends InventoryAddEditFragment {
     }
 
 
+
     /**
      * Called when the fragment's view has been created. Handles user interactions for editing an item.
      *
@@ -50,13 +57,15 @@ public class InventoryEditFragment extends InventoryAddEditFragment {
         setupFragment(view);
         // get the index of item to be edited
         item = (Item) getArguments().getSerializable("item");
-        // TODO: Get images using imageId, currently, successfully downloaded the image from the data bast,
-        //  however, cannot update the view using the adapter (bug)
-        itemDB.getImagesByItemId(item.getID(), requireContext());
 
         adjustFields(item);
-        adapter.updateDisplayedUris(displayedUris);
-
+        // TODO: Get images using imageId, currently, successfully downloaded the image from the data bast,
+        //  however, cannot update the view using the adapter (bug)
+        if (isFirstCreation) {
+            // Run your method to get images only during the first creation
+            itemDB.getImagesByItemId(item.getID(), requireContext(), displayedUris, adapter);
+            isFirstCreation = false; // Set the flag to false after the first creation
+        }
         // save an edited item by clicking the small add button
         Button small_save_button = view.findViewById(R.id.small_save_button);
         small_save_button.setOnClickListener(v -> {

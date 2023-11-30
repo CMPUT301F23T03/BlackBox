@@ -190,6 +190,7 @@ public class AttachImageFragment extends Fragment {
                 Snackbar.make(view, "Image already added", Snackbar.LENGTH_SHORT).show();
             } else {
                 uriArrayList.add(imageUri);
+                Log.d("debug", String.valueOf(uriArrayList.size()));
                 if (imageSelectedListener != null) {
                     imageSelectedListener.onImageSelected(imageUri);
                 }

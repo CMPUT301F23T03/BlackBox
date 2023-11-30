@@ -167,12 +167,8 @@ public class InventoryDB {
         imageData.put("imageUrl", downloadUri.toString()); // Convert Uri to String
         // Add the image URL to Firestore
         images.add(imageData)
-                .addOnSuccessListener(new OnSuccessListener() {
-                    @Override
-                    public void onSuccess(Object o) {
-                        Log.d("Success image add", "Image URL added to Firestore: " + downloadUri.toString());
-                    }
-                })
+                .addOnSuccessListener((OnSuccessListener)
+                        o -> Log.d("Success image add", "Image URL added to Firestore: " + downloadUri.toString()))
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
@@ -180,6 +176,8 @@ public class InventoryDB {
                     }
                 });
     }
+
+
 
     /**
      * Retrieves images associated with a specific itemId from the Firestore 'images' collection
@@ -193,7 +191,8 @@ public class InventoryDB {
      *
      * @param itemId The ID of the item for which images need to be retrieved.
      */
-    public void getImagesByItemId(String itemId, Context context) {
+    public void getImagesByItemId(String itemId, Context context,
+                                  ArrayList<Uri> displayedUris, ImageRecyclerAdapter adapter) {
         // Query the 'images' collection for documents with matching itemId
         images.whereEqualTo("itemId", itemId)
                 .get()
@@ -209,7 +208,7 @@ public class InventoryDB {
                             File imageFile = new File(storageDir, imageFileName + ".jpg");
 
                             // Download image using its URL
-                            downloadImageFromUrl(imageUrl, imageFile, context);
+                            downloadImageFromUrl(imageUrl, imageFile, context, displayedUris, adapter);
                         }
                     }
                 })
@@ -223,7 +222,8 @@ public class InventoryDB {
      * @param imageUrl  The URL of the image to be downloaded.
      * @param imageFile The File object where the downloaded image will be saved.
      */
-    private void downloadImageFromUrl(String imageUrl, File imageFile, Context context) {
+    private void downloadImageFromUrl(String imageUrl, File imageFile, Context context,
+                                      ArrayList<Uri> displayedUris, ImageRecyclerAdapter adapter) {
         StorageReference storageRef = storage.getReferenceFromUrl(imageUrl);
 
         storageRef.getFile(imageFile)
@@ -234,7 +234,8 @@ public class InventoryDB {
                     // Get the URI of the newly created local file
                     Uri localUri = FileProvider.getUriForFile(context,
                             context.getPackageName() + ".provider", imageFile);
-
+                    displayedUris.add(localUri);
+//                    adapter.updateDisplayedUris(displayedUris);
                     Log.d("URI", localUri.toString());
                 })
                 .addOnFailureListener(e ->
@@ -254,6 +255,11 @@ public class InventoryDB {
         inventory.document(itemId).set(data);
     }
 
+    public void updateImagesInDB(Item old_item, ArrayList<Uri> uris) {
+        itemId = old_item.getID();
+        deleteImagesByItemId(itemId); // delete every images of that item
+        addImagesToDB(uris); // add new images to database
+    }
     /**
      * Creates a HashMap which represents the data of a tag
      * @param item
