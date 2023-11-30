@@ -193,8 +193,7 @@ public class InventoryDB {
      *
      * @param itemId The ID of the item for which images need to be retrieved.
      */
-    public void getImagesByItemId(String itemId, Context context,
-                                  ArrayList<Uri> displayedUris, ImageRecyclerAdapter adapter) {
+    public void getImagesByItemId(String itemId, Context context) {
         // Query the 'images' collection for documents with matching itemId
         images.whereEqualTo("itemId", itemId)
                 .get()
@@ -209,11 +208,8 @@ public class InventoryDB {
                             File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                             File imageFile = new File(storageDir, imageFileName + ".jpg");
 
-                            Log.d("Number of pictures", String.valueOf(displayedUris.size()));
-
                             // Download image using its URL
-                            downloadImageFromUrl(imageUrl, imageFile,
-                                    context, displayedUris, adapter);
+                            downloadImageFromUrl(imageUrl, imageFile, context);
                         }
                     }
                 })
@@ -227,8 +223,7 @@ public class InventoryDB {
      * @param imageUrl  The URL of the image to be downloaded.
      * @param imageFile The File object where the downloaded image will be saved.
      */
-    private void downloadImageFromUrl(String imageUrl, File imageFile, Context context,
-                                      ArrayList<Uri> displayedUris, ImageRecyclerAdapter adapter) {
+    private void downloadImageFromUrl(String imageUrl, File imageFile, Context context) {
         StorageReference storageRef = storage.getReferenceFromUrl(imageUrl);
 
         storageRef.getFile(imageFile)
@@ -239,15 +234,12 @@ public class InventoryDB {
                     // Get the URI of the newly created local file
                     Uri localUri = FileProvider.getUriForFile(context,
                             context.getPackageName() + ".provider", imageFile);
-                    // Append the URI to displayedUris ArrayList
-                    displayedUris.add(localUri);
+
                     Log.d("URI", localUri.toString());
-                    adapter.updateDisplayedUris(displayedUris);
                 })
                 .addOnFailureListener(e ->
                         Log.e("Firebase Storage", "Failed to download image: " + e.getMessage())
                 );
-
     }
 
     /**

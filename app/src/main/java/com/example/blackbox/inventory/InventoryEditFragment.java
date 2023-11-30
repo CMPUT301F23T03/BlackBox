@@ -52,7 +52,7 @@ public class InventoryEditFragment extends InventoryAddEditFragment {
         item = (Item) getArguments().getSerializable("item");
         // TODO: Get images using imageId, currently, successfully downloaded the image from the data bast,
         //  however, cannot update the view using the adapter (bug)
-        itemDB.getImagesByItemId(item.getID(), requireContext(), displayedUris, adapter);
+        itemDB.getImagesByItemId(item.getID(), requireContext());
 
         adjustFields(item);
         adapter.updateDisplayedUris(displayedUris);

@@ -59,9 +59,8 @@ public class AttachImageFragment extends Fragment {
     private Uri imageUri;
     private File cameraImageFile;
     private Uri cameraImageUri;
-    public ArrayList<Uri> uriArrayList = new ArrayList<>();
     private ActivityResultLauncher<Uri> takePicture;
-
+    private ArrayList<Uri> uriArrayList = new ArrayList<>();
     // Listener for image selection
     private OnImageSelectedListener imageSelectedListener;
     @Override
@@ -95,17 +94,15 @@ public class AttachImageFragment extends Fragment {
         // Activity Result Launcher for capturing an image and store it in side imageFile
         takePicture = registerForActivityResult(
                 new ActivityResultContracts.TakePicture(),
-                new ActivityResultCallback<Boolean>() {
-                    @Override
-                    public void onActivityResult(Boolean result) {
-                        if (result) {
-                            if (cameraImageUri != null) {
-                                imageView.setImageURI(cameraImageUri);
-                                imageUri = cameraImageUri;
-                                Log.d("Camera", "Selected URI: " + imageUri);
-                            } else {
-                                Log.d("Camera", "No media selected");
-                            }
+                result -> {
+                    if (result) {
+                        if (cameraImageUri != null) {
+                            imageView.setImageURI(null); // reset view to null
+                            imageView.setImageURI(cameraImageUri); // attach new image
+                            imageUri = cameraImageUri;
+                            Log.d("Camera", "Selected URI: " + imageUri);
+                        } else {
+                            Log.d("Camera", "No media selected");
                         }
                     }
                 });
@@ -116,6 +113,10 @@ public class AttachImageFragment extends Fragment {
         confirmAttachment();
 
         return view;
+    }
+
+    public ArrayList<Uri> getUriArrayList(){
+        return uriArrayList;
     }
 
     // Setter method for the listener
@@ -197,7 +198,12 @@ public class AttachImageFragment extends Fragment {
         });
     }
 
-    // Function to check if a URI already exists in the ArrayList
+    /** Function to check if a URI already exists in the ArrayList
+     *
+     * @param uriList
+     * @param uriToCheck
+     * @return boolean
+     */
     private static boolean isUriDuplicate(ArrayList<Uri> uriList, Uri uriToCheck) {
         for (Uri uri : uriList) {
             if (uri.equals(uriToCheck)) {
