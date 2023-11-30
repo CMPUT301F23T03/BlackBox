@@ -48,6 +48,7 @@ public class ExpenseFragment extends Fragment{
     private ExpenseListAdapter expenseAdapter;
     private ArrayList<Item> expenseItemList;
     private TextView totalExpenseTextView;
+    private TextView info_text;
     private TagDB tagDB;
     private ArrayList<Tag> tagList;
     private ListenerRegistration tagDBListener;
@@ -58,8 +59,8 @@ public class ExpenseFragment extends Fragment{
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.expense_fragment, container, false);
         ((MainActivity) requireActivity()).toggleBottomNavigationView(true);
+        View view = inflater.inflate(R.layout.expense_fragment, container, false);
 
         // Display profile picture (taken from the Google account)
         ImageButton profilePicture = view.findViewById(R.id.profile_button);
@@ -76,28 +77,14 @@ public class ExpenseFragment extends Fragment{
         tagDB = new TagDB();
 
         tagList = new ArrayList<>();
+        itemList = new ArrayList<>();
         expenseTagListView = view.findViewById(R.id.tag_expense_list);
+        info_text = view.findViewById(R.id.info_text);
         expenseAdapter = new ExpenseListAdapter(activityContext, tagList);
         expenseTagListView.setAdapter(expenseAdapter);
         expenseAdapter.notifyDataSetChanged();
 
-        setupDBListeners();
-
-
-
-        // When profile icon is clicked, switch to profile fragment
-        ImageButton profileButton = view.findViewById(R.id.profile_button);
-        profileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ProfileFragment profileFragment = new ProfileFragment();
-                NavigationManager.switchFragmentWithoutBack(profileFragment, getParentFragmentManager());
-            }
-        });
-    }
-
-    private void setupDBListeners(){
-        // DB listener
+        // Setting up DB listeners
         tagDBListener = tagDB.getTags()
                 .whereEqualTo("user_id", googleAuthDB.getUid())
                 .orderBy("update_date", Query.Direction.DESCENDING)
@@ -124,54 +111,75 @@ public class ExpenseFragment extends Fragment{
                             tagList.add(tag);
                         }
                         // Notify the adapter that the data has changed
+                        hideView();
                         expenseAdapter.notifyDataSetChanged();
                     }
                 });
 
-            inventoryDBListener = inventoryDB.getInventory()
-                        .whereEqualTo("user_id", googleAuthDB.getUid())
-                            // whenever database is update it is reordered by add date
-                        .orderBy("update_date", Query.Direction.DESCENDING)
-                        .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                            @Override
-                            public void onEvent(@Nullable QuerySnapshot value,
-                                                @Nullable FirebaseFirestoreException e) {
-                                if (e != null) {
-                                    // An error occurred while fetching the data
-                                    Log.e("Firestore", "Error getting inventory", e);
-                                    return;
-                                }
-                                itemList.clear();
-                                List<Task<DocumentSnapshot>> tagTasks = new ArrayList<>();
-                                for (QueryDocumentSnapshot doc : value) {
-                                    String name = doc.getString("name");
-                                    Double val = doc.getDouble("value");
-                                    String desc = doc.getString("description");
-                                    String make = doc.getString("make");
-                                    String model = doc.getString("model");
-                                    String serialNumber = doc.getString("serial_number");
-                                    String comment = doc.getString("comment");
-                                    String dateOfPurchase = doc.getString("purchase_date");
-                                    String dbID = doc.getId();
-                                    String userID = doc.getString("user_id");
-                                    ArrayList<Tag> tags = new ArrayList<>();
-                                    List<String> tagIDs = (List<String>) doc.get("tags");
+        inventoryDBListener = inventoryDB.getInventory()
+                .whereEqualTo("user_id", googleAuthDB.getUid())
+                // whenever database is update it is reordered by add date
+                .orderBy("update_date", Query.Direction.DESCENDING)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            // An error occurred while fetching the data
+                            Log.e("Firestore", "Error getting inventory", e);
+                            return;
+                        }
+                        itemList.clear();
+                        List<Task<DocumentSnapshot>> tagTasks = new ArrayList<>();
+                        for (QueryDocumentSnapshot doc : value) {
+                            String name = doc.getString("name");
+                            Double val = doc.getDouble("value");
+                            String desc = doc.getString("description");
+                            String make = doc.getString("make");
+                            String model = doc.getString("model");
+                            String serialNumber = doc.getString("serial_number");
+                            String comment = doc.getString("comment");
+                            String dateOfPurchase = doc.getString("purchase_date");
+                            String dbID = doc.getId();
+                            String userID = doc.getString("user_id");
+                            ArrayList<Tag> tags = new ArrayList<>();
+                            List<String> tagIDs = (List<String>) doc.get("tags");
 
-                                    Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID, userID);
-                                    if (tagIDs != null && !tagIDs.isEmpty()) {
-                                        for (String tagID : tagIDs) {
-                                            Task<DocumentSnapshot> tagTask = tagDB.getTags().document(tagID).get();
-                                            tagTasks.add(tagTask);
-                                            Log.d("Firestore", "added task");
-                                            tagTask.addOnSuccessListener(tagSnapshot -> {
-                                                fetchTagForItem(item, tagSnapshot);
-                                            });
-                                        }
-                                    }
-                                    itemList.add(item);
+                            Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID, userID);
+                            if (tagIDs != null && !tagIDs.isEmpty()) {
+                                for (String tagID : tagIDs) {
+                                    Task<DocumentSnapshot> tagTask = tagDB.getTags().document(tagID).get();
+                                    tagTasks.add(tagTask);
+                                    Log.d("Firestore", "added task");
+                                    tagTask.addOnSuccessListener(tagSnapshot -> {
+                                        fetchTagForItem(item, tagSnapshot);
+                                    });
                                 }
                             }
-                        });
+                            itemList.add(item);
+                        }
+                        // Notify the adapter that the data has changed
+                        expenseAdapter.notifyDataSetChanged();
+                    }
+                });
+
+        // When profile icon is clicked, switch to profile fragment
+        ImageButton profileButton = view.findViewById(R.id.profile_button);
+        profileButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ProfileFragment profileFragment = new ProfileFragment();
+                NavigationManager.switchFragmentWithoutBack(profileFragment, getParentFragmentManager());
+            }
+        });
+
+    }
+
+    private void hideView() {
+        if (tagList.isEmpty()) {
+            info_text.setVisibility(View.VISIBLE);
+            expenseAdapter.notifyDataSetChanged();
+        }
     }
 
     private void fetchTagForItem(Item item,  DocumentSnapshot document) {

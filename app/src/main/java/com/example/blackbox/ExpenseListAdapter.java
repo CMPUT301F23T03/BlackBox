@@ -1,6 +1,7 @@
 package com.example.blackbox;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +48,7 @@ public class ExpenseListAdapter extends ArrayAdapter {
 
         if (currentTag != null) {
             tagName.setText(currentTag.getName());
+            color.setBackgroundTintList(ColorStateList.valueOf(currentTag.getColor()));
 //            String val = StringFormatter.getMonetaryString(currentTag.getEstimatedValue()); // Convert double to a string with 2 decimal places
 //            tagStatistic.setText(val);
         }
