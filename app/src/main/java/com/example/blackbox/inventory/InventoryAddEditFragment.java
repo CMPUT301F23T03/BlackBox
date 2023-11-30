@@ -333,6 +333,15 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
         if (item.getTags() != null){
             selectedTags = item.getTags();
             tags = item.getTags();
+            // Ordering tags in the text box
+            Comparator<Tag> tagComp = new Comparator<Tag>() {
+                @Override
+                public int compare(Tag tag1, Tag tag2) {
+                    int result = tag1.getName().compareToIgnoreCase(tag2.getName());
+                    return result;
+                }
+            };
+            selectedTags.sort(tagComp);
         }
         if (selectedTags != null){
             ArrayList<String> selectedTagNames = new ArrayList<>();

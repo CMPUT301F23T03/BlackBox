@@ -464,7 +464,8 @@ public class InventoryFragment extends Fragment {
                                 selectedItem.getModel(),
                                 selectedItem.getSerialNumber(),
                                 selectedItem.getDescription(),
-                                selectedItem.getComment()
+                                selectedItem.getComment(),
+                                selectedItem.getUserID()
                         );
 
                         // Update the item in the database
@@ -668,9 +669,10 @@ public class InventoryFragment extends Fragment {
             int color = document.getLong("color").intValue();
             String colorName = document.getString("color_name");
             String description = document.getString("description");
-            String tagID = document.getId();
+            String dataBaseID = document.getId();
+            String userID = document.getString("user_id");
             // Create a Tag object with the retrieved data
-            Tag tag = new Tag(name, color, colorName, description, tagID);
+            Tag tag = new Tag(name, color, colorName, description, dataBaseID, userID);
             item.getTags().add(tag);
     }
 
