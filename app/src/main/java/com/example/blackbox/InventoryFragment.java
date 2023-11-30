@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -134,16 +135,28 @@ public class InventoryFragment extends Fragment {
         filterViewList = (RecyclerView) view.findViewById(R.id.filter_list);
         searchView = view.findViewById(R.id.searchView);
 
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                Log.d("SearchView","On close triggered");
+                inventoryAdapter.getFilter().filter(null);
+                return false;
+            }
+        });
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.d("SearchView","Query submitted");
+                Log.d("SearchView","query submitted");
+                query = query.replaceAll(" ",",");
+                query = query.replaceAll("[^,a-zA-Z]","");
+                inventoryAdapter.getFilter().filter(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                Log.d("SearchView","Query changed");
                 return false;
             }
         });
@@ -151,7 +164,6 @@ public class InventoryFragment extends Fragment {
         inventoryAdapter = new InventoryListAdapter(activityContext, itemList);
         filterAdapter = new FilterListAdapter(filterList,itemList,inventoryAdapter, getActivity());
         LinearLayoutManager layoutManager = new LinearLayoutManager(activityContext,LinearLayoutManager.HORIZONTAL,false);
-        //GridLayoutManager layoutManager = new GridLayoutManager(this,);
 
         filterViewList.setLayoutManager(layoutManager);
         filterViewList.setAdapter(filterAdapter);

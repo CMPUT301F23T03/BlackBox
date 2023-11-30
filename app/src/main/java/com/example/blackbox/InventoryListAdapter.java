@@ -4,23 +4,30 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 
+import org.checkerframework.checker.units.qual.A;
+
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * A custom ArrayAdapter for populating an inventory list view with Item objects.
  */
-public class InventoryListAdapter extends ArrayAdapter {
+public class InventoryListAdapter extends ArrayAdapter implements Filterable {
+
+    private ArrayList<Item> originalItems;
 
     private ArrayList<Item> items;
     private Context context;
@@ -34,6 +41,7 @@ public class InventoryListAdapter extends ArrayAdapter {
     public InventoryListAdapter(@NonNull Context context, ArrayList<Item> items) {
         super(context, 0, items); // Call the constructor of the base class
         this.items = items;
+        this.originalItems = (ArrayList<Item>) items.clone();
         this.context = context;
     }
 
@@ -113,4 +121,55 @@ public class InventoryListAdapter extends ArrayAdapter {
 
         return view;
     }
+
+    @Override
+    public Filter getFilter(){
+        Filter filter = new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                Log.d("InventoryListAdapter","filtering reached");
+                FilterResults filterResults = new FilterResults();
+                if (constraint != null && constraint.length() > 0){
+                    String[] filterTokens = constraint.toString().split(",");
+                    ArrayList<Item> results = new ArrayList<>();
+                    for (String token: filterTokens){
+                        for (Item item: originalItems){
+                            if (item.getDescription().contains(token)){
+                                Log.d("InventoryListAdapter","item added");
+                                results.add(item);
+                            }
+                        }
+                    }
+                    filterResults.values = results;
+                    filterResults.count = results.size();
+                }else{
+                    //count here is kept to 0 so that we know that the results returned nothing
+                    filterResults.values = originalItems;
+                    filterResults.count = 0;
+                }
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                if (results.count > 0){
+                    Log.d("InventoryListAdapter","Data set notified");
+                    items.clear();
+                    items.addAll((Collection<? extends Item>) results.values);
+                    notifyDataSetChanged();
+                }else if (constraint != null && constraint.length() > 0){
+                    Toast.makeText(context,"No Results Found",Toast.LENGTH_LONG).show();
+                }else{
+                    items.clear();
+                    items.addAll((Collection<? extends Item>) results.values);
+                    Log.d("InventoryListAdapter","items restored" + items.toString());
+                    notifyDataSetChanged();
+                }
+            }
+        };
+        return filter;
+    }
+
 }
+
+
