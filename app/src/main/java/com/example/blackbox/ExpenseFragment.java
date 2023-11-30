@@ -6,11 +6,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +20,7 @@ import com.example.blackbox.inventory.Item;
 import com.example.blackbox.tag.TagDB;
 import com.example.blackbox.tag.Tag;
 import com.example.blackbox.utils.NavigationManager;
+import com.example.blackbox.utils.StringFormatter;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -34,6 +33,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -46,7 +47,6 @@ public class ExpenseFragment extends Fragment{
     private InventoryDB inventoryDB;
     private ArrayList<Item> itemList;
     private ExpenseListAdapter expenseAdapter;
-    private ArrayList<Item> expenseItemList;
     private TextView totalExpenseTextView;
     private TextView info_text;
     private TagDB tagDB;
@@ -80,7 +80,8 @@ public class ExpenseFragment extends Fragment{
         itemList = new ArrayList<>();
         expenseTagListView = view.findViewById(R.id.tag_expense_list);
         info_text = view.findViewById(R.id.info_text);
-        expenseAdapter = new ExpenseListAdapter(activityContext, tagList);
+        totalExpenseTextView = view.findViewById(R.id.total_sum);
+        expenseAdapter = new ExpenseListAdapter(activityContext, tagList, itemList);
         expenseTagListView.setAdapter(expenseAdapter);
         expenseAdapter.notifyDataSetChanged();
 
@@ -111,7 +112,8 @@ public class ExpenseFragment extends Fragment{
                             tagList.add(tag);
                         }
                         // Notify the adapter that the data has changed
-                        hideView();
+                        featureVisibility();
+
                         expenseAdapter.notifyDataSetChanged();
                     }
                 });
@@ -148,16 +150,27 @@ public class ExpenseFragment extends Fragment{
                             Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID, userID);
                             if (tagIDs != null && !tagIDs.isEmpty()) {
                                 for (String tagID : tagIDs) {
-                                    Task<DocumentSnapshot> tagTask = tagDB.getTags().document(tagID).get();
-                                    tagTasks.add(tagTask);
-                                    Log.d("Firestore", "added task");
-                                    tagTask.addOnSuccessListener(tagSnapshot -> {
-                                        fetchTagForItem(item, tagSnapshot);
-                                    });
+//                                        Task<DocumentSnapshot> tagTask = tagDB.getTags().document(tagID).get();
+//                                        tagTasks.add(tagTask);
+//                                        Log.d("Firestore", "added task");
+//                                        tagTask.addOnSuccessListener(tagSnapshot -> {
+//                                            fetchTagForItem(item, tagSnapshot);
+//                                        });
+                                    for (Tag tag : tagList) {
+                                        if (tagID.equals(tag.getDataBaseID())) {
+                                            item.getTags().add(tag);
+                                        }
+                                    }
                                 }
                             }
                             itemList.add(item);
                         }
+                        // Total estimated value (same value show in inventory fragment)
+                        updateTotalValue(itemList);
+
+                        // Sort the tags by highest expense
+                        sortTagsByExpense();
+
                         // Notify the adapter that the data has changed
                         expenseAdapter.notifyDataSetChanged();
                     }
@@ -175,11 +188,50 @@ public class ExpenseFragment extends Fragment{
 
     }
 
-    private void hideView() {
+    private void featureVisibility() {
         if (tagList.isEmpty()) {
             info_text.setVisibility(View.VISIBLE);
             expenseAdapter.notifyDataSetChanged();
         }
+    }
+
+    private void updateTotalValue(List<Item> items) {
+        double totalValue = calculateTotalValue(items);
+        totalExpenseTextView.setText(StringFormatter.getMonetaryString(totalValue));
+    }
+
+    private double calculateTotalValue(List<Item> items) {
+        double totalValue = 0.0;
+        for (Item item : items) {
+            totalValue += item.getEstimatedValue();
+        }
+        return totalValue;
+    }
+
+    private void sortTagsByExpense() {
+        Comparator<Tag> tagComp = new Comparator<Tag>() {
+            @Override
+            public int compare(Tag tag1, Tag tag2) {
+                double tag1Sum = calculateTagSum(tag1);
+                double tag2Sum = calculateTagSum(tag2);
+                return Double.compare(tag2Sum, tag1Sum);
+            }
+        };
+
+        tagList.sort(tagComp);
+    }
+
+    private double calculateTagSum(Tag tag) {
+        double tagSum = 0.0;
+        for (Item item : itemList) {
+            for (Tag itemTag : item.getTags()) {
+                if (itemTag.getDataBaseID().equals(tag.getDataBaseID())) {
+                    tagSum += item.getEstimatedValue();
+                    break;
+                }
+            }
+        }
+        return tagSum;
     }
 
     private void fetchTagForItem(Item item,  DocumentSnapshot document) {

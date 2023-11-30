@@ -200,7 +200,6 @@ public class InventoryFragment extends Fragment {
                                 @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
                     // An error occurred while fetching the data
-                    // Handle the error here
                     Log.e("Firestore", "Error getting inventory", e);
                 }
                 else {
