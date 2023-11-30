@@ -3,10 +3,7 @@ package com.example.blackbox;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
-import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -15,28 +12,16 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 
 
-import static java.util.regex.Pattern.matches;
-
-import android.util.Log;
-import android.widget.DatePicker;
-import android.widget.TextView;
-
-import androidx.test.espresso.Espresso;
-import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.assertion.ViewAssertions;
 //import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.espresso.matcher.RootMatchers;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
-import org.hamcrest.Matchers;
+import com.example.blackbox.inventory.Item;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.internal.matchers.Null;
-
-import java.util.Calendar;
 
 public class InventorySortTest {
     final private Integer maxDelay = 1000;
@@ -44,11 +29,24 @@ public class InventorySortTest {
     public ActivityScenarioRule<MainActivity> activityScenarioRule = new ActivityScenarioRule<>(MainActivity.class);
 
     /**
+     * A method which sets up items and tags to be sorted
+     */
+    @Before
+    public void setup(){
+        InventoryDBTest.clearInventoryDB();
+        TagDBTest.clearTagDB();
+        addTestTags();
+        addTestItem1();
+        addTestItem2();
+        addTestItem3();
+    }
+
+    /**
      * Method used to clear all the tags from the database and then make new tags for the test
      */
     public void addTestTags() {
         // Switch to the tag fragment
-        onView(withId(R.id.settings)).perform(click());
+        TagFunctionalityTest.navigateToTags();
         // Click on the "Add" button to add a new tag.
         onView(withId(R.id.add_tag_button)).perform(click());
 
@@ -106,7 +104,7 @@ public class InventorySortTest {
         onView(withId(R.id.small_save_button)).perform(click());
 
         // Switch back to the item fragment screen
-        onView(withId(R.id.inventory)).perform(click());
+        TagFunctionalityTest.navigateFromTagsToItems();
     }
 
     /**
@@ -187,12 +185,6 @@ public class InventorySortTest {
      */
     @Test
     public void testSortByValue(){
-        InventoryDBTest.clearInventoryDB();
-        TagDBTest.clearTagDB();
-        addTestTags();
-        addTestItem1();
-        addTestItem2();
-        addTestItem3();
         // Click on the "Sort" button
         onView(withId(R.id.sort_button)).perform(click());
         // Choose sort by value
@@ -238,12 +230,6 @@ public class InventorySortTest {
      */
     @Test
     public void testSortByMake(){
-        InventoryDBTest.clearInventoryDB();
-        TagDBTest.clearTagDB();
-        addTestTags();
-        addTestItem1();
-        addTestItem2();
-        addTestItem3();
         // Click on the "Sort" button
         onView(withId(R.id.sort_button)).perform(click());
         // Choose sort by make
@@ -286,12 +272,6 @@ public class InventorySortTest {
 
     @Test
     public void testSortByTag(){
-        InventoryDBTest.clearInventoryDB();
-        TagDBTest.clearTagDB();
-        addTestTags();
-        addTestItem1();
-        addTestItem2();
-        addTestItem3();
         // Click on the "Sort" button
         onView(withId(R.id.sort_button)).perform(click());
         // Choose sort by tag

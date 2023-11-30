@@ -5,9 +5,7 @@ package com.example.blackbox;
         import static androidx.test.espresso.action.ViewActions.click;
         import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
         import static androidx.test.espresso.assertion.ViewAssertions.matches;
-        import static androidx.test.espresso.matcher.RootMatchers.isPlatformPopup;
         import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-        import static androidx.test.espresso.matcher.ViewMatchers.withChild;
         import static androidx.test.espresso.matcher.ViewMatchers.withId;
         import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
         import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -18,35 +16,23 @@ package com.example.blackbox;
         import static org.hamcrest.CoreMatchers.is;
         import static org.hamcrest.CoreMatchers.not;
 
-        import android.graphics.Color;
-        import android.graphics.drawable.ColorDrawable;
-        import android.graphics.drawable.Drawable;
         import android.util.Log;
-        import android.widget.Switch;
 
         import androidx.test.espresso.Espresso;
-        import androidx.test.espresso.ViewAssertion;
         import androidx.test.espresso.action.ViewActions;
-        import androidx.test.espresso.assertion.ViewAssertions;
-        import androidx.test.espresso.matcher.BoundedMatcher;
         import androidx.test.espresso.matcher.ViewMatchers;
         import androidx.test.ext.junit.rules.ActivityScenarioRule;
         import androidx.test.ext.junit.runners.AndroidJUnit4;
 
-        import org.checkerframework.checker.units.qual.A;
-        import org.hamcrest.Description;
-        import org.hamcrest.Matcher;
-        import org.hamcrest.Matchers;
-        import org.hamcrest.TypeSafeMatcher;
+        import com.example.blackbox.inventory.Item;
+        import com.example.blackbox.tag.Tag;
+        import com.example.blackbox.utils.StringFormatter;
+
         import org.junit.Rule;
         import org.junit.Test;
         import org.junit.runner.RunWith;
 
         import java.util.ArrayList;
-        import java.util.Arrays;
-        import java.util.Collections;
-        import java.util.Date;
-        import java.util.List;
 
 @RunWith(AndroidJUnit4.class)
 public class InventoryFunctionalityTest {
@@ -84,7 +70,7 @@ public class InventoryFunctionalityTest {
 
         // Mock data for testing
         // Switch to the tag fragment
-        onView(withId(R.id.settings)).perform(click());
+        TagFunctionalityTest.navigateToTags();
 
         // Click on the "Add" button to add a new tag.
         onView(withId(R.id.add_tag_button)).perform(click());
@@ -129,7 +115,7 @@ public class InventoryFunctionalityTest {
         onView(withId(R.id.small_save_button)).perform(click());
 
         // Switch back to the item fragment screen
-        onView(withId(R.id.inventory)).perform(click());
+        TagFunctionalityTest.navigateFromTagsToItems();
 
         // Click on the "Add" button to add a new item
         onView(withId(R.id.add_button)).perform(click());
@@ -174,6 +160,14 @@ public class InventoryFunctionalityTest {
 
         // Add the item.
         onView(withId(R.id.small_save_button)).perform(click());
+
+        // wait for item to be added
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
 
     }
 
@@ -237,14 +231,21 @@ public class InventoryFunctionalityTest {
         // fill information
         onView(withId(R.id.name_editText)).perform(ViewActions.typeText("Random Test"));
         onView(withId(R.id.value_editText)).perform(ViewActions.replaceText(String.valueOf(150)));
-
         // add item
         onView(withId(R.id.small_save_button)).perform(click());
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
         // open the newly added item
         onData(is(instanceOf(Item.class))).inAdapterView(withId(R.id.item_list)).atPosition(0).perform(click());
-        // change the name and value
+        // change the name
         onView(withId(R.id.name_editText)).perform(ViewActions.clearText());
         onView(withId(R.id.name_editText)).perform(ViewActions.typeText(name));
+        // change the value
+        onView(withId(R.id.value_editText)).perform(ViewActions.scrollTo());
         onView(withId(R.id.value_editText)).perform(ViewActions.clearText());
         onView(withId(R.id.value_editText)).perform(ViewActions.typeText(String.valueOf(estimatedValue)));
         // update item
@@ -294,12 +295,6 @@ public class InventoryFunctionalityTest {
         // start with a fresh database
         setup();
 
-        try {
-            Thread.sleep(maxDelay);
-        }
-        catch (Exception e){
-            Log.d("Sleep", "Exception");
-        }
 
         // Verify that the newly added item is displayed with its name and estimated value.
         onView(withText(name)).check(matches(isDisplayed()));
@@ -336,13 +331,6 @@ public class InventoryFunctionalityTest {
     public void testEditItemWithTags() {
         // start with a fresh database
         setup();
-
-        try {
-            Thread.sleep(maxDelay);
-        }
-        catch (Exception e){
-            Log.d("Sleep", "Exception");
-        }
 
         // Edit the item
         onView(withText(name)).perform(click());
@@ -389,6 +377,7 @@ public class InventoryFunctionalityTest {
             Log.d("Sleep", "Exception");
         }
 
+        // failing right now because no autofill when opening selector
         onView(allOf(
                 withId(R.id.tag_dropdown),
                 withText(containsString("Tag1")),
@@ -404,13 +393,6 @@ public class InventoryFunctionalityTest {
     public void testTotalEstimatedValue() {
         setup();
 
-        try {
-            Thread.sleep(maxDelay);
-        }
-        catch (Exception e){
-            Log.d("Sleep", "Exception");
-        }
-
         double testing_sum = estimatedValue + estimatedValue2;
         String expectedTotalSum = String.format("Total: "+StringFormatter.getMonetaryString(testing_sum));
 
@@ -421,15 +403,11 @@ public class InventoryFunctionalityTest {
 
     @Test
     public void testTagImageViewVisibility() {
+        // FAILING BECAUSE AUTOFILL ON TAG SELECTOR NOT SET UP
+
         // start with a fresh database
         setup();
 
-        try {
-            Thread.sleep(maxDelay);
-        }
-        catch (Exception e){
-            Log.d("Sleep", "Exception");
-        }
 
         // Setup for 2 tags
         onView(withText(name2)).perform(click());
@@ -559,13 +537,6 @@ public class InventoryFunctionalityTest {
     public void testDeleteSelectedItems() {
         setup();
 
-        try {
-            Thread.sleep(maxDelay);
-        }
-        catch (Exception e){
-            Log.d("Sleep", "Exception");
-        }
-
         // Testing for deletion of all items with multi-select
         // Perform a click on the long-clickable item
         Espresso.onView(withText(name)).perform(ViewActions.longClick());
@@ -575,6 +546,13 @@ public class InventoryFunctionalityTest {
 
         // Click the delete button
         Espresso.onView(ViewMatchers.withId(R.id.inventory_delete_button)).perform(ViewActions.click());
+
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
 
         // Check if the items are deleted
         onView(withText(name)).check(doesNotExist());
@@ -613,37 +591,46 @@ public class InventoryFunctionalityTest {
         onView(withText("item1")).check(matches(isDisplayed()));
     }
 
-//    /**
-//     * Testing Selection of items and Canceling
-//     */
-//    @Test
-//    public void testSelectItemsAndCancel() {
-//        clearDBs();
-//
-//        // Setting up the items
-//        createItemSetup("item1");
-//        createItemSetup("item2");
-//        createItemSetup("item3");
-//
-//        // Perform a click on the first item to enable multi-selection
-//        Espresso.onView(withText("item1")).perform(ViewActions.longClick());
-//
-//        // Perform clicks on other items to simulate selection
-//        onView(withText("item2")).perform(click());
-//        onView(withText("item3")).perform(click());
-//
-//        // TODO: do an assertion to check all items are selected
-//
-//        // Deselect an itme
-//        onView(withText("item3")).perform(click());
-//
-//        // TODO: do an assertion checking item3 is deslected while other items are selected
-//
-//        // Click the cancel button
-//        Espresso.onView(ViewMatchers.withId(R.id.inventory_cancel_button)).perform(ViewActions.click());
-//
-//        // TODO:
-//        // Check if selection is cleared after clicking cancel
-//
-//    }
+    /**
+     * Test for resetting inventory
+     */
+    @Test
+    public void testReset(){
+        setup();
+
+        // navigate to settings and click reset
+        onView(withId(R.id.settings)).perform(click());
+        // wait for update
+        onView(withId(R.id.reset_cl)).perform(ViewActions.scrollTo());
+        onView(withId(R.id.reset_cl)).perform(click());
+        onView(withText("CONFIRM")).perform(click());
+
+        // wait for update
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
+
+        // navigate to items
+        onView(withId(R.id.inventory)).perform(click());
+
+        // check that items no longer show up
+//        onView(withText(name)).check(doesNotExist());
+//        onView(withText(name2)).check(doesNotExist());
+
+        // navigate to tags
+        TagFunctionalityTest.navigateToTags();
+
+        // check that tags no longer exist
+        onView(withText("Tag1")).check(doesNotExist());
+        onView(withText("Tag2")).check(doesNotExist());
+        onView(withText("Tag3")).check(doesNotExist());
+
+
+
+    }
 }
+
+

@@ -7,9 +7,9 @@ import android.widget.TextView;
 
 import androidx.fragment.app.FragmentManager;
 
-import com.example.blackbox.InventoryAddFragment;
-import com.example.blackbox.Item;
-import com.example.blackbox.NavigationManager;
+import com.example.blackbox.inventory.InventoryAddFragment;
+import com.example.blackbox.inventory.Item;
+import com.example.blackbox.utils.NavigationManager;
 import com.google.android.gms.vision.barcode.Barcode;
 
 import org.jsoup.Jsoup;

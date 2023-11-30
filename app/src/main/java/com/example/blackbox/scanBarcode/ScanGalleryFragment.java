@@ -3,9 +3,8 @@ package com.example.blackbox.scanBarcode;
 
 import static android.Manifest.permission.READ_MEDIA_IMAGES;
 
-import static androidx.core.content.PackageManagerCompat.LOG_TAG;
 
-
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -29,13 +28,11 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import com.example.blackbox.InventoryAddFragment;
-import com.example.blackbox.Item;
 import com.example.blackbox.MainActivity;
-import com.example.blackbox.NavigationManager;
 import com.example.blackbox.R;
 import com.example.blackbox.scanBarcode.handler.BarcodeHandleChain;
 import com.google.android.gms.vision.Frame;
@@ -53,7 +50,6 @@ import pub.devrel.easypermissions.EasyPermissions;
  */
 
 public class ScanGalleryFragment extends Fragment {
-    private static final String READ_MEDIA_IMAGES_PERMISSION = READ_MEDIA_IMAGES;
     private BarcodeDetector barcodeDetector;
     private TextView barcodeText;
     private String barcodeData;
@@ -93,6 +89,9 @@ public class ScanGalleryFragment extends Fragment {
                 .permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
+        // disable navigation bar
+        ((MainActivity) requireActivity()).toggleBottomNavigationView(false);
+
         View view = inflater.inflate(R.layout.gallery_scan_fragment, container, false);
         imageView = view.findViewById(R.id.image_view);
         barcodeText = view.findViewById(R.id.barcode_text);
@@ -120,17 +119,15 @@ public class ScanGalleryFragment extends Fragment {
      * is displayed to prompt the user to grant permission.
      */
     private void openGallery() {
-        if (ContextCompat.checkSelfPermission(requireContext(), READ_MEDIA_IMAGES_PERMISSION)
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES)
                 == PackageManager.PERMISSION_GRANTED) {
             // Permission already granted, set up the gallery picker
             pickMedia.launch(new PickVisualMediaRequest());
+
         } else {
             // Request storage permission if not granted.
-//             ActivityCompat.requestPermissions(requireActivity(), new
-//                     String[]{Manifest.permission.READ_MEDIA_IMAGES, Manifest.permission.READ_MEDIA_VIDEO}, REQUEST_GALLERY_PERMISSION);
-            String[] perms = {READ_MEDIA_IMAGES};
-            EasyPermissions.requestPermissions(this,"Please grant permission",
-                   REQUEST_GALLERY_PERMISSION, perms);
+            ActivityCompat.requestPermissions(requireActivity(),
+                    new String[]{Manifest.permission.READ_MEDIA_IMAGES}, REQUEST_GALLERY_PERMISSION);
             Toast.makeText(requireContext(), "Please grant permission to access the gallery", Toast.LENGTH_SHORT).show();
         }
     }

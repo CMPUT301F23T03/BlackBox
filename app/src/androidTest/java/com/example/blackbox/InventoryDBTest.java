@@ -1,10 +1,6 @@
 package com.example.blackbox;
 
-import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
-import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.junit.Assert.assertFalse;
@@ -13,10 +9,10 @@ import static org.junit.Assert.fail;
 
 import android.util.Log;
 
-import androidx.test.ext.junit.rules.ActivityScenarioRule;
-
-import android.util.Log;
-
+import com.example.blackbox.authentication.GoogleAuthDB;
+import com.example.blackbox.inventory.InventoryDB;
+import com.example.blackbox.inventory.Item;
+import com.example.blackbox.tag.Tag;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
@@ -25,30 +21,23 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.checkerframework.checker.units.qual.A;
-import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Date;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 public class InventoryDBTest {
-
     private final Tag basicTag = new Tag("Name", 1, "Color", "Description");
     private final ArrayList<Tag> tag_list = new ArrayList<>();
-
     /**
      * Deletes all items in the inventory DB
      * @param inventoryDB this is an InventoryDB object
      */
-    public static void clearInventoryDB(InventoryDB inventoryDB) {
+    public static void clearInventoryDB(InventoryDB inventoryDB, String userID) {
         CollectionReference inventoryRef = inventoryDB.getInventory();
-        Task<QuerySnapshot> querySnapshotInventory = inventoryRef.get();
+        Task<QuerySnapshot> querySnapshotInventory = inventoryRef.whereEqualTo("user_id", userID).get();
         Log.d("Firestore", "Before listener");
 
         // Create a CountDownLatch with an initial count of 1
@@ -78,21 +67,35 @@ public class InventoryDBTest {
     }
 
     /**
-     * Deletes all items in the inventory DB
+     * Deletes all items in the inventory DB of specified user
+     */
+    public static void clearInventoryDB(String userID){
+        InventoryDB inventoryDB = new InventoryDB();
+        clearInventoryDB(inventoryDB, userID);
+    }
+
+    /**
+     * Deletes all items in the inventory DB of current user
      */
     public static void clearInventoryDB(){
         InventoryDB inventoryDB = new InventoryDB();
-        clearInventoryDB(inventoryDB);
+        String userID = new GoogleAuthDB().getUid();
+        clearInventoryDB(inventoryDB, userID);
     }
+
 
     /**
      * Test adding an item
      */
     @Test
     public void testAddItem(){
+        String userID = new GoogleAuthDB().getUid();
+        basicTag.setUserID(userID);
         InventoryDB inventoryDB = new InventoryDB("test database");
         tag_list.add(basicTag);
+
         Item basicItem = new Item("Name",  tag_list, "2023-08-11", Double.valueOf(120), "12", "12", "12321", "Hi", "no");
+        basicItem.setUserID(userID);
         inventoryDB.addItemToDB(basicItem);
         CollectionReference inventory = inventoryDB.getInventory();
         Query query = inventory.whereEqualTo("name", basicItem.getName());
@@ -103,7 +106,7 @@ public class InventoryDBTest {
         } catch (Exception e) {
             Log.d("Firestore", "Exception Encountered");
         }
-        clearInventoryDB(inventoryDB);
+        clearInventoryDB(inventoryDB, userID);
     }
 
     /**
@@ -111,9 +114,13 @@ public class InventoryDBTest {
      */
     @Test
     public void testEditItem(){
+        String userID = new GoogleAuthDB().getUid();
+        basicTag.setUserID(userID);
+
         InventoryDB inventoryDB = new InventoryDB("test database");
         tag_list.add(basicTag);
         Item basicItem = new Item("Name",  tag_list, "2023-08-11", Double.valueOf(120), "12", "12", "12321", "Hi", "no");
+        basicItem.setUserID(userID);
         inventoryDB.addItemToDB(basicItem);
         CollectionReference inventory = inventoryDB.getInventory();
         Query query = inventory.whereEqualTo("name", basicItem.getName());
@@ -157,12 +164,6 @@ public class InventoryDBTest {
         } catch (Exception e) {
             fail("Firestore Query Failed");
         }
-        clearInventoryDB(inventoryDB);
-    }
-
-    /**
-     *
-     */
-    public static void checkItemTags(){
+        clearInventoryDB(inventoryDB, userID);
     }
 }

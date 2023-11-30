@@ -3,12 +3,32 @@
     <string name="add_button">Add an item</string>
     <string name="app">BlackBox 💵</string>
     <string name="add_tag">Add Tag</string>
-    <string name="are_you_sure_you_would_nlike_to_delete_this">Are you sure you would \nlike to delete this?</string>
+    <string name="are_you_sure_you_would_nlike_to_delete_this">Are you sure you would like to delete this?</string>
     <string name="total_sum_format">Total: $%.2f</string>
     <string name="enter_new_name">Enter new name</string>
     <string name="color">Color</string>
     <string name="item_name">Item Name</string>
     <string name="select_one_or_more_tags">Select one or more tags</string>
+    <string name="default_web_client_id">82712996640-dgigaeoj0ngvvrh9ai5k9v53f25p1e89.apps.googleusercontent.com</string>
+    <string name="tag_name">Tag Name</string>
+    <string name="edit_tags">Edit Tags</string>
+    <string name="profile_image">Profile Image</string>
+    <string name="settings">Settings</string>
+    <string name="log_out">Logout</string>
+    <string name="version">0.01</string>
+    <string name="version_text">Version</string>
+    <string name="select_a_new_language">Select a new language.</string>
+    <string name="language">Language</string>
+    <string name="dark_mode">Dark Mode</string>
+    <string name="enable_dark_mode_color_scheme">Enable dark mode color scheme.</string>
+    <string name="create_new_tags_or_remove_existing_ones">Create new tags or remove existing ones.</string>
+    <string name="log_out_of_this_account">Logout of this account.</string>
+    <string name="credits">Credits</string>
+    <string name="credits_text">Abhinav Parbhakar\nAndy Tran\nPeter Thai\nRiley Kinahan\nSheikh Safwan\nViet Chu</string>
+    <string name="reset_inventory">Reset Inventory</string>
+    <string name="clear_inventory_of_all_items_and_tags">Clear inventory of all items and tags!</string>
+    <string name="back">Back</string>
+    <string name="tags">Tags</string>
     <string-array name="sort_category">
         <item>Sorting Category</item>
         <item>By Date</item>

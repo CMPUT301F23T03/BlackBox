@@ -2,6 +2,11 @@ package com.example.blackbox;
 
 import static org.junit.Assert.assertEquals;
 
+import com.example.blackbox.inventory.Item;
+import com.example.blackbox.inventory.ItemList;
+import com.example.blackbox.tag.Tag;
+import com.example.blackbox.utils.StringFormatter;
+
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -45,6 +50,6 @@ public class TotalExpenseTest {
     public void testWithEmptyList(){
         ItemList itemList = new ItemList();
         assertEquals(Double.valueOf(0), itemList.calculateTotalSum());
-        assertEquals("$0.00",StringFormatter.getMonetaryString(itemList.calculateTotalSum()));
+        assertEquals("$0.00", StringFormatter.getMonetaryString(itemList.calculateTotalSum()));
     }
 }

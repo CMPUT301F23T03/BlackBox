@@ -21,10 +21,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
-import com.example.blackbox.NavigationManager;
+import com.example.blackbox.MainActivity;
 import com.example.blackbox.R;
 import com.example.blackbox.scanBarcode.handler.BarcodeHandleChain;
-import com.example.blackbox.scanBarcode.handler.BarcodeValidHandler;
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -58,6 +57,10 @@ public class ScanCameraFragment extends Fragment {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
                 .permitAll().build();
         StrictMode.setThreadPolicy(policy);
+
+        // disable navigation bar
+        ((MainActivity) requireActivity()).toggleBottomNavigationView(false);
+
 
         View view = inflater.inflate(R.layout.camera_scan_fragment, container, false);
         toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
@@ -138,12 +141,14 @@ public class ScanCameraFragment extends Fragment {
     private void startCameraSource() {
         try {
             // Check if the camera permission is granted.
-            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+                    == PackageManager.PERMISSION_GRANTED) {
                 // Camera permission is granted, start the camera source.
                 cameraSource.start(surfaceView.getHolder());
             } else {
                 // Camera permission is not granted, request it from the user.
-                ActivityCompat.requestPermissions(requireActivity(), new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+                ActivityCompat.requestPermissions(requireActivity(),
+                        new String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
             }
         } catch (IOException e) {
             // Handle an exception if there's an issue starting the camera source.
