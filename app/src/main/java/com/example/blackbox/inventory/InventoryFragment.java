@@ -424,13 +424,8 @@ public class InventoryFragment extends Fragment {
 
                     // Apply tags based on the conditions
                     for (Item selectedItem : selectedItemsList) {
-<<<<<<< HEAD:app/src/main/java/com/example/blackbox/InventoryFragment.java
-                        ArrayList<Tag> existingTags = selectedItem.getTags();
-                        ArrayList<Tag> newTags = new ArrayList<>(existingTags);
-=======
                         // Tags that the selected item already has
                         ArrayList<Tag> itemsTags = selectedItem.getTags();
->>>>>>> main:app/src/main/java/com/example/blackbox/inventory/InventoryFragment.java
 
                         int tagIndex = 0;
 
@@ -673,17 +668,9 @@ public class InventoryFragment extends Fragment {
             int color = document.getLong("color").intValue();
             String colorName = document.getString("color_name");
             String description = document.getString("description");
-<<<<<<< HEAD:app/src/main/java/com/example/blackbox/InventoryFragment.java
             String tagID = document.getId();
             // Create a Tag object with the retrieved data
-
             Tag tag = new Tag(name, color, colorName, description, tagID);
-=======
-            String dataBaseId = document.getId();
-
-            // Create a Tag object with the retrieved data
-            Tag tag = new Tag(name, color, colorName, description, dataBaseId);
->>>>>>> main:app/src/main/java/com/example/blackbox/inventory/InventoryFragment.java
             item.getTags().add(tag);
     }
 

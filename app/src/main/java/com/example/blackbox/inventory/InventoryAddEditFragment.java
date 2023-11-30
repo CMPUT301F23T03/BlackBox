@@ -3,12 +3,9 @@ package com.example.blackbox.inventory;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.app.AlertDialog;
-<<<<<<< HEAD
 import android.graphics.Color;
-=======
 import android.net.Uri;
 import android.os.Environment;
->>>>>>> adc3d1286dd293d7dc6ceb63cfad627d66e43dd1
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -17,22 +14,16 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-<<<<<<< HEAD
 import android.widget.ListView;
-=======
 import android.widget.ImageButton;
->>>>>>> adc3d1286dd293d7dc6ceb63cfad627d66e43dd1
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-<<<<<<< HEAD
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-=======
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
->>>>>>> adc3d1286dd293d7dc6ceb63cfad627d66e43dd1
 
 import com.example.blackbox.AddEditFragment;
 import com.example.blackbox.AttachImageFragment;
@@ -275,35 +266,12 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
      */
     @Override
     public void add(){
-
-        TagDB tagDB = new TagDB();
-
-        String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
-        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
-
-            @Override
-            public void onSuccess(ArrayList<Tag> tagList) {
-
-                for (String selectedTagName : selectedTagNames) {
-                    for (Tag tag : tagList) {
-                        if (tag.getName().equals(selectedTagName)){
-                            selectedTags.add(tag);
-                        }
-                    }
-                }
-                String userID = googleAuthDB.getUid();
-                Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment, userID);
-                itemDB.addItemToDB(new_item);
-                // clear all temporary pictures
-                clearTempFiles();
-                NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
-            }
-            @Override
-            public void onError(String errorMessage) {
-                // Handle the error, e.g., display an error message
-                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
-            }
-        });
+            String userID = googleAuthDB.getUid();
+            Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment, userID);
+            itemDB.addItemToDB(new_item);
+            // clear all temporary pictures
+            clearTempFiles();
+            NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
     }
 
     /**
@@ -312,36 +280,13 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
      *      The item to be replaced
      */
     public void editItem(Item item){
-        TagDB tagDB = new TagDB();
-
-        String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
-        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
-
-            @Override
-            public void onSuccess(ArrayList<Tag> tagList) {
-
-                for (String selectedTagName : selectedTagNames) {
-                    for (Tag tag : tagList) {
-                        if (tag.getName().equals(selectedTagName)){
-                            selectedTags.add(tag);
-                        }
-                    }
-                }
-                String userID = googleAuthDB.getUid();
-                Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment, userID);
-                itemDB.updateItemInDB(item, new_item);
-                // clear all temporary pictures
-                clearTempFiles();
-                InventoryFragment inventoryFragment = new InventoryFragment();
-                NavigationManager.switchFragmentWithBack(inventoryFragment, getParentFragmentManager());
-
-            }
-            @Override
-            public void onError(String errorMessage) {
-                // Handle the error, e.g., display an error message
-                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
-            }
-        });
+        String userID = googleAuthDB.getUid();
+        Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment, userID);
+        itemDB.updateItemInDB(item, new_item);
+        // clear all temporary pictures
+        clearTempFiles();
+        InventoryFragment inventoryFragment = new InventoryFragment();
+        NavigationManager.switchFragmentWithBack(inventoryFragment, getParentFragmentManager());
     }
 
     /**
