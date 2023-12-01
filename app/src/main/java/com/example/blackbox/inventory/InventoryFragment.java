@@ -165,6 +165,17 @@ public class InventoryFragment extends Fragment {
             }
         });
 
+
+        // make search bar clickable
+        searchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Open the search functionality
+                searchView.setIconified(false);
+                searchView.requestFocus();
+            }
+        });
+
         inventoryAdapter = new InventoryListAdapter(activityContext, itemList);
         filterAdapter = new FilterListAdapter(filterList,itemList,inventoryAdapter, getActivity());
         LinearLayoutManager layoutManager = new LinearLayoutManager(activityContext,LinearLayoutManager.HORIZONTAL,false);
