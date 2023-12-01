@@ -181,7 +181,8 @@ public class InventoryDB {
      * @param itemId The ID of the item for which images need to be retrieved.
      */
     public void getImagesByItemId(String itemId, Context context,
-                                  ArrayList<Uri> displayedUris, ImageRecyclerAdapter adapter) {
+                                  ArrayList<Uri> displayedUris, ImageRecyclerAdapter adapter,
+                                  OnGetImagesCallback callback) {
         // Query the 'images' collection for documents with matching itemId
         images.whereEqualTo("itemId", itemId)
                 .get()
@@ -197,7 +198,7 @@ public class InventoryDB {
                             File imageFile = new File(storageDir, imageFileName + ".jpg");
 
                             // Download image using its URL
-                            downloadImageFromUrl(imageUrl, imageFile, context, displayedUris, adapter);
+                            downloadImageFromUrl(imageUrl, imageFile, context, displayedUris, adapter, callback);
                         }
                     }
                 })
@@ -205,6 +206,7 @@ public class InventoryDB {
                         Log.e("Firestore", "Failed to query images collection: " + e.getMessage())
                 );
     }
+
     /**
      * Downloads an image from Firebase Storage using its URL and saves it to a specified file.
      *
@@ -212,7 +214,8 @@ public class InventoryDB {
      * @param imageFile The File object where the downloaded image will be saved.
      */
     private void downloadImageFromUrl(String imageUrl, File imageFile, Context context,
-                                      ArrayList<Uri> displayedUris, ImageRecyclerAdapter adapter) {
+                                      ArrayList<Uri> displayedUris, ImageRecyclerAdapter adapter,
+                                      OnGetImagesCallback callback) {
         StorageReference storageRef = storage.getReferenceFromUrl(imageUrl);
 
         storageRef.getFile(imageFile)
@@ -226,10 +229,21 @@ public class InventoryDB {
                     displayedUris.add(localUri);
 //                    adapter.updateDisplayedUris(displayedUris);
                     Log.d("URI", localUri.toString());
+                    callback.onSuccess(displayedUris);
+
                 })
-                .addOnFailureListener(e ->
-                        Log.e("Firebase Storage", "Failed to download image: " + e.getMessage())
+                .addOnFailureListener(e -> {
+                    Log.e("Firebase Storage", "Failed to download image: " + e.getMessage());
+                    callback.onError();
+                    }
                 );
+    }
+
+
+    public interface OnGetImagesCallback {
+        void onSuccess(ArrayList<Uri> displayedUris);
+
+        void onError();
     }
 
     /**
@@ -344,6 +358,9 @@ public class InventoryDB {
                     );
         }
     }
+
+
+
 
     /**
      * Clears all items in the 'inventory' collection in the Firestore database.

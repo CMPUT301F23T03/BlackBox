@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.blackbox.DeletePopupFragment;
+import com.example.blackbox.ItemImageDB;
 import com.example.blackbox.R;
 
 import java.util.ArrayList;
@@ -63,7 +64,17 @@ public class InventoryEditFragment extends InventoryAddEditFragment {
         //  however, cannot update the view using the adapter (bug)
         if (isFirstCreation) {
             // Run your method to get images only during the first creation
-            itemDB.getImagesByItemId(item.getID(), requireContext(), displayedUris, adapter);
+            itemDB.getImagesByItemId(item.getID(), requireContext(), displayedUris, adapter, new InventoryDB.OnGetImagesCallback(){
+                @Override
+                public void onSuccess(ArrayList<Uri> displayedUris) {
+                    ArrayList<Uri> updatedUris = new ArrayList<Uri>();
+                    updatedUris.addAll(displayedUris);
+                    adapter.updateDisplayedUris(updatedUris);
+                    Log.d("Update", "onSuccess: ");
+                }
+                @Override
+                public void onError(){};
+            });
             isFirstCreation = false; // Set the flag to false after the first creation
 //            adapter.updateDisplayedUris(displayedUris);
         }
