@@ -110,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     /**
      * Override method called when the app requests permissions at runtime,
      * and the user responds to the permission request.
