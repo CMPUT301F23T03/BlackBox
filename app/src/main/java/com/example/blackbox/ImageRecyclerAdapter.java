@@ -1,6 +1,7 @@
 package com.example.blackbox;
 
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,7 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageRecyclerAdap
     public void updateDisplayedUris(ArrayList<Uri> updatedUris) {
         displayedUris.clear();
         displayedUris.addAll(updatedUris);
+        Log.d("Attach image", "Updating image");
         notifyDataSetChanged();
     }
 }

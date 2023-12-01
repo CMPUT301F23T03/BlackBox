@@ -76,12 +76,15 @@ public class ScanGalleryFragment extends Fragment {
 
     /**
      * Constructor used for testing
+     *
      * @param activity
      */
     public ScanGalleryFragment(MainActivity activity) {
         this.testActivity = activity;
     }
-    public ScanGalleryFragment() {}
+
+    public ScanGalleryFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -97,9 +100,6 @@ public class ScanGalleryFragment extends Fragment {
         barcodeText = view.findViewById(R.id.barcode_text);
         toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
         barcodeHandleChain = new BarcodeHandleChain();
-        barcodeDetector = new BarcodeDetector.Builder(requireContext())
-                .setBarcodeFormats(Barcode.ALL_FORMATS)
-                .build();
 
         choosePictureButton = view.findViewById(R.id.choose_button);
         choosePictureButton.setOnClickListener(v -> {
@@ -113,7 +113,7 @@ public class ScanGalleryFragment extends Fragment {
      * Opens the device's gallery for selecting images. This function checks
      * for permission to access media and requests permission if it's not granted. After permission is
      * granted, it launches a media picker to allow the user to select visual media.
-     *
+     * <p>
      * If the required permission is already granted, the media picker is launched directly.
      * If the permission is not granted, a request for permission is initiated, and a toast message
      * is displayed to prompt the user to grant permission.
@@ -134,14 +134,16 @@ public class ScanGalleryFragment extends Fragment {
 
     /**
      * Sets up a click listener for the back button in the fragment.
-     * @param view  The parent view containing the back button.
+     *
+     * @param view The parent view containing the back button.
      */
-    public void setupBackButtonListener(View view){
+    public void setupBackButtonListener(View view) {
         final Button backButton = view.findViewById(R.id.back_button);
         backButton.setOnClickListener(v -> {
             getParentFragmentManager().popBackStack();
         });
     }
+
     /**
      * Retrieves barcodes from an image specified by the provided Uri. The method rotates the image
      * 3 times and returns the set of barcodes from the rotation that yields the most detected barcodes.
@@ -179,6 +181,9 @@ public class ScanGalleryFragment extends Fragment {
      */
     private SparseArray<Barcode> detectBarcodes(Bitmap bitmap) {
         Frame frame = new Frame.Builder().setBitmap(bitmap).build();
+        barcodeDetector = new BarcodeDetector.Builder(requireContext())
+                .setBarcodeFormats(Barcode.CODE_128 | Barcode.UPC_A | Barcode.EAN_13)
+                .build();
         return barcodeDetector.detect(frame);
     }
 
@@ -189,7 +194,7 @@ public class ScanGalleryFragment extends Fragment {
      * @param barcodes A SparseArray of Barcode objects representing detected barcodes.
      */
     @SuppressLint("RestrictedApi")
-    public void checkBarcode(SparseArray<Barcode> barcodes){
+    public void checkBarcode(SparseArray<Barcode> barcodes) {
         barcodeHandleChain.handleRequest(barcodeText, barcodes, toneGen1,
                 getParentFragmentManager());
     }
@@ -202,17 +207,8 @@ public class ScanGalleryFragment extends Fragment {
     public void setContext(Context context) {
         this.context = context;
     }
+
     public Context getContext() {
         return this.context;
     }
-
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String[]
-//            permissions, int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions,grantResults);
-//
-//        // Forward results to EasyPermissions
-//        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
-//    }
 }

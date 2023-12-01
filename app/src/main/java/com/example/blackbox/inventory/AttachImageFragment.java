@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.inventory;
 
 import static android.Manifest.permission.READ_MEDIA_IMAGES;
 import android.Manifest;
@@ -25,6 +25,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import com.example.blackbox.R;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
@@ -56,10 +57,10 @@ public class AttachImageFragment extends Fragment {
     // Activity Result Launchers and related variables
     private ActivityResultLauncher<PickVisualMediaRequest> pickMedia;
     private Uri imageUri;
-    public ArrayList<Uri> uriArrayList = new ArrayList<>();
-    private File imageFile;
+    private File cameraImageFile;
+    private Uri cameraImageUri;
     private ActivityResultLauncher<Uri> takePicture;
-
+    private ArrayList<Uri> uriArrayList = new ArrayList<>();
     // Listener for image selection
     private OnImageSelectedListener imageSelectedListener;
     @Override
@@ -78,30 +79,30 @@ public class AttachImageFragment extends Fragment {
         pickMedia = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(), uri -> {
             if (uri != null) {
                 imageView.setImageURI(uri);
+                imageUri = uri;
                 Log.d("PhotoPicker", "Selected URI: " + uri);
             } else {
                 Log.d("PhotoPicker", "No media selected");
             }
         });
 
-        // Creating a temporary image file and obtaining its URI
-        imageFile = CreateTempImage();
-        imageUri = FileProvider.getUriForFile(requireContext(),
-                requireContext().getPackageName() + ".provider", imageFile);
+        // Creating a temporary camera image file and obtaining its URI
+        cameraImageFile = CreateTempImage();
+        cameraImageUri = FileProvider.getUriForFile(requireContext(),
+                requireContext().getPackageName() + ".provider", cameraImageFile);
 
         // Activity Result Launcher for capturing an image and store it in side imageFile
         takePicture = registerForActivityResult(
                 new ActivityResultContracts.TakePicture(),
-                new ActivityResultCallback<Boolean>() {
-                    @Override
-                    public void onActivityResult(Boolean result) {
-                        if (result) {
-                            if (imageUri != null) {
-                                imageView.setImageURI(imageUri);
-                                Log.d("Camera", "Selected URI: " + imageUri);
-                            } else {
-                                Log.d("Camera", "No media selected");
-                            }
+                result -> {
+                    if (result) {
+                        if (cameraImageUri != null) {
+                            imageView.setImageURI(null); // reset view to null
+                            imageView.setImageURI(cameraImageUri); // attach new image
+                            imageUri = cameraImageUri;
+                            Log.d("Camera", "Selected URI: " + imageUri);
+                        } else {
+                            Log.d("Camera", "No media selected");
                         }
                     }
                 });
@@ -112,6 +113,10 @@ public class AttachImageFragment extends Fragment {
         confirmAttachment();
 
         return view;
+    }
+
+    public ArrayList<Uri> getUriArrayList(){
+        return uriArrayList;
     }
 
     // Setter method for the listener
@@ -132,6 +137,11 @@ public class AttachImageFragment extends Fragment {
         return imageFile;
     }
 
+    /**
+     * Initializes the camera functionality if the CAMERA permission is granted.
+     * If the permission is not granted, requests the CAMERA permission.
+     * Sets an OnClickListener on the cameraButton to launch the takePicture action.
+     */
     private void initializeCamera(){
         if (ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.CAMERA)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -139,10 +149,15 @@ public class AttachImageFragment extends Fragment {
                     , REQUEST_CAMERA_PERMISSION);
         }
         cameraButton.setOnClickListener(v -> {
-            takePicture.launch(imageUri);
+            takePicture.launch(cameraImageUri);
         });
     }
 
+    /**
+     * Initializes the gallery functionality if the READ_MEDIA_IMAGES permission is granted.
+     * If the permission is not granted, requests the READ_MEDIA_IMAGES permission.
+     * Sets an OnClickListener on the galleryButton to launch the pickMedia action.
+     */
     private void initializeGallery(){
         if (ContextCompat.checkSelfPermission(requireContext(), READ_MEDIA_IMAGES)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -157,19 +172,46 @@ public class AttachImageFragment extends Fragment {
         void onImageSelected(Uri imageUri);
     }
 
+    /**
+     * Handles confirmation of attachment by setting an OnClickListener on the confirmButton.
+     * Displays Snackbar error messages for various scenarios:
+     * - If imageView is empty, prompts to select an image.
+     * - If the selected image is already added, displays a message indicating the image is already added.
+     * Adds the imageUri to the uriArrayList if it's not a duplicate.
+     * Notifies the imageSelectedListener about the selected image and navigates back from the fragment.
+     */
     private void confirmAttachment() {
         confirmButton.setOnClickListener(v -> {
             if (imageView.getDrawable() == null) {
                 // Display Snackbar error message when imageView is empty
                 Snackbar.make(view, "Please select an image first", Snackbar.LENGTH_SHORT).show();
+            } else if (isUriDuplicate(uriArrayList, imageUri)) {
+                // Check for duplicates before adding
+                Snackbar.make(view, "Image already added", Snackbar.LENGTH_SHORT).show();
             } else {
                 uriArrayList.add(imageUri);
+                Log.d("debug", String.valueOf(uriArrayList.size()));
                 if (imageSelectedListener != null) {
                     imageSelectedListener.onImageSelected(imageUri);
                 }
                 getParentFragmentManager().popBackStack();
             }
         });
+    }
+
+    /** Function to check if a URI already exists in the ArrayList
+     *
+     * @param uriList
+     * @param uriToCheck
+     * @return boolean
+     */
+    private static boolean isUriDuplicate(ArrayList<Uri> uriList, Uri uriToCheck) {
+        for (Uri uri : uriList) {
+            if (uri.equals(uriToCheck)) {
+                return true; // URI already exists in the list
+            }
+        }
+        return false; // URI does not exist in the list
     }
 
 

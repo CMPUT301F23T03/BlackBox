@@ -26,10 +26,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.blackbox.AddEditFragment;
-import com.example.blackbox.AttachImageFragment;
+
+import com.example.blackbox.inventory.AttachImageFragment;
 import com.example.blackbox.authentication.GoogleAuthDB;
 import com.example.blackbox.ImageRecyclerAdapter;
 import com.example.blackbox.utils.NavigationManager;
+
 import com.example.blackbox.R;
 import com.example.blackbox.tag.Tag;
 import com.example.blackbox.tag.TagDB;
@@ -47,34 +49,46 @@ import java.util.Comparator;
  * and one related to editing items
  */
 public abstract class InventoryAddEditFragment extends AddEditFragment implements AttachImageFragment.OnImageSelectedListener {
-    private EditText itemName;
-    private EditText itemValue;
-    private EditText itemDescription;
-    private EditText itemMake;
-    private EditText itemModel;
-    private EditText itemSerialNumber;
-    private EditText itemComment;
-    private String name;
-    private Double val;
-    private String desc;
-    private InventoryDB itemDB;
-    private String make;
-    private String model;
-    private String serialNumber;
-    private String comment;
-    private Button dateButton;
-    private final String dateFormat = "%d-%02d-%02d";
-    private String date;
-    private Context activityContext;
-    private ArrayList<Tag> tags = new ArrayList<>();
-    private TextView tagDropdown;
-    ArrayList<Tag> selectedTags = new ArrayList<>();
-    private ImageButton addImgBtn;
-    private AttachImageFragment attachImageFragment = new AttachImageFragment();
-    private RecyclerView recyclerView;
-    private ArrayList<Uri> displayedUris;
-    ImageRecyclerAdapter adapter;
+    // EditText fields for various item details
+    private EditText itemName;         // Holds the item name
+    private EditText itemValue;        // Holds the item value
+    private EditText itemDescription;  // Holds the item description
+    private EditText itemMake;         // Holds the item make information
+    private EditText itemModel;        // Holds the item model information
+    private EditText itemSerialNumber; // Holds the item serial number
+    private EditText itemComment;      // Holds additional comments related to the item
 
+    // Variables to store item details
+    private String name;               // Stores the item name
+    private Double val;                // Stores the item value
+    private String desc;               // Stores the item description
+    protected InventoryDB itemDB;      // Database reference for inventory management
+    private String make;               // Stores the item make information
+    private String model;              // Stores the item model information
+    private String serialNumber;       // Stores the item serial number
+    private String comment;            // Stores additional comments related to the item
+
+    // Button to handle date selection
+    private Button dateButton;         // Button for selecting date related to the item
+    private final String dateFormat = "%d-%02d-%02d";  // Format for date display
+
+    // Context reference for the current activity
+    private String date;               // Stores the selected date in the specified format
+    private Context activityContext;   // Context reference for the current activity
+
+    // List of tags associated with the item
+    private ArrayList<Tag> tags = new ArrayList<>();          // Holds all available tags
+    private TextView tagDropdown;       // TextView to display and select tags
+    ArrayList<Tag> selectedTags = new ArrayList<>();           // Holds selected tags
+
+    // Button to add images to the item
+    private ImageButton addImgBtn;     // Button for adding images to the item
+    private AttachImageFragment attachImageFragment = new AttachImageFragment();  // Fragment for attaching images
+
+    // RecyclerView and adapter for displaying images
+    private RecyclerView recyclerView;             // RecyclerView to display attached images
+    protected ArrayList<Uri> displayedUris;       // List of URIs of displayed images
+    protected ImageRecyclerAdapter adapter;        // Adapter for populating images in RecyclerView
 
     private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
 
@@ -116,8 +130,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
         itemMake = view.findViewById(R.id.make_editText);
         itemModel = view.findViewById(R.id.model_editText);
         itemComment = view.findViewById(R.id.comment_editText);
-        itemSerialNumber = view.findViewById(R.id.serial_number_editText);;
-
+        itemSerialNumber = view.findViewById(R.id.serial_number_editText);
         tagDropdown = view.findViewById(R.id.tag_dropdown);
         tagDropdown.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,21 +146,18 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
         // add image
         recyclerView = view.findViewById(R.id.image_recycler_view);
         addImgBtn = view.findViewById(R.id.add_img_btn);
-        addImgBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Set the listener on AttachImageFragment
-                attachImageFragment.setOnImageSelectedListener(InventoryAddEditFragment.this);
-                NavigationManager.switchFragmentWithBack(attachImageFragment, getParentFragmentManager());
-            }
+        addImgBtn.setOnClickListener(v -> {
+            // Set the listener on AttachImageFragment
+            attachImageFragment.setOnImageSelectedListener(InventoryAddEditFragment.this);
+            Log.d("Attach image", "Going to fragment");
+            NavigationManager.switchFragmentWithBack(attachImageFragment, getParentFragmentManager());
         });
 
-        ArrayList<Uri> uriArrayList = new ArrayList<>(attachImageFragment.uriArrayList);
-        displayedUris = new ArrayList<>(uriArrayList);  // Initialize the list
+        displayedUris = attachImageFragment.getUriArrayList();
 
         adapter = new ImageRecyclerAdapter(displayedUris);
-        recyclerView.setLayoutManager(new GridLayoutManager(activityContext, 2));
         recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new GridLayoutManager(activityContext, 2));
     }
 
     @Override
@@ -266,12 +276,13 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
      */
     @Override
     public void add(){
-            String userID = googleAuthDB.getUid();
-            Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment, userID);
-            itemDB.addItemToDB(new_item);
-            // clear all temporary pictures
-            clearTempFiles();
-            NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
+        String userID = googleAuthDB.getUid();
+        Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment, userID);
+        itemDB.addItemToDB(new_item);
+        itemDB.addImagesToDB(displayedUris);
+        // clear all temporary pictures
+        clearTempFiles();
+        NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
     }
 
     /**
@@ -283,6 +294,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
         String userID = googleAuthDB.getUid();
         Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment, userID);
         itemDB.updateItemInDB(item, new_item);
+        itemDB.updateImagesInDB(item, displayedUris);
         // clear all temporary pictures
         clearTempFiles();
         InventoryFragment inventoryFragment = new InventoryFragment();

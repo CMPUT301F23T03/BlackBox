@@ -9,7 +9,10 @@ import android.widget.Toast;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.gms.vision.barcode.Barcode;
-
+/**
+ * Implementation of CustomHandler used for validating barcode formats.
+ * This handler checks the validity of received barcodes and allows processing for specific barcode types.
+ */
 public class BarcodeValidHandler implements CustomHandler {
     private CustomHandler nextCustomHandler;
 
