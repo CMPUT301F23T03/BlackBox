@@ -133,25 +133,19 @@ public class InventoryDB {
 
         // Upload the file to Firebase Storage
         imageRef.putFile(imageUri)
-                .addOnSuccessListener(new OnSuccessListener() {
-                    @Override
-                    public void onSuccess(Object o) {
-                        // Get the download URL of the uploaded image
-                        imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri downloadUri) {
-                                // Image uploaded successfully, now add its URL to Firestore
-                                addImageUrlToFirestore(downloadUri);
-                            }
-                        });
-                    }
+                .addOnSuccessListener((OnSuccessListener) o -> {
+                    // Get the download URL of the uploaded image
+                    imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri downloadUri) {
+                            // Image uploaded successfully, now add its URL to Firestore
+                            addImageUrlToFirestore(downloadUri);
+                        }
+                    });
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        // Handle unsuccessful uploads
-                        Log.d("Fail image upload", "Failed to upload image to Storage: " + e.getMessage());
-                    }
+                .addOnFailureListener(e -> {
+                    // Handle unsuccessful uploads
+                    Log.d("Fail image upload", "Failed to upload image to Storage: " + e.getMessage());
                 });
     }
 
@@ -169,12 +163,7 @@ public class InventoryDB {
         images.add(imageData)
                 .addOnSuccessListener((OnSuccessListener)
                         o -> Log.d("Success image add", "Image URL added to Firestore: " + downloadUri.toString()))
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("Fail image add", "Failed to add image URL to Firestore: " + e.getMessage());
-                    }
-                });
+                .addOnFailureListener(e -> Log.d("Fail image add", "Failed to add image URL to Firestore: " + e.getMessage()));
     }
 
 

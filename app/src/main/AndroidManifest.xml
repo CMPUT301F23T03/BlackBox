@@ -29,9 +29,13 @@
             android:name=".MainActivity"
             android:exported="false" />
         <activity
+            android:name=".TestMainActivity"
+            android:exported="false" />
+        <activity
             android:name=".authentication.GoogleSignInActivity"
             android:windowSoftInputMode="adjustPan"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -65,7 +65,10 @@ public class InventoryEditFragment extends InventoryAddEditFragment {
             // Run your method to get images only during the first creation
             itemDB.getImagesByItemId(item.getID(), requireContext(), displayedUris, adapter);
             isFirstCreation = false; // Set the flag to false after the first creation
+//            adapter.updateDisplayedUris(displayedUris);
         }
+//        adapter.updateDisplayedUris(displayedUris);
+
         // save an edited item by clicking the small add button
         Button small_save_button = view.findViewById(R.id.small_save_button);
         small_save_button.setOnClickListener(v -> {

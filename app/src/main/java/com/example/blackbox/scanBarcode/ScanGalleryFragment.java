@@ -100,9 +100,6 @@ public class ScanGalleryFragment extends Fragment {
         barcodeText = view.findViewById(R.id.barcode_text);
         toneGen1 = new ToneGenerator(AudioManager.STREAM_MUSIC, 100);
         barcodeHandleChain = new BarcodeHandleChain();
-        barcodeDetector = new BarcodeDetector.Builder(requireContext())
-                .setBarcodeFormats(Barcode.ALL_FORMATS)
-                .build();
 
         choosePictureButton = view.findViewById(R.id.choose_button);
         choosePictureButton.setOnClickListener(v -> {
@@ -184,6 +181,9 @@ public class ScanGalleryFragment extends Fragment {
      */
     private SparseArray<Barcode> detectBarcodes(Bitmap bitmap) {
         Frame frame = new Frame.Builder().setBitmap(bitmap).build();
+        barcodeDetector = new BarcodeDetector.Builder(requireContext())
+                .setBarcodeFormats(Barcode.CODE_128 | Barcode.UPC_A | Barcode.EAN_13)
+                .build();
         return barcodeDetector.detect(frame);
     }
 

@@ -28,8 +28,15 @@ import com.google.android.material.navigation.NavigationBarView;
 public class MainActivity extends AppCompatActivity {
     BottomNavigationView bottomNavigationView;
     GoogleAuthDB googleAuthDB;
-
+    private boolean functionality_test_mode = false;
     String currentFragment;
+
+
+    public MainActivity(){};
+    public MainActivity(boolean test){
+        functionality_test_mode = test;
+    };
+
 
     /**
      * Called when the activity is created. Initializes the main layout and sets up the BottomNavigationView.
@@ -38,67 +45,64 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Create a profile from Google Sign-In
-        googleAuthDB = new GoogleAuthDB();
-        googleAuthDB.createProfile();
-
         final FragmentManager fm = getSupportFragmentManager();
+        // Create a profile from Google Sign-In if not in test mode
+        if (!functionality_test_mode){
+            googleAuthDB = new GoogleAuthDB();
+            googleAuthDB.createProfile();
+
+            // Initialize or restore the current fragment
+            if (savedInstanceState != null){
+                if (savedInstanceState.get("fragmentTag") == "Settings"){
+                    NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), fm);
+                    currentFragment = "Settings";
+                }
+            }
+            else{
+                NavigationManager.switchFragmentWithoutBack(new InventoryFragment(), fm);
+                currentFragment = "Inventory";
+            }
+        }
+
 
         // load home page
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.inventory);
 
-        // Initialize or restore the current fragment
-        if (savedInstanceState != null){
-            if (savedInstanceState.get("fragmentTag") == "Settings"){
-                NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), fm);
-                currentFragment = "Settings";
-            }
-        }
-        else{
-            NavigationManager.switchFragmentWithoutBack(new InventoryFragment(), fm);
-            currentFragment = "Inventory";
-        }
 
         // set a listener to handle item selection in the BottomNavigationView
         bottomNavigationView.setOnItemSelectedListener(
-                new NavigationBarView.OnItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        int id = item.getItemId();
-                        Log.d("ItemId", String.format("%d",id));
-                        if (id == R.id.inventory){
-                            // load inventory fragment
-                            currentFragment = "Inventory";
-                            NavigationManager.switchFragmentWithoutBack(new InventoryFragment(), fm);
-                        }
-                        else if (id == R.id.expenses){
-                            currentFragment = "Expenses";
-                            NavigationManager.switchFragmentWithoutBack( new ExpenseFragment(), fm);
-                        }
-                        else if (id == R.id.scan){
-                            // load scan fragment
-                            currentFragment = "Scan";
-                            NavigationManager.switchFragmentWithoutBack(new ScanFragment(), fm);
-                        }
-                        else if (id == R.id.profile){
-                            currentFragment = "Profile";
-                            NavigationManager.switchFragmentWithoutBack(new ProfileFragment(), fm);
-                        }
-                        else if (id == R.id.settings){
-                            // load tag fragment
-                            currentFragment = "Settings";
-                            NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), fm);
-
-                        }
-                        return true;
+                item -> {
+                    int id = item.getItemId();
+                    Log.d("ItemId", String.format("%d",id));
+                    if (id == R.id.inventory){
+                        // load inventory fragment
+                        currentFragment = "Inventory";
+                        NavigationManager.switchFragmentWithoutBack(new InventoryFragment(), fm);
                     }
+                    else if (id == R.id.expenses){
+                        currentFragment = "Expenses";
+                        NavigationManager.switchFragmentWithoutBack( new ExpenseFragment(), fm);
+                    }
+                    else if (id == R.id.scan){
+                        // load scan fragment
+                        currentFragment = "Scan";
+                        NavigationManager.switchFragmentWithoutBack(new ScanFragment(), fm);
+                    }
+                    else if (id == R.id.profile){
+                        currentFragment = "Profile";
+                        NavigationManager.switchFragmentWithoutBack(new ProfileFragment(), fm);
+                    }
+                    else if (id == R.id.settings){
+                        // load tag fragment
+                        currentFragment = "Settings";
+                        NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), fm);
+
+                    }
+                    return true;
                 }
         );
 

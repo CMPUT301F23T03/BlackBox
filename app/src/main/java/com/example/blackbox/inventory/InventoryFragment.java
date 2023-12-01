@@ -192,45 +192,35 @@ public class InventoryFragment extends Fragment {
                 inventoryDB.getInventory().whereEqualTo("user_id", googleAuthDB.getUid())
                 // whenever database is update it is reordered by add date
                 .orderBy("update_date", Query.Direction.DESCENDING)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value,
-                                @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    // An error occurred while fetching the data
-                    // Handle the error here
-                    Log.e("Firestore", "Error getting inventory", e);
-                }
-                else {
-                    // update inventory
-                    if (value != null && !value.isEmpty()) {
-                        handleGetInventory(value, e);
-                    } else {
-                        itemList.clear();
-                        processUpdate();
+                .addSnapshotListener((value, e) -> {
+                    if (e != null) {
+                        // An error occurred while fetching the data
+                        // Handle the error here
+                        Log.e("Firestore", "Error getting inventory", e);
                     }
-                }
-            }
-        });
+                    else {
+                        // update inventory
+                        if (value != null && !value.isEmpty()) {
+                            handleGetInventory(value, e);
+                        } else {
+                            itemList.clear();
+                            processUpdate();
+                        }
+                    }
+                });
 
         // When profile icon is clicked, switch to profile fragment
         ImageButton profileButton = view.findViewById(R.id.profile_button);
-        profileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ProfileFragment profileFragment = new ProfileFragment();
-                NavigationManager.switchFragmentWithoutBack(profileFragment, getParentFragmentManager());
-            }
+        profileButton.setOnClickListener(v -> {
+            ProfileFragment profileFragment = new ProfileFragment();
+            NavigationManager.switchFragmentWithoutBack(profileFragment, getParentFragmentManager());
         });
 
         filterButton = (Button) view.findViewById(R.id.filter_button);
-        filterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FilterDialog.showFilter(getActivity(),itemList,inventoryAdapter,filterAdapter);
-                Log.d("FilterDialog","Returned from filter dialog");
-                updateTotalSum();
-            }
+        filterButton.setOnClickListener(v -> {
+            FilterDialog.showFilter(getActivity(),itemList,inventoryAdapter,filterAdapter);
+            Log.d("FilterDialog","Returned from filter dialog");
+            updateTotalSum();
         });
         // add an item - display add fragment
         addButton = view.findViewById(R.id.add_button);
@@ -239,15 +229,13 @@ public class InventoryFragment extends Fragment {
         });
 
         // edit item - display edit fragment
-        itemViewList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (!isLongClick) {
-                    // Regular click
-                    InventoryEditFragment inventoryEditFragment = InventoryEditFragment.newInstance(itemList.get(i));
-                    NavigationManager.switchFragmentWithBack(inventoryEditFragment, getParentFragmentManager());
-                } else {
-                    toggleSelection(i);
-                }
+        itemViewList.setOnItemClickListener((adapterView, view1, i, l) -> {
+            if (!isLongClick) {
+                // Regular click
+                InventoryEditFragment inventoryEditFragment = InventoryEditFragment.newInstance(itemList.get(i));
+                NavigationManager.switchFragmentWithBack(inventoryEditFragment, getParentFragmentManager());
+            } else {
+                toggleSelection(i);
             }
         });
 
