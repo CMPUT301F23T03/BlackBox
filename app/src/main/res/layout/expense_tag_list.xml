@@ -9,9 +9,10 @@
         android:id="@+id/expense_tag_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="10dp"
         android:text="Tag"
         android:textSize="20sp"
-        android:textStyle="bold"
+
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.114"
         app:layout_constraintStart_toStartOf="parent"
@@ -20,23 +21,23 @@
     <TextView
         android:id="@+id/expense_tag_statistic"
         android:layout_width="0dp"
-        android:layout_height="27dp"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
         android:text="Statistic"
         android:textAlignment="textEnd"
-        android:paddingEnd="10dp"
-        android:paddingStart="15dp"
+
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.991"
         app:layout_constraintStart_toEndOf="@+id/expense_tag_name"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/color"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="4dp"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:layout_marginStart="19dp"
+        android:layout_marginTop="19dp"
         android:background="@drawable/rounded_square"
         android:backgroundTint="@color/primary"
         app:layout_constraintStart_toStartOf="parent"

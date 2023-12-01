@@ -190,24 +190,23 @@ public class InventoryFragment extends Fragment {
         // listener for data changes in DB
         dbListener =
                 inventoryDB.getInventory().whereEqualTo("user_id", googleAuthDB.getUid())
-                // whenever database is update it is reordered by add date
-                .orderBy("update_date", Query.Direction.DESCENDING)
-                .addSnapshotListener((value, e) -> {
-                    if (e != null) {
-                        // An error occurred while fetching the data
-                        // Handle the error here
-                        Log.e("Firestore", "Error getting inventory", e);
-                    }
-                    else {
-                        // update inventory
-                        if (value != null && !value.isEmpty()) {
-                            handleGetInventory(value, e);
-                        } else {
-                            itemList.clear();
-                            processUpdate();
-                        }
-                    }
-                });
+                        // whenever database is update it is reordered by add date
+                        .orderBy("update_date", Query.Direction.DESCENDING)
+                        .addSnapshotListener((value, e) -> {
+                            if (e != null) {
+                                // An error occurred while fetching the data
+                                Log.e("Firestore", "Error getting inventory", e);
+                            }
+                            else {
+                                // update inventory
+                                if (value != null && !value.isEmpty()) {
+                                    handleGetInventory(value, e);
+                                } else {
+                                    itemList.clear();
+                                    processUpdate();
+                                }
+                            }
+                        });
 
         // When profile icon is clicked, switch to profile fragment
         ImageButton profileButton = view.findViewById(R.id.profile_button);
@@ -450,7 +449,8 @@ public class InventoryFragment extends Fragment {
                                 selectedItem.getModel(),
                                 selectedItem.getSerialNumber(),
                                 selectedItem.getDescription(),
-                                selectedItem.getComment()
+                                selectedItem.getComment(),
+                                selectedItem.getUserID()
                         );
 
                         // Update the item in the database
@@ -652,12 +652,12 @@ public class InventoryFragment extends Fragment {
         // Access the db instance from InventoryDB
             String name = document.getString("name");
             int color = document.getLong("color").intValue();
-            String colorName = document.getString("colorName");
+            String colorName = document.getString("color_name");
             String description = document.getString("description");
-            String dataBaseId = document.getId();
-
+            String dataBaseID = document.getId();
+            String userID = document.getString("user_id");
             // Create a Tag object with the retrieved data
-            Tag tag = new Tag(name, color, colorName, description, dataBaseId);
+            Tag tag = new Tag(name, color, colorName, description, dataBaseID, userID);
             item.getTags().add(tag);
     }
 

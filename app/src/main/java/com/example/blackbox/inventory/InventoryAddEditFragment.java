@@ -3,19 +3,25 @@ package com.example.blackbox.inventory;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.app.AlertDialog;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -270,35 +276,13 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
      */
     @Override
     public void add(){
-        TagDB tagDB = new TagDB();
-
-        String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
-        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
-
-            @Override
-            public void onSuccess(ArrayList<Tag> tagList) {
-
-                for (String selectedTagName : selectedTagNames) {
-                    for (Tag tag : tagList) {
-                        if (tag.getName().equals(selectedTagName)){
-                            selectedTags.add(tag);
-                        }
-                    }
-                }
-                String userID = googleAuthDB.getUid();
-                Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment, userID);
-                itemDB.addItemToDB(new_item);
-                itemDB.addImagesToDB(displayedUris);
-                // clear all temporary pictures
-                clearTempFiles();
-                NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
-            }
-            @Override
-            public void onError(String errorMessage) {
-                // Handle the error, e.g., display an error message
-                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
-            }
-        });
+        String userID = googleAuthDB.getUid();
+        Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment, userID);
+        itemDB.addItemToDB(new_item);
+        itemDB.addImagesToDB(displayedUris);
+        // clear all temporary pictures
+        clearTempFiles();
+        NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
     }
 
     /**
@@ -307,36 +291,14 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
      *      The item to be replaced
      */
     public void editItem(Item item){
-        TagDB tagDB = new TagDB();
-
-        String[] selectedTagNames = tagDropdown.getText().toString().split(", ");
-        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
-
-            @Override
-            public void onSuccess(ArrayList<Tag> tagList) {
-
-                for (String selectedTagName : selectedTagNames) {
-                    for (Tag tag : tagList) {
-                        if (tag.getName().equals(selectedTagName)){
-                            selectedTags.add(tag);
-                        }
-                    }
-                }
-                String userID = googleAuthDB.getUid();
-                Item new_item = new Item(name, selectedTags, date, val, make, model, serialNumber, desc, comment, userID);
-                itemDB.updateItemInDB(item, new_item);
-                itemDB.updateImagesInDB(item, displayedUris);
-                // clear all temporary pictures
-                clearTempFiles();
-                NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
-
-            }
-            @Override
-            public void onError(String errorMessage) {
-                // Handle the error, e.g., display an error message
-                Log.e("InventoryAddEditFragment", "Error retrieving tag names: " + errorMessage);
-            }
-        });
+        String userID = googleAuthDB.getUid();
+        Item new_item = new Item(name, tags, date, val, make, model, serialNumber, desc, comment, userID);
+        itemDB.updateItemInDB(item, new_item);
+        itemDB.updateImagesInDB(item, displayedUris);
+        // clear all temporary pictures
+        clearTempFiles();
+        InventoryFragment inventoryFragment = new InventoryFragment();
+        NavigationManager.switchFragmentWithBack(inventoryFragment, getParentFragmentManager());
     }
 
     /**
@@ -383,6 +345,15 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
         if (item.getTags() != null){
             selectedTags = item.getTags();
             tags = item.getTags();
+            // Ordering tags in the text box
+            Comparator<Tag> tagComp = new Comparator<Tag>() {
+                @Override
+                public int compare(Tag tag1, Tag tag2) {
+                    int result = tag1.getName().compareToIgnoreCase(tag2.getName());
+                    return result;
+                }
+            };
+            selectedTags.sort(tagComp);
         }
         if (selectedTags != null){
             ArrayList<String> selectedTagNames = new ArrayList<>();
@@ -439,6 +410,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
                 builder.setMultiChoiceItems(tagNameList, selectedTags, (dialogInterface, index, isChecked) -> {
                     // Update the selectedTags array when a tag is selected or deselected
                     selectedTags[index] = isChecked;
+
                 });
 
                 builder.setPositiveButton("OK", (dialogInterface, which) -> {
@@ -471,7 +443,6 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
                     }
                     tagDropdown.setText("");
                 });
-
                 builder.show();
             }
             @Override

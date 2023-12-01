@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 @LargeTest
 public class ProfileFunctionalityTest {
 
+    final private Integer maxDelay = 1000;
     /**
      * Initialize MainActivity
      */
@@ -57,12 +58,21 @@ public class ProfileFunctionalityTest {
         onView(withId(R.id.name_editText)).perform(ViewActions.clearText());
         onView(withId(R.id.bio_editText)).perform(ViewActions.clearText());
         onView(withId(R.id.name_editText)).perform(ViewActions.typeText("Name1"));
-        //onView(withId(R.id.bio_editText)).perform(ViewActions.typeText("Era of Computer Science"));
+        onView(withId(R.id.bio_editText)).perform(ViewActions.typeText("Era of Computer Science"));
         // edit item
         onView(withId(R.id.small_save_button)).perform(click());
+
+        // wait for the profile update to process
+        try {
+            Thread.sleep(maxDelay);
+        }
+        catch (Exception e){
+            Log.d("Sleep", "Exception");
+        }
+
         // see if the newly edited data is displayed
         onView(withText("Name1")).check(matches(isDisplayed()));
-        //onView(withText("Era of Computer Science")).check(matches(isDisplayed()));
+        onView(withText("Era of Computer Science")).check(matches(isDisplayed()));
     }
 
     /**
