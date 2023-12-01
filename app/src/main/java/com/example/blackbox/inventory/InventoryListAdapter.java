@@ -2,6 +2,7 @@ package com.example.blackbox.inventory;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -98,9 +99,19 @@ public class InventoryListAdapter extends ArrayAdapter {
             // show both tag images
             tagImage.setVisibility(View.VISIBLE);
             tagImage2.setVisibility(View.VISIBLE);
-            // this has to be set otherwise it will default to something weird sometimes
-            tagImage.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
-            tagImage2.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
+            int currentNightMode = context.getResources().getConfiguration().uiMode
+                    & Configuration.UI_MODE_NIGHT_MASK;
+            // set color based on whether in dark or light mode
+            if (currentNightMode == Configuration.UI_MODE_NIGHT_YES){
+                tagImage.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+                tagImage2.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
+            }
+            else{
+                // this has to be set otherwise it will default to something weird sometimes
+                tagImage.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
+                tagImage2.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
+            }
+
 
         }
 
