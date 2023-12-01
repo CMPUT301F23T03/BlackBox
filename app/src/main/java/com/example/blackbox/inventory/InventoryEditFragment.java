@@ -67,10 +67,7 @@ public class InventoryEditFragment extends InventoryAddEditFragment {
             itemDB.getImagesByItemId(item.getID(), requireContext(), displayedUris, adapter, new InventoryDB.OnGetImagesCallback(){
                 @Override
                 public void onSuccess(ArrayList<Uri> displayedUris) {
-                    ArrayList<Uri> updatedUris = new ArrayList<Uri>();
-                    updatedUris.addAll(displayedUris);
-                    adapter.updateDisplayedUris(updatedUris);
-                    Log.d("Update", "onSuccess: ");
+                    adapter.notifyDataSetChanged();
                 }
                 @Override
                 public void onError(){};
