@@ -60,30 +60,37 @@ public class InventoryEditFragment extends InventoryAddEditFragment {
         item = (Item) getArguments().getSerializable("item");
 
         adjustFields(item);
-        // TODO: Get images using imageId, currently, successfully downloaded the image from the data bast,
-        //  however, cannot update the view using the adapter (bug)
+
         if (isFirstCreation) {
             // Run your method to get images only during the first creation
-            itemDB.getImagesByItemId(item.getID(), requireContext(), displayedUris, adapter, new InventoryDB.OnGetImagesCallback(){
-                @Override
-                public void onSuccess(ArrayList<Uri> displayedUris) {
-                    adapter.notifyDataSetChanged();
-                }
-                @Override
-                public void onError(){};
-            });
-            isFirstCreation = false; // Set the flag to false after the first creation
-//            adapter.updateDisplayedUris(displayedUris);
-        }
-//        adapter.updateDisplayedUris(displayedUris);
+            itemDB.getImagesByItemId(item.getID(), requireContext(), displayedUris,
+                    new InventoryDB.OnGetImagesCallback(){
+                        @Override
+                        public void onSuccess(ArrayList<Uri> displayedUris) {
+                            ArrayList<Uri> updatedUris = new ArrayList<Uri>();
+                            updatedUris.addAll(displayedUris);
+                            adapter.updateDisplayedUris(updatedUris);
+                            Log.d("Update", "onSuccess: ");
+                            // only allow to save when images when finish downloading
+                            if (updatedUris.size() == itemDB.getNumberOfImages()){
+                                setUpSaveButton(view);
+                            }
+                        }
 
-        // save an edited item by clicking the small add button
-        Button small_save_button = view.findViewById(R.id.small_save_button);
-        small_save_button.setOnClickListener(v -> {
-            if(validateInput()){
-                editItem(item);
-            }
-        });
+                        @Override
+                        public void onSuccessNoPicture() {
+                            // allow to save when images if there's no picture
+                            setUpSaveButton(view);
+                        }
+
+                        @Override
+                        public void onError(){
+                        };
+                    });
+            isFirstCreation = false; // Set the flag to false after the first creation
+        } else {
+            setUpSaveButton(view);
+        }
 
         // setup a delete button
         final Button deleteButton = view.findViewById(R.id.delete_item_button);
@@ -91,6 +98,16 @@ public class InventoryEditFragment extends InventoryAddEditFragment {
             showDeletePopup();
         });
 
+    }
+
+    private void setUpSaveButton(View view){
+        // save an edited item by clicking the small add button
+        Button small_save_button = view.findViewById(R.id.small_save_button);
+        small_save_button.setOnClickListener(v -> {
+            if(validateInput()){
+                editItem(item);
+            }
+        });
     }
 
 

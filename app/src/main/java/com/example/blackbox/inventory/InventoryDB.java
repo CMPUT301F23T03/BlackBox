@@ -39,6 +39,7 @@ public class InventoryDB {
     private CollectionReference images;
     private StorageReference imagesStorageReference;
     private String itemId; // collection id of the item in inventory
+    private int numberOfImages = 0;
     private FirebaseFirestore db;
     private FirebaseStorage storage;
 
@@ -175,18 +176,19 @@ public class InventoryDB {
      * @param itemId        The ID of the item for which images need to be retrieved.
      * @param context       The Context of the application/activity.
      * @param displayedUris The ArrayList of URIs to which the URIs of new local files will be added.
-     *//**
-     * Retrieves images associated with a specific itemId from the Firestore 'images' collection.
-     *
-     * @param itemId The ID of the item for which images need to be retrieved.
      */
     public void getImagesByItemId(String itemId, Context context,
-                                  ArrayList<Uri> displayedUris, ImageRecyclerAdapter adapter,
-                                  OnGetImagesCallback callback) {
+                                  ArrayList<Uri> displayedUris, OnGetImagesCallback callback) {
         // Query the 'images' collection for documents with matching itemId
         images.whereEqualTo("itemId", itemId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
+                    numberOfImages = queryDocumentSnapshots.size();
+                    if (numberOfImages == 0) {
+                        callback.onSuccessNoPicture(); // Trigger onSuccess immediately if no images found
+                        return;
+                    }
+
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         String imageUrl = document.getString("imageUrl");
                         if (imageUrl != null) {
@@ -197,8 +199,14 @@ public class InventoryDB {
                             File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
                             File imageFile = new File(storageDir, imageFileName + ".jpg");
 
+                            // Get the URI of the newly created local file
+                            Uri localUri = FileProvider.getUriForFile(context,
+                                    context.getPackageName() + ".provider", imageFile);
+                            displayedUris.add(localUri);
+                            Log.d("URI", localUri.toString());
+
                             // Download image using its URL
-                            downloadImageFromUrl(imageUrl, imageFile, context, displayedUris, adapter, callback);
+                            downloadImageFromUrl(imageUrl, imageFile, displayedUris, callback);
                         }
                     }
                 })
@@ -213,9 +221,8 @@ public class InventoryDB {
      * @param imageUrl  The URL of the image to be downloaded.
      * @param imageFile The File object where the downloaded image will be saved.
      */
-    private void downloadImageFromUrl(String imageUrl, File imageFile, Context context,
-                                      ArrayList<Uri> displayedUris, ImageRecyclerAdapter adapter,
-                                      OnGetImagesCallback callback) {
+    private void downloadImageFromUrl(String imageUrl, File imageFile,
+                                      ArrayList<Uri> displayedUris, OnGetImagesCallback callback) {
         StorageReference storageRef = storage.getReferenceFromUrl(imageUrl);
 
         storageRef.getFile(imageFile)
@@ -223,12 +230,6 @@ public class InventoryDB {
                     // Image downloaded successfully
                     Log.d("Firebase Storage", "Image downloaded successfully to: " + imageFile.getAbsolutePath());
                     // Handle the downloaded image (e.g., display or further processing)
-                    // Get the URI of the newly created local file
-                    Uri localUri = FileProvider.getUriForFile(context,
-                            context.getPackageName() + ".provider", imageFile);
-                    displayedUris.add(localUri);
-//                    adapter.updateDisplayedUris(displayedUris);
-                    Log.d("URI", localUri.toString());
                     callback.onSuccess(displayedUris);
 
                 })
@@ -242,6 +243,7 @@ public class InventoryDB {
 
     public interface OnGetImagesCallback {
         void onSuccess(ArrayList<Uri> displayedUris);
+        void onSuccessNoPicture();
 
         void onError();
     }
@@ -360,8 +362,6 @@ public class InventoryDB {
     }
 
 
-
-
     /**
      * Clears all items in the 'inventory' collection in the Firestore database.
      */
@@ -380,6 +380,10 @@ public class InventoryDB {
                 }
             }
         });
+    }
+
+    public int getNumberOfImages(){
+        return this.numberOfImages;
     }
 }
 
