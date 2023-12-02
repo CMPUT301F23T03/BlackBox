@@ -73,6 +73,7 @@ public class InventoryEditFragment extends InventoryAddEditFragment {
                             Log.d("Update", "onSuccess: ");
                             // only allow to save when images when finish downloading
                             if (updatedUris.size() == itemDB.getNumberOfImages()){
+                                //TODO: add sorted by date
                                 setUpSaveButton(view);
                             }
                         }

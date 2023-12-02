@@ -35,6 +35,7 @@ import com.example.blackbox.utils.NavigationManager;
 import com.example.blackbox.R;
 import com.example.blackbox.tag.Tag;
 import com.example.blackbox.tag.TagDB;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -147,10 +148,15 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
         recyclerView = view.findViewById(R.id.image_recycler_view);
         addImgBtn = view.findViewById(R.id.add_img_btn);
         addImgBtn.setOnClickListener(v -> {
-            // Set the listener on AttachImageFragment
-            attachImageFragment.setOnImageSelectedListener(InventoryAddEditFragment.this);
-            Log.d("Attach image", "Going to fragment");
-            NavigationManager.switchFragmentWithBack(attachImageFragment, getParentFragmentManager());
+            if (displayedUris.size() >= 6) {
+                Snackbar.make(v, "You can only attach up to 6 pictures", Snackbar.LENGTH_SHORT).show();
+            } else {
+                // Set the listener on AttachImageFragment
+                attachImageFragment.setOnImageSelectedListener(InventoryAddEditFragment.this);
+
+                Log.d("Attach image", "Going to fragment");
+                NavigationManager.switchFragmentWithBack(attachImageFragment, getParentFragmentManager());
+            }
         });
 
         displayedUris = attachImageFragment.getUriArrayList();
