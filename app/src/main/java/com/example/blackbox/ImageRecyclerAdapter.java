@@ -48,6 +48,7 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageRecyclerAdap
             Uri uri = displayedUris.get(position);
             holder.imageView.setImageURI(uri);
             holder.imageRemoveButton.setOnClickListener(view -> {
+                Log.d("Delete Image", "Delete image at position " + position);
                 showConfirmationDialog(position);
             });
         }
@@ -68,7 +69,7 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageRecyclerAdap
     // Method to remove an item at a specific position
     private void removeItem(int position) {
         displayedUris.remove(position);
-        notifyItemRemoved(position);
+        notifyDataSetChanged();
     }
 
     @Override
