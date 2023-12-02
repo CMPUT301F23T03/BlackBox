@@ -151,19 +151,11 @@ public class InventoryFragment extends Fragment {
         filterViewList = (RecyclerView) view.findViewById(R.id.filter_list);
         searchView = view.findViewById(R.id.searchView);
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Log.d("SearchView","Query submitted");
-                return false;
-            }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                Log.d("SearchView","Query changed");
-                return false;
-            }
-        });
+
+
+        setupSearchViewListeners();
+
 
         inventoryAdapter = new InventoryListAdapter(activityContext, itemList);
         filterAdapter = new FilterListAdapter(filterList,itemList,inventoryAdapter, getActivity());
@@ -316,6 +308,63 @@ public class InventoryFragment extends Fragment {
               }
         });
 
+    }
+
+    /**
+     * Helper method to set up the listeners for the search view
+     */
+    private void setupSearchViewListeners(){
+
+
+        // makes search bar clickable
+        searchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Open the search functionality
+                searchView.setIconified(false);
+                boolean focused = searchView.hasFocus();
+
+            }
+        });
+        // listens to input to search bar
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.d("SearchView","Query submitted");
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.d("SearchView","Query changed");
+                return false;
+            }
+        });
+        // makes bottom nav bar and add button disappear when searching
+        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    ((MainActivity) requireActivity()).toggleBottomNavigationView(false);
+                    addButton.setVisibility(View.GONE);
+                } else {
+                    ((MainActivity) requireActivity()).toggleBottomNavigationView(true);
+                    addButton.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    ((MainActivity) requireActivity()).toggleBottomNavigationView(false);
+                    addButton.setVisibility(View.GONE);
+                } else {
+                    ((MainActivity) requireActivity()).toggleBottomNavigationView(true);
+                    addButton.setVisibility(View.VISIBLE);
+                }
+            }
+        });
     }
 
     /**
