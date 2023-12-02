@@ -14,4 +14,14 @@
         app:layout_constraintDimensionRatio="1"
         tools:ignore="MissingConstraints" />
 
+    <ImageView
+        android:id="@+id/crossButton"
+        android:layout_width="51dp"
+        android:layout_height="50dp"
+        android:src="@android:drawable/ic_delete"
+        android:visibility="visible"
+        tools:ignore="MissingConstraints"
+        tools:layout_editor_absoluteX="359dp"
+        tools:layout_editor_absoluteY="1dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
