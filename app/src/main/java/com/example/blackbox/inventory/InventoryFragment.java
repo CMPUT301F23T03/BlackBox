@@ -666,8 +666,8 @@ public class InventoryFragment extends Fragment {
                             int startIndex = imageUrl.indexOf("images%2F")+ 9;
                             int endIndex = imageUrl.indexOf("?alt=media");
                             // Create unique file names for each image
-                            String imageFileName = imageUrl.substring(startIndex, endIndex).concat("display");
-                            File imageFile = new File(storageDir, imageFileName + ".jpg");
+                            String imageFileName = imageUrl.substring(startIndex, endIndex);
+                            File imageFile = new File(storageDir, imageFileName);
                             // Get the URI of the newly created local file
                             Uri localUri = FileProvider.getUriForFile(activityContext,
                                     activityContext.getPackageName() + ".provider", imageFile);
@@ -677,12 +677,12 @@ public class InventoryFragment extends Fragment {
                                     .addOnSuccessListener(taskSnapshot -> {
                                         // Image downloaded successfully
                                         inventoryAdapter.notifyDataSetChanged();
-                                        Log.d("Firebase Storage", "Image downloaded successfully to: " + imageFile.getAbsolutePath());
+                                        Log.d("Firestore", "Image downloaded successfully to: " + imageFile.getAbsolutePath());
                                         // Handle the downloaded image (e.g., display or further processing)
 
                                     })
                                     .addOnFailureListener(e -> {
-                                                Log.e("Firebase Storage","Failed to download image: " + e.getMessage());
+                                                Log.e("Firestore","Failed to download image: " + e.getMessage());
                                             }
                                     );
                         }
