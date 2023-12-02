@@ -22,6 +22,15 @@ public class NavigationManager {
     public static void switchFragmentWithBack(Fragment fragment, FragmentManager fm) {
         // Create a FragmentTransaction to begin the transaction and replace the Fragment
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
+
+        // Set custom animations for the fragment transition
+        fragmentTransaction.setCustomAnimations(
+                R.anim.slide_in_from_left, // enter animation
+                R.anim.slide_out_to_right, // exit animation
+                R.anim.slide_out_to_left, // popExit animation when popping back from back stack
+                R.anim.slide_in_from_right // popEnter animation when popping back from back stack
+        );
+
         // Replace the FrameLayout with the new Fragment
         fragmentTransaction.replace(R.id.contentFragment, fragment);
         // allow the Android phone back button to be in-app functional
