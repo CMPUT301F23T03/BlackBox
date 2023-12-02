@@ -129,19 +129,24 @@ public class InventoryDB {
      */
     private void uploadImageToStorage(Uri imageUri) {
         // Create a reference to store images in Firebase Storage with a unique name
-        String imageName = System.currentTimeMillis() + "_" + imageUri.getLastPathSegment();
+        String lastPathSegment = imageUri.getLastPathSegment();
+
+        // rename image files
+        if (lastPathSegment.endsWith(".jpg")){
+            lastPathSegment = lastPathSegment.substring(0, lastPathSegment.length() - 4);
+            Log.d("Last path", lastPathSegment);
+        }
+        String imageName = System.currentTimeMillis() + "_"
+                + lastPathSegment.substring(lastPathSegment.length() - 5);
         StorageReference imageRef = imagesStorageReference.child(imageName);
 
         // Upload the file to Firebase Storage
         imageRef.putFile(imageUri)
                 .addOnSuccessListener((OnSuccessListener) o -> {
                     // Get the download URL of the uploaded image
-                    imageRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri downloadUri) {
-                            // Image uploaded successfully, now add its URL to Firestore
-                            addImageUrlToFirestore(downloadUri);
-                        }
+                    imageRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
+                        // Image uploaded successfully, now add its URL to Firestore
+                        addImageUrlToFirestore(downloadUri);
                     });
                 })
                 .addOnFailureListener(e -> {
