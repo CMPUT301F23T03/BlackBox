@@ -5,7 +5,8 @@
     android:layout_width="wrap_content"
     android:padding="6dp"
     android:layout_height="wrap_content"
-    android:background="@drawable/filter_background">
+    android:background="@drawable/filter_background"
+    android:backgroundTint="?attr/colorPrimary">
 
     <TextView
         android:layout_width="wrap_content"
@@ -31,7 +32,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:background="@drawable/filter_cancel"
-        android:backgroundTint="@color/colorPrimary"/>
+        android:background="@drawable/filter_cancel"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
