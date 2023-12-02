@@ -111,8 +111,7 @@ public class InventoryFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        dbListener.remove();
-        imageListener.remove();
+        removeListeners();
         activityContext = null;
     }
 
@@ -235,6 +234,7 @@ public class InventoryFragment extends Fragment {
         // add an item - display add fragment
         addButton = view.findViewById(R.id.add_button);
         addButton.setOnClickListener((v) -> {
+            removeListeners();
             NavigationManager.switchFragmentWithBack(new InventoryAddFragment(), getParentFragmentManager());
         });
 
@@ -243,6 +243,7 @@ public class InventoryFragment extends Fragment {
             if (!isLongClick) {
                 // Regular click
                 InventoryEditFragment inventoryEditFragment = InventoryEditFragment.newInstance(itemList.get(i));
+                removeListeners();
                 NavigationManager.switchFragmentWithBack(inventoryEditFragment, getParentFragmentManager());
             } else {
                 toggleSelection(i);
@@ -328,6 +329,18 @@ public class InventoryFragment extends Fragment {
         });
 
     }
+
+    /**
+     * This is a helper method which removes the persistent listeners before switching
+     * to a new fragment or detaching
+     * Must be called to prevent listeners from remaining active past
+     * fragment life cycle
+     */
+    private void removeListeners(){
+        imageListener.remove();
+        dbListener.remove();
+    }
+
 
     /**
      * Helper method to set up the listeners for the search view
