@@ -46,13 +46,14 @@
 
     <ImageView
         android:id="@+id/imageView"
-        android:layout_width="67dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginStart="16dp"
+        android:scaleType="centerCrop"
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:srcCompat="@tools:sample/avatars" />
+        />
 
     <ImageView
         android:id="@+id/tag_image"

@@ -3,7 +3,9 @@ package com.example.blackbox.inventory;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +40,7 @@ import com.example.blackbox.tag.Tag;
 import com.example.blackbox.tag.TagDB;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -44,9 +48,13 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -68,6 +76,7 @@ public class InventoryFragment extends Fragment {
     Button cancelButton;
     Button setTagButton;
     ListenerRegistration dbListener;
+    ListenerRegistration imageListener;
     private Button filterButton;
     private Context activityContext;
     InventoryDB inventoryDB;
@@ -78,6 +87,7 @@ public class InventoryFragment extends Fragment {
     private ArrayList<Item> selectedItemsList = new ArrayList<>();
     private boolean isLongClick = false;
     private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
+    private File storageDir;
 
     /**
      * Default constructor for the InventoryFragment.
@@ -101,8 +111,9 @@ public class InventoryFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        activityContext = null;
         dbListener.remove();
+        imageListener.remove();
+        activityContext = null;
     }
 
 
@@ -126,6 +137,9 @@ public class InventoryFragment extends Fragment {
         // Display profile picture (taken from the Google account)
         ImageButton profilePicture = ItemFragmentLayout.findViewById(R.id.profile_button);
         googleAuthDB.displayGoogleProfilePicture(profilePicture, 80, 80, this);
+
+        storageDir = activityContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
 
         return ItemFragmentLayout;
     }
@@ -179,6 +193,7 @@ public class InventoryFragment extends Fragment {
         });
 
 
+
         // listener for data changes in DB
         dbListener =
                 inventoryDB.getInventory().whereEqualTo("user_id", googleAuthDB.getUid())
@@ -200,6 +215,10 @@ public class InventoryFragment extends Fragment {
                             }
                         });
 
+
+        imageListener= inventoryDB.getImages().addSnapshotListener((value, e) ->{
+            updateDisplayedImages();
+        });
         // When profile icon is clicked, switch to profile fragment
         ImageButton profileButton = view.findViewById(R.id.profile_button);
         profileButton.setOnClickListener(v -> {
@@ -238,7 +257,7 @@ public class InventoryFragment extends Fragment {
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (!isLongClick) {
                     // Show a toast to indicate long click
-                    Toast.makeText(requireContext(), "Multiselection Enabled", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Multi-selection Enabled", Toast.LENGTH_SHORT).show();
 
                     isLongClick = true;
 
@@ -620,6 +639,47 @@ public class InventoryFragment extends Fragment {
         builder.create().show();
     }
 
+
+    private void updateDisplayedImages(){
+        for (Item item : itemList){
+            inventoryDB.getImages()
+                    .whereEqualTo("itemId",item.getID()).get()
+                    .addOnSuccessListener(imageSnapshot -> {
+                        // get first item
+                        Iterator<QueryDocumentSnapshot> iterator =  imageSnapshot.iterator();
+                        if (iterator.hasNext()) {
+                            QueryDocumentSnapshot imageDoc = iterator.next();
+                            String imageUrl = imageDoc.getString("imageUrl");
+                            int startIndex = imageUrl.indexOf("images%2F")+ 9;
+                            int endIndex = imageUrl.indexOf("?alt=media");
+                            // Create unique file names for each image
+                            String imageFileName = imageUrl.substring(startIndex, endIndex).concat("display");
+                            File imageFile = new File(storageDir, imageFileName + ".jpg");
+                            // Get the URI of the newly created local file
+                            Uri localUri = FileProvider.getUriForFile(activityContext,
+                                    activityContext.getPackageName() + ".provider", imageFile);
+                            item.setDisplayImageUri(localUri);
+                            StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
+                            storageRef.getFile(imageFile)
+                                    .addOnSuccessListener(taskSnapshot -> {
+                                        // Image downloaded successfully
+                                        inventoryAdapter.notifyDataSetChanged();
+                                        Log.d("Firebase Storage", "Image downloaded successfully to: " + imageFile.getAbsolutePath());
+                                        // Handle the downloaded image (e.g., display or further processing)
+
+                                    })
+                                    .addOnFailureListener(e -> {
+                                                Log.e("Firebase Storage","Failed to download image: " + e.getMessage());
+                                            }
+                                    );
+                        }
+                        else {
+                            Log.d("Firestore", "Image has no item");
+                        }
+                    });
+        }
+
+    }
     /**
      * This method handles acquiring new data from the Firestore database
      * and ensures that all async firestore tasks complete before processing the update
@@ -661,6 +721,7 @@ public class InventoryFragment extends Fragment {
                     });
                 }
             }
+
             itemList.add(item);
 
 

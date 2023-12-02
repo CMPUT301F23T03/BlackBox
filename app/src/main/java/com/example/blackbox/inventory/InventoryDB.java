@@ -85,6 +85,14 @@ public class InventoryDB {
     }
 
     /**
+     * Gets the image collection
+     * @return images    a CollectionReference object
+     */
+    public CollectionReference getImages() {
+        return images;
+    }
+
+    /**
      * Adds a new item to the 'inventory' collection in the Firestore database.
      *
      * @param item The Item object to be added to the database.
@@ -168,7 +176,6 @@ public class InventoryDB {
     }
 
 
-
     /**
      * Retrieves images associated with a specific itemId from the Firestore 'images' collection
      * and adds the URIs of newly created local files to the displayedUris ArrayList.
@@ -247,6 +254,23 @@ public class InventoryDB {
 
         void onError();
     }
+
+    public void downloadSingleImageFromUrl(String imageUrl, File imageFile){
+        StorageReference storageRef = storage.getReferenceFromUrl(imageUrl);
+        storageRef.getFile(imageFile)
+                .addOnSuccessListener(taskSnapshot -> {
+                    // Image downloaded successfully
+                    Log.d("Firebase Storage", "Image downloaded successfully to: " + imageFile.getAbsolutePath());
+                    // Handle the downloaded image (e.g., display or further processing)
+
+                })
+                .addOnFailureListener(e -> {
+                            Log.e("Firebase Storage","Failed to download image: " + e.getMessage());
+                        }
+                );
+    }
+
+
 
     /**
      * Updates an item in the Firestore database with new values

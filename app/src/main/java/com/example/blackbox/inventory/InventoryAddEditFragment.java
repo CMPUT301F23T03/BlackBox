@@ -282,7 +282,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
         itemDB.addImagesToDB(displayedUris);
         // clear all temporary pictures
         clearTempFiles();
-        NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
+        getParentFragmentManager().popBackStack();
     }
 
     /**
@@ -297,8 +297,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
         itemDB.updateImagesInDB(item, displayedUris);
         // clear all temporary pictures
         clearTempFiles();
-        InventoryFragment inventoryFragment = new InventoryFragment();
-        NavigationManager.switchFragmentWithBack(inventoryFragment, getParentFragmentManager());
+        getParentFragmentManager().popBackStack();
     }
 
     /**
@@ -308,7 +307,7 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
      */
     public void deleteItem(Item item){
         itemDB.deleteItem(item);
-        NavigationManager.switchFragmentWithBack(new InventoryFragment(), getParentFragmentManager());
+        getParentFragmentManager().popBackStack();
     }
 
     /**
