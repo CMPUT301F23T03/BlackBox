@@ -16,16 +16,14 @@ public class BarcodeHandleChain {
 
     /**
      * Constructs a BarcodeHandleChain and initializes a chain of CustomHandlers:
-     * BarcodeValidHandler, DatabaseHandler, and WebScrapingHandler.
+     * BarcodeValidHandler and WebScrapingHandler.
      * Establishes the chain of responsibility by setting next handlers accordingly.
      */
     public BarcodeHandleChain(){
         this.h1 = new BarcodeValidHandler();
-        CustomHandler databaseHandler = new DatabaseHandler();
         CustomHandler webScrapingHandler = new WebScrapingHandler();
 
-        h1.setNextHandler(databaseHandler);
-        databaseHandler.setNextHandler(webScrapingHandler);
+        h1.setNextHandler(webScrapingHandler);
     }
 
     /**

@@ -209,7 +209,8 @@ public class InventoryDBTest {
      */
     @Test
     public void testAddImagesToDB() throws InterruptedException {
-        String userID = new GoogleAuthDB().getUid();
+        GoogleAuthDB googleAuthDB = new GoogleAuthDB();
+        String userID = googleAuthDB.getUid();
         ArrayList<Uri> imageList = new ArrayList<>();
         try {
             // Retrieve images from the app's assets
@@ -230,7 +231,7 @@ public class InventoryDBTest {
         CountDownLatch latch = new CountDownLatch(1);
         inventoryDB.addImagesToDB(imageList);
         downloadUris= inventoryDB.getDownloadUris();
-
+        latch.countDown();
         boolean completed = latch.await(5, TimeUnit.SECONDS);
         assertTrue(completed);
     }
