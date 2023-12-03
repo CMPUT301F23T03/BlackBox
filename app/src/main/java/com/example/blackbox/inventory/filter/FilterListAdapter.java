@@ -14,7 +14,10 @@ import com.example.blackbox.utils.StringFormatter;
 import com.example.blackbox.inventory.Item;
 import com.example.blackbox.inventory.ItemList;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.ViewHolder> {
     private ArrayList<Filter> filterList;
@@ -79,8 +82,58 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
     private void updateItemList(int filterPosition){
         Filter clickedFilter = filterList.get(filterPosition);
         ArrayList<Item> filterItemList = clickedFilter.getItemList();
-        for (Item filteredItem :filterItemList){
-            this.itemList.add(filteredItem);
+        if (filterList.size() == 1){
+            for (Item filteredItem : filterItemList){
+                itemList.add(filteredItem);
+            }
+        }else {
+            for (Item filteredItem : filterItemList) {
+                boolean itemFiltered = false;
+                for (Filter filter : filterList) {
+                    if (filterList.indexOf(filter) != filterPosition) {
+                        switch (filter.getFilterType()) {
+                            case "make":
+                                if (!filteredItem.getMake().equalsIgnoreCase(filter.getMake())) {
+                                    filter.addItemToFilter(filteredItem);
+                                    itemFiltered = true;
+                                }
+                                break;
+                            case "date":
+                                String lowerDate = filter.getDateRange()[0];
+                                String upperDate = filter.getDateRange()[1];
+                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                                try {
+                                    Date filterLowerDate = dateFormat.parse(lowerDate);
+                                    Date filterUpperDate = dateFormat.parse(upperDate);
+                                    Date date = dateFormat.parse(filteredItem.getDateOfPurchase());
+                                    if (!(date.equals(filterLowerDate) || date.equals(filterUpperDate))) {
+                                        if (date.after(filterUpperDate) || date.before(filterLowerDate)) {
+                                            filter.addItemToFilter(filteredItem);
+                                            itemFiltered = true;
+                                        }
+                                    }
+                                } catch (ParseException e) {
+                                    throw new RuntimeException(e);
+                                }
+                                break;
+                            case "price":
+                                double lowerRange = filter.getPriceRange()[0];
+                                double upperRange = filter.getPriceRange()[1];
+                                double cost = filteredItem.getEstimatedValue();
+                                if (!((cost == lowerRange || cost == upperRange) || (cost < upperRange && cost > lowerRange))) {
+                                    filter.addItemToFilter(filteredItem);
+                                    itemFiltered = true;
+                                }
+                                break;
+                            case "tag":
+                                break;
+                        }
+                        if (!itemFiltered) {
+                            this.itemList.add(filteredItem);
+                        }
+                    }
+                }
+            }
         }
         inventoryAdapter.notifyDataSetChanged();
     }

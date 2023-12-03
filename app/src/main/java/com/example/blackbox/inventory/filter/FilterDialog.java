@@ -12,17 +12,25 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.blackbox.R;
+import com.example.blackbox.authentication.GoogleAuthDB;
 import com.example.blackbox.utils.StringFormatter;
 import com.example.blackbox.inventory.Item;
 import com.example.blackbox.inventory.ItemList;
 import com.example.blackbox.tag.Tag;
 import com.example.blackbox.tag.TagAdapter;
 import com.example.blackbox.tag.TagDB;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -59,19 +67,18 @@ public abstract class FilterDialog{
     private static FilterListAdapter filterAdapter;
     private static TextView totalSumView;
 
-    private static ArrayList<Tag> tags;
-    private static TagDB tagDB;
+    private static GoogleAuthDB googleAuthDB = new GoogleAuthDB();
+    private static TagDB tagDB = new TagDB();
+    private static ArrayList<Tag> tags = new ArrayList<>();
+    private static ListenerRegistration tagDBListener;
+
     private static TagAdapter tagAdapter;
 
     private static void initializeSpinner(){
-        FilterDialog.tagDB = new TagDB();
+        TagDB tagDB = new TagDB();
         tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
             @Override
             public void onSuccess(ArrayList<Tag> tagList) {
-                System.out.println(tagList);
-                FilterDialog.tags = tagList;
-                System.out.println(tags);
-                System.out.println(tags.size());
                 Log.d("TagFilter","Data received");
             }
 
@@ -122,6 +129,7 @@ public abstract class FilterDialog{
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked){
                     tagSpinner.setVisibility(View.VISIBLE);
+                    Log.d("FilterTags",tags.toString());
                 }else{
                     tagSpinner.setVisibility(View.GONE);
                 }
@@ -186,6 +194,35 @@ public abstract class FilterDialog{
         startDate = view.findViewById(R.id.start_date);
         endDate = view.findViewById(R.id.after_date);
         make = view.findViewById(R.id.make_edit_text);
+
+        tagDBListener = tagDB.getTags()
+                .whereEqualTo("user_id", googleAuthDB.getUid())
+                .orderBy("update_date", Query.Direction.DESCENDING)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            // An error occurred while fetching the data
+                            Log.e("Firestore", "Error getting inventory", e);
+                            return;
+                        }
+                        tags.clear();
+                        for (QueryDocumentSnapshot doc : value) {
+                            String name = doc.getString("name");
+                            int col = doc.getLong("color").intValue();
+                            String desc = doc.getString("description");
+                            String colorName = doc.getString("color_name");
+                            String dbID = doc.getId();
+                            String userID = doc.getString("user_id");
+                            Tag tag = new Tag(name, col, colorName, desc, dbID, userID);
+                            tag.setDateUpdatedWithString(doc.getString("update_date"));
+                            // Only add tags that belong to the current user to the list to display
+                            tags.add(tag);
+                        }
+                    }
+                });
+
 
         //initializeSpinner();
         initializeCheckBoxes();
@@ -263,7 +300,7 @@ public abstract class FilterDialog{
             Date date;
             try{
                 date = dateFormat.parse(item.getDateOfPurchase());
-                if (!date.equals(lowerBoundDate) && !date.equals(upperBoundDate)){
+                if (!(date.equals(lowerBoundDate) || date.equals(upperBoundDate))){
                     if (date.after(upperBoundDate) || date.before(lowerBoundDate)){
                         addToFilteredList(item,dateFilter);
                     }

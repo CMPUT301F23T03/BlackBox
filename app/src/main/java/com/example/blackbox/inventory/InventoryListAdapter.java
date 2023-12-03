@@ -10,24 +10,34 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+
+import org.checkerframework.checker.units.qual.A;
 
 import com.example.blackbox.R;
 import com.example.blackbox.utils.StringFormatter;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * A custom ArrayAdapter for populating an inventory list view with Item objects.
  */
-public class InventoryListAdapter extends ArrayAdapter {
+public class InventoryListAdapter extends ArrayAdapter implements Filterable {
+
+    private ArrayList<Item> originalItems;
 
     private ArrayList<Item> items;
     private Context context;
+
+    private String notifyReason = "";
 
     /**
      * Constructor for the InventoryListAdapter.
@@ -38,6 +48,7 @@ public class InventoryListAdapter extends ArrayAdapter {
     public InventoryListAdapter(@NonNull Context context, ArrayList<Item> items) {
         super(context, 0, items); // Call the constructor of the base class
         this.items = items;
+        this.originalItems = null;
         this.context = context;
     }
 
@@ -67,6 +78,8 @@ public class InventoryListAdapter extends ArrayAdapter {
         TextView desc = view.findViewById(R.id.desc);
         ImageView tagImage = view.findViewById(R.id.tag_image);
         ImageView tagImage2 = view.findViewById(R.id.tag_image2);
+        ImageView itemImage = view.findViewById(R.id.item_list_item_image);
+
 
         // set image
         if (item.getDisplayImageUri() != null){
@@ -135,4 +148,67 @@ public class InventoryListAdapter extends ArrayAdapter {
 
         return view;
     }
+
+    @Override
+    public Filter getFilter(){
+        Filter filter = new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                Log.d("InventoryListAdapter","filtering reached");
+                FilterResults filterResults = new FilterResults();
+
+                
+
+                if (notifyReason.equalsIgnoreCase("")){
+                    originalItems = (ArrayList<Item>) items.clone();
+                }
+                if (constraint != null){
+                    String[] filterTokens = constraint.toString().split(",");
+                    ArrayList<Item> results = new ArrayList<>();
+                    for (String token: filterTokens){
+                        for (Item item: originalItems){
+                            if (item.getDescription().toLowerCase().contains(token.toLowerCase())){
+                                Log.d("InventoryListAdapter","item added");
+                                if (!results.contains(item)){results.add(item);}
+                            }
+                        }
+                    }
+                    filterResults.values = results;
+                    filterResults.count = results.size();
+                }else{
+                    //count here is kept to 0 so that we know that the results returned nothing
+                    filterResults.values = originalItems;
+                    filterResults.count = 0;
+                }
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+                if (results.count > 0){
+                    Log.d("InventoryListAdapter","Data set notified");
+                    Toast.makeText(context,results.count + " Result(s) Found",Toast.LENGTH_SHORT).show();
+                    items.clear();
+                    items.addAll((Collection<? extends Item>) results.values);
+                    notifyReason = "filter";
+                    notifyDataSetChanged();
+                }else if (constraint != null){
+                    items.clear();
+                    notifyReason = "filter";
+                    notifyDataSetChanged();
+                    Toast.makeText(context,"No Results Found",Toast.LENGTH_SHORT).show();
+                }else{
+                    items.clear();
+                    items.addAll((Collection<? extends Item>) results.values);
+                    Log.d("InventoryListAdapter","items restored" + items.toString());
+                    notifyReason = "";
+                    notifyDataSetChanged();
+                }
+            }
+        };
+        return filter;
+    }
+
 }
+
+
