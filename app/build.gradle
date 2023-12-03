@@ -3,6 +3,13 @@ plugins {
     id 'com.google.gms.google-services'
 }
 
+def keystorePropertiesFile = file("keystore.properties")
+def keystoreProperties = new Properties()
+
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace 'com.example.blackbox'
     compileSdk 34
@@ -13,11 +20,14 @@ android {
         targetSdk 34
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
+        debug{
+            signingConfig signingConfigs.debug
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -26,6 +36,15 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file(keystoreProperties['keystore.file'])
+            storePassword keystoreProperties['keystore.storePassword']
+            keyAlias keystoreProperties['keystore.keyAlias']
+            keyPassword keystoreProperties['keystore.keyPassword']
+        }
     }
 }
 
@@ -40,10 +59,13 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.14.3'
     implementation platform('com.google.firebase:firebase-bom:32.5.0')
     implementation("com.google.firebase:firebase-firestore")
+    implementation 'com.google.firebase:firebase-appcheck:1.0.6'
+    implementation 'com.google.firebase:firebase-storage:20.0.0'
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
+    implementation 'com.github.AnyChart:AnyChart-Android:1.1.2'
+    implementation("androidx.multidex:multidex:2.0.1")
     androidTestImplementation "androidx.test.uiautomator:uiautomator:2.3.0-alpha05"
-
     testImplementation 'junit:junit:4.13'
     testImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 
@@ -52,10 +74,10 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     androidTestImplementation 'androidx.test.espresso:espresso-intents:3.5.1'
     androidTestImplementation 'androidx.test:core:1.5.0'
-    androidTestImplementation 'org.mockito:mockito-core:4.0.0'
+    androidTestImplementation 'org.mockito:mockito-android:4.0.0'
+    androidTestImplementation 'net.bytebuddy:byte-buddy:1.8.11'
 
     implementation 'com.github.bumptech.glide:glide:4.14.2'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.14.2'
-
     compileOnly(files("${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"))
 }

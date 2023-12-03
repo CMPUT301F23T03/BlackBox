@@ -116,6 +116,7 @@ public class TagFragment extends Fragment {
 
         tagListView.setOnItemClickListener((parent, view1, position, id) -> {
             TagEditFragment tagEditFragment = TagEditFragment.newInstance(tagList.get(position));
+            tagDBlistener.remove();
             NavigationManager.switchFragmentWithBack(tagEditFragment, getParentFragmentManager());
         });
 
@@ -129,6 +130,9 @@ public class TagFragment extends Fragment {
         });
 
     }
+
+
+
     /**
      * Called when the fragment is attached to an activity.
      *
@@ -149,5 +153,4 @@ public class TagFragment extends Fragment {
         activityContext = null;
         tagDBlistener.remove();
     }
-
 }

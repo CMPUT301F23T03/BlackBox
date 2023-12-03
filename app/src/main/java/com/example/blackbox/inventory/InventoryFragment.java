@@ -3,7 +3,9 @@ package com.example.blackbox.inventory;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -21,6 +23,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,6 +41,7 @@ import com.example.blackbox.tag.Tag;
 import com.example.blackbox.tag.TagDB;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -45,9 +49,13 @@ import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -69,18 +77,18 @@ public class InventoryFragment extends Fragment {
     Button cancelButton;
     Button setTagButton;
     ListenerRegistration dbListener;
+    ListenerRegistration imageListener;
     private Button filterButton;
     private Context activityContext;
     InventoryDB inventoryDB;
     TagDB tagDB;
-    InventoryEditFragment inventoryEditFragment = new InventoryEditFragment();
-    InventoryAddFragment inventoryAddFragment = new InventoryAddFragment();
     private TextView totalSumTextView;
     // Add a member variable to store the total sum
     private double totalSum = 0.0;
     private ArrayList<Item> selectedItemsList = new ArrayList<>();
     private boolean isLongClick = false;
     private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
+    private File storageDir;
 
     /**
      * Default constructor for the InventoryFragment.
@@ -104,8 +112,8 @@ public class InventoryFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        removeListeners();
         activityContext = null;
-        dbListener.remove();
     }
 
 
@@ -121,6 +129,7 @@ public class InventoryFragment extends Fragment {
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
+
         View ItemFragmentLayout = inflater.inflate(R.layout.inventory_fragment, container, false);
         // enable navigation bar
         ((MainActivity) requireActivity()).toggleBottomNavigationView(true);
@@ -129,6 +138,9 @@ public class InventoryFragment extends Fragment {
         // Display profile picture (taken from the Google account)
         ImageButton profilePicture = ItemFragmentLayout.findViewById(R.id.profile_button);
         googleAuthDB.displayGoogleProfilePicture(profilePicture, 80, 80, this);
+
+        storageDir = activityContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
 
         return ItemFragmentLayout;
     }
@@ -155,32 +167,10 @@ public class InventoryFragment extends Fragment {
         searchView = view.findViewById(R.id.searchView);
 
 
-        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
-            @Override
-            public boolean onClose() {
-                Log.d("SearchView","On close triggered");
-                inventoryAdapter.getFilter().filter(null);
-                updateTotalSum();
-                return false;
-            }
-        });
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                Log.d("SearchView","query submitted");
-                query = query.replaceAll(" ",",");
-                query = query.replaceAll("[^,a-zA-Z]","");
-                inventoryAdapter.getFilter().filter(query);
-                updateTotalSum();
-                return false;
-            }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                return false;
-            }
-        });
+        setupSearchViewListeners();
+
 
         inventoryAdapter = new InventoryListAdapter(activityContext, itemList);
         filterAdapter = new FilterListAdapter(filterList,itemList,inventoryAdapter, getActivity());
@@ -203,67 +193,61 @@ public class InventoryFragment extends Fragment {
         });
 
 
+
         // listener for data changes in DB
         dbListener =
                 inventoryDB.getInventory().whereEqualTo("user_id", googleAuthDB.getUid())
-                // whenever database is update it is reordered by add date
-                .orderBy("update_date", Query.Direction.DESCENDING)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value,
-                                @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    // An error occurred while fetching the data
-                    // Handle the error here
-                    Log.e("Firestore", "Error getting inventory", e);
-                }
-                else {
-                    // update inventory
-                    if (value != null && !value.isEmpty()) {
-                        handleGetInventory(value, e);
-                    } else {
-                        itemList.clear();
-                        processUpdate();
-                    }
-                }
-            }
-        });
+                        // whenever database is update it is reordered by add date
+                        .orderBy("update_date", Query.Direction.DESCENDING)
+                        .addSnapshotListener((value, e) -> {
+                            if (e != null) {
+                                // An error occurred while fetching the data
+                                Log.e("Firestore", "Error getting inventory", e);
+                            }
+                            else {
+                                // update inventory
+                                if (value != null && !value.isEmpty()) {
+                                    handleGetInventory(value, e);
+                                } else {
+                                    itemList.clear();
+                                    processUpdate();
+                                }
+                            }
+                        });
 
+
+        imageListener= inventoryDB.getImages().addSnapshotListener((value, e) ->{
+            updateDisplayedImages();
+        });
         // When profile icon is clicked, switch to profile fragment
         ImageButton profileButton = view.findViewById(R.id.profile_button);
-        profileButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ProfileFragment profileFragment = new ProfileFragment();
-                NavigationManager.switchFragmentWithoutBack(profileFragment, getParentFragmentManager());
-            }
+        profileButton.setOnClickListener(v -> {
+            ProfileFragment profileFragment = new ProfileFragment();
+            NavigationManager.switchFragmentWithoutBack(profileFragment, getParentFragmentManager());
         });
 
         filterButton = (Button) view.findViewById(R.id.filter_button);
-        filterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FilterDialog.showFilter(getActivity(),itemList,inventoryAdapter,filterAdapter);
-                Log.d("FilterDialog","Returned from filter dialog");
-                updateTotalSum();
-            }
+        filterButton.setOnClickListener(v -> {
+            FilterDialog.showFilter(getActivity(),itemList,inventoryAdapter,filterAdapter);
+            Log.d("FilterDialog","Returned from filter dialog");
+            updateTotalSum();
         });
         // add an item - display add fragment
         addButton = view.findViewById(R.id.add_button);
         addButton.setOnClickListener((v) -> {
-            NavigationManager.switchFragmentWithBack(inventoryAddFragment, getParentFragmentManager());
+            removeListeners();
+            NavigationManager.switchFragmentWithBack(new InventoryAddFragment(), getParentFragmentManager());
         });
 
         // edit item - display edit fragment
-        itemViewList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if (!isLongClick) {
-                    // Regular click
-                    inventoryEditFragment = InventoryEditFragment.newInstance(itemList.get(i));
-                    NavigationManager.switchFragmentWithBack(inventoryEditFragment, getParentFragmentManager());
-                } else {
-                    toggleSelection(i);
-                }
+        itemViewList.setOnItemClickListener((adapterView, view1, i, l) -> {
+            if (!isLongClick) {
+                // Regular click
+                InventoryEditFragment inventoryEditFragment = InventoryEditFragment.newInstance(itemList.get(i));
+                removeListeners();
+                NavigationManager.switchFragmentWithBack(inventoryEditFragment, getParentFragmentManager());
+            } else {
+                toggleSelection(i);
             }
         });
 
@@ -275,7 +259,7 @@ public class InventoryFragment extends Fragment {
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 if (!isLongClick) {
                     // Show a toast to indicate long click
-                    Toast.makeText(requireContext(), "Multiselection Enabled", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), "Multi-selection Enabled", Toast.LENGTH_SHORT).show();
 
                     isLongClick = true;
 
@@ -348,6 +332,74 @@ public class InventoryFragment extends Fragment {
     }
 
     /**
+     * This is a helper method which removes the persistent listeners before switching
+     * to a new fragment or detaching
+     * Must be called to prevent listeners from remaining active past
+     * fragment life cycle
+     */
+    private void removeListeners(){
+        imageListener.remove();
+        dbListener.remove();
+    }
+
+
+    /**
+     * Helper method to set up the listeners for the search view
+     */
+    private void setupSearchViewListeners(){
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                Log.d("SearchView","On close triggered");
+                inventoryAdapter.getFilter().filter(null);
+                updateTotalSum();
+                return false;
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.d("SearchView","query submitted");
+                query = query.replaceAll(" ",",");
+                query = query.replaceAll("[^,a-zA-Z]","");
+                inventoryAdapter.getFilter().filter(query);
+                updateTotalSum();
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+        // makes search bar clickable
+        searchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Open the search functionality
+                searchView.setIconified(false);
+                boolean focused = searchView.hasFocus();
+
+            }
+        });
+        // makes bottom nav bar and add button disappear when searching
+        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    ((MainActivity) requireActivity()).toggleBottomNavigationView(false);
+                    addButton.setVisibility(View.GONE);
+                } else {
+                    ((MainActivity) requireActivity()).toggleBottomNavigationView(true);
+                    addButton.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
+    /**
      * Helper method to toggle whether an item in the list of items is currently selected
      * @param position
      *      The position of the item in the list
@@ -399,7 +451,6 @@ public class InventoryFragment extends Fragment {
             @Override
             public void onSuccess(ArrayList<Tag> tagList) {
                 boolean[] selectedTags = new boolean[tagList.size()];
-                Log.d("MultiSelectDialog",tagList.toString());
                 String[] tagNameList = new String[tagList.size()];
 
                 // Sorting tag list multi-select dialogue
@@ -601,6 +652,47 @@ public class InventoryFragment extends Fragment {
         builder.create().show();
     }
 
+
+    private void updateDisplayedImages(){
+        for (Item item : itemList){
+            inventoryDB.getImages()
+                    .whereEqualTo("itemId",item.getID()).get()
+                    .addOnSuccessListener(imageSnapshot -> {
+                        // get first item
+                        Iterator<QueryDocumentSnapshot> iterator =  imageSnapshot.iterator();
+                        if (iterator.hasNext()) {
+                            QueryDocumentSnapshot imageDoc = iterator.next();
+                            String imageUrl = imageDoc.getString("imageUrl");
+                            int startIndex = imageUrl.indexOf("images%2F")+ 9;
+                            int endIndex = imageUrl.indexOf("?alt=media");
+                            // Create unique file names for each image
+                            String imageFileName = imageUrl.substring(startIndex, endIndex);
+                            File imageFile = new File(storageDir, imageFileName);
+                            // Get the URI of the newly created local file
+                            Uri localUri = FileProvider.getUriForFile(activityContext,
+                                    activityContext.getPackageName() + ".provider", imageFile);
+                            item.setDisplayImageUri(localUri);
+                            StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
+                            storageRef.getFile(imageFile)
+                                    .addOnSuccessListener(taskSnapshot -> {
+                                        // Image downloaded successfully
+                                        inventoryAdapter.notifyDataSetChanged();
+                                        Log.d("Firestore", "Image downloaded successfully to: " + imageFile.getAbsolutePath());
+                                        // Handle the downloaded image (e.g., display or further processing)
+
+                                    })
+                                    .addOnFailureListener(e -> {
+                                                Log.e("Firestore","Failed to download image: " + e.getMessage());
+                                            }
+                                    );
+                        }
+                        else {
+                            Log.d("Firestore", "Image has no item");
+                        }
+                    });
+        }
+
+    }
     /**
      * This method handles acquiring new data from the Firestore database
      * and ensures that all async firestore tasks complete before processing the update
@@ -642,6 +734,7 @@ public class InventoryFragment extends Fragment {
                     });
                 }
             }
+
             itemList.add(item);
 
 
