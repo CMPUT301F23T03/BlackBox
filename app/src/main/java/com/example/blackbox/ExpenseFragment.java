@@ -203,8 +203,8 @@ public class ExpenseFragment extends Fragment{
 
                         Pie pie = AnyChart.pie();
 
-                        List<Integer> colors = Arrays.asList(ContextCompat.getColor(getContext(), R.color.light_green),
-                                ContextCompat.getColor(getContext(), R.color.dark_green));
+//                        List<Integer> colors = Arrays.asList(ContextCompat.getColor(getContext(), R.color.light_green),
+//                                ContextCompat.getColor(getContext(), R.color.dark_green));
 
                         ArrayList<String> paletteColors = new ArrayList<>();
 
