@@ -48,7 +48,7 @@ public class BarcodeValidHandler implements CustomHandler {
                 barcodeText.post(new Runnable() {
                     @Override
                     public void run() {
-                        barcodeText.setText("Incorrect Barcode format. Only accept CODE 128, UPC, and EAN");
+                        barcodeText.setText("Incorrect Barcode format.");
                     }
                 });
             }
