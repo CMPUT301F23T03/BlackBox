@@ -130,6 +130,7 @@ public class InventoryFragment extends Fragment {
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
+
         View ItemFragmentLayout = inflater.inflate(R.layout.inventory_fragment, container, false);
         // enable navigation bar
         ((MainActivity) requireActivity()).toggleBottomNavigationView(true);

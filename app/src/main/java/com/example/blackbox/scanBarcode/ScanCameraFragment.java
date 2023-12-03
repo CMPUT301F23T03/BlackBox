@@ -67,6 +67,7 @@ public class ScanCameraFragment extends Fragment {
         barcodeHandleChain = new BarcodeHandleChain();
         surfaceView = view.findViewById(R.id.surface_view);
         barcodeText = view.findViewById(R.id.barcode_text);
+
         setupBackButtonListener(view);
         initializeDetectorsAndSources();
 
@@ -93,16 +94,15 @@ public class ScanCameraFragment extends Fragment {
                 .setBarcodeFormats(Barcode.ALL_FORMATS)
                 .build();
 
-        // Initialize a camera source using the barcode detector and configure it.
-        cameraSource = new CameraSource.Builder(requireContext(), barcodeDetector)
-                .setRequestedPreviewSize(1920, 1080)
-                .setAutoFocusEnabled(true)
-                .build();
-
         // Set up a callback for the SurfaceView to handle surface-related events.
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
+                // Initialize a camera source using the barcode detector and configure it.
+                cameraSource = new CameraSource.Builder(requireContext(), barcodeDetector)
+                        .setRequestedPreviewSize(1920, 1080)
+                        .setAutoFocusEnabled(true)
+                        .build();
                 startCameraSource();
             }
 
@@ -117,6 +117,7 @@ public class ScanCameraFragment extends Fragment {
                 cameraSource.stop();
             }
         });
+
 
         // Set up a processor to handle barcode detection results.
         barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
@@ -200,7 +201,7 @@ public class ScanCameraFragment extends Fragment {
             // Check if the camera permission is granted.
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Camera permission granted, proceed to start the camera source.
-                startCameraSource();
+//                startCameraSource();
             } else {
                 // Camera permission denied, handle accordingly (e.g., show a message to the user).
                 Toast.makeText(requireContext(), "Camera permission denied", Toast.LENGTH_SHORT).show();
