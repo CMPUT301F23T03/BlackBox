@@ -3,22 +3,23 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/bg_white_rounded"
+    android:backgroundTint="?attr/colorContainer"
     android:layout_width="300dp"
     android:layout_height="wrap_content"
     android:id="@+id/filter_layout">
 
     <TextView
         android:id="@+id/filter_title"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:text="Apply Filters"
-        android:textSize="24sp"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -28,27 +29,30 @@
         android:id="@+id/filter_checkboxes">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/checkbox_layer_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/checkbox_layer_1"
+            android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
+
             <CheckBox
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/price_checkbox"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/date_checkbox"
-                app:layout_constraintTop_toTopOf="parent"
-                android:text="Price Range"/>
-            <CheckBox
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Price Range"
+                app:layout_constraintEnd_toStartOf="@+id/date_checkbox"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <CheckBox
                 android:id="@+id/date_checkbox"
-                app:layout_constraintStart_toEndOf="@id/price_checkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Date Range"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:text="Date Range"/>
+                app:layout_constraintStart_toEndOf="@id/price_checkbox"
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -242,29 +246,38 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/filter_make_layout"
         android:paddingTop="10dp">
+
         <TextView
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:id="@+id/cancel_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="16dp"
             android:text="Cancel"
-            android:textStyle="bold"
-            android:textColor="@color/warning"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            />
-        <TextView
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textColor="@color/primary"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/accept_button"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
             android:id="@+id/accept_button"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Apply Changes"
-            android:textStyle="bold"
-            android:textColor="?colorPrimary"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="Confirm"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
 
-            />
+            android:textColor="@color/primary"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

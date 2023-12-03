@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:padding="1dp">
@@ -12,6 +13,18 @@
         android:layout_height="0dp"
         android:scaleType="centerCrop"
         app:layout_constraintDimensionRatio="1"
+        android:background="@drawable/rounded_image_bg"
+        tools:ignore="MissingConstraints"
+        android:clipToOutline="true" />
+
+    <ImageView
+        android:id="@+id/crossButton"
+        android:layout_width="34dp"
+        android:layout_height="27dp"
+        android:src="@android:drawable/ic_delete"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="@id/item_image"
+        app:layout_constraintTop_toTopOf="@id/item_image"
         tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
