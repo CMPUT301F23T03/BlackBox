@@ -23,11 +23,11 @@ public class NavigationManager {
         // Create a FragmentTransaction to begin the transaction and replace the Fragment
         FragmentTransaction fragmentTransaction = fm.beginTransaction();
 
-        // Set custom animations for the fragment transition
-        fragmentTransaction.setCustomAnimations(
-                R.anim.slide_in_from_left, // enter animation
-                R.anim.slide_out_to_right
-        );
+//        // Set custom animations for the fragment transition
+//        fragmentTransaction.setCustomAnimations(
+//                R.anim.slide_in_from_left, // enter animation
+//                R.anim.slide_out_to_right
+//        );
 
         // Replace the FrameLayout with the new Fragment
         fragmentTransaction.replace(R.id.contentFragment, fragment);
