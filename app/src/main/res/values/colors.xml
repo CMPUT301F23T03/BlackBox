@@ -16,5 +16,7 @@
     <color name="blue">#154FDD</color>
     <color name="purple">#680DD1</color>
     <color name="warning">#BF2828</color>
+    <color name="light_green">#387F7F</color>
+    <color name="dark_green">#A3E4C3</color>
 
 </resources>
