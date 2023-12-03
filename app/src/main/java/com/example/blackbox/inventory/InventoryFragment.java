@@ -90,6 +90,7 @@ public class InventoryFragment extends Fragment {
     private ArrayList<Item> selectedItemsList = new ArrayList<>();
     private boolean isLongClick = false;
     private GoogleAuthDB googleAuthDB = new GoogleAuthDB();
+    private File storageDir;
 
     /**
      * Default constructor for the InventoryFragment.
@@ -166,6 +167,8 @@ public class InventoryFragment extends Fragment {
         itemViewList = (ListView) view.findViewById(R.id.item_list);
         filterViewList = (RecyclerView) view.findViewById(R.id.filter_list);
         searchView = view.findViewById(R.id.searchView);
+
+
 
 
         setupSearchViewListeners();
@@ -348,6 +351,7 @@ public class InventoryFragment extends Fragment {
      */
     private void setupSearchViewListeners(){
 
+
         searchView.setOnCloseListener(new SearchView.OnCloseListener() {
             @Override
             public boolean onClose() {
@@ -368,7 +372,7 @@ public class InventoryFragment extends Fragment {
 
             }
         });
-        // listens to input to search bar
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -399,6 +403,7 @@ public class InventoryFragment extends Fragment {
                 }
             }
         });
+        // makes bottom nav bar and add button disappear when searching
         searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
