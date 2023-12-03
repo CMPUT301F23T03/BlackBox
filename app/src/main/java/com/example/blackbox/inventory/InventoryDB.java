@@ -153,7 +153,7 @@ public class InventoryDB {
         String imageName = System.currentTimeMillis() + "_"
                 + lastPathSegment.substring(lastPathSegment.length() - 5);
         StorageReference imageRef = imagesStorageReference.child(imageName);
-
+        downloadUris = new ArrayList<>();
         // Upload the file to Firebase Storage
         imageRef.putFile(imageUri)
                 .addOnSuccessListener((OnSuccessListener) o -> {
