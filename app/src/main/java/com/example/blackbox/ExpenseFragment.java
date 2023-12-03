@@ -151,6 +151,7 @@ public class ExpenseFragment extends Fragment{
 
                 });
 
+
         inventoryDBListener = inventoryDB.getInventory()
                 .whereEqualTo("user_id", googleAuthDB.getUid())
                 // whenever database is update it is reordered by add date
