@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,6 +82,8 @@ public class InventoryFragment extends Fragment {
     private Context activityContext;
     InventoryDB inventoryDB;
     TagDB tagDB;
+    InventoryEditFragment inventoryEditFragment = new InventoryEditFragment();
+    InventoryAddFragment inventoryAddFragment = new InventoryAddFragment();
     private TextView totalSumTextView;
     // Add a member variable to store the total sum
     private double totalSum = 0.0;
@@ -128,6 +131,7 @@ public class InventoryFragment extends Fragment {
             LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState
     ) {
+
         View ItemFragmentLayout = inflater.inflate(R.layout.inventory_fragment, container, false);
         // enable navigation bar
         ((MainActivity) requireActivity()).toggleBottomNavigationView(true);
@@ -348,6 +352,16 @@ public class InventoryFragment extends Fragment {
     private void setupSearchViewListeners(){
 
 
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                Log.d("SearchView","On close triggered");
+                inventoryAdapter.getFilter().filter(null);
+                updateTotalSum();
+                return false;
+            }
+        });
+
         // makes search bar clickable
         searchView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -358,11 +372,15 @@ public class InventoryFragment extends Fragment {
 
             }
         });
-        // listens to input to search bar
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                Log.d("SearchView","Query submitted");
+                Log.d("SearchView","query submitted");
+                query = query.replaceAll(" ",",");
+                query = query.replaceAll("[^,a-zA-Z]","");
+                inventoryAdapter.getFilter().filter(query);
+                updateTotalSum();
                 return false;
             }
 
@@ -385,6 +403,7 @@ public class InventoryFragment extends Fragment {
                 }
             }
         });
+        // makes bottom nav bar and add button disappear when searching
         searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
