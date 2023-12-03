@@ -1,6 +1,8 @@
 package com.example.blackbox.inventory;
 
 import android.annotation.SuppressLint;
+import android.media.Image;
+import android.net.Uri;
 
 import com.example.blackbox.tag.Tag;
 
@@ -33,6 +35,7 @@ public class Item implements Serializable {
     @SuppressLint("SimpleDateFormat")
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private String userID;
+    private Uri displayImageUri;
 
     /**
      * Constructor of an Item object
@@ -156,8 +159,13 @@ public class Item implements Serializable {
         return name;
     }
 
+    public void setDisplayImageUri(Uri imageUri){
+        this.displayImageUri = imageUri;
+    }
 
-
+    public Uri getDisplayImageUri(){
+        return this.displayImageUri;
+    }
     public void setName(String name) {
         this.name = name;
     }

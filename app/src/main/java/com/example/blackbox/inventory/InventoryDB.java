@@ -90,6 +90,14 @@ public class InventoryDB {
     }
 
     /**
+     * Gets the image collection
+     * @return images    a CollectionReference object
+     */
+    public CollectionReference getImages() {
+        return images;
+    }
+
+    /**
      * Adds a new item to the 'inventory' collection in the Firestore database.
      *
      * @param item The Item object to be added to the database.
@@ -180,7 +188,6 @@ public class InventoryDB {
     }
 
 
-
     /**
      * Retrieves images associated with a specific itemId from the Firestore 'images' collection
      * and adds the URIs of newly created local files to the displayedUris ArrayList.
@@ -259,6 +266,7 @@ public class InventoryDB {
 
         void onError();
     }
+
 
     /**
      * Updates an item in the Firestore database with new values

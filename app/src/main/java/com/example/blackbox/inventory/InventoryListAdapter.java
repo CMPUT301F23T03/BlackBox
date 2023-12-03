@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.media.Image;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,11 +61,21 @@ public class InventoryListAdapter extends ArrayAdapter {
         Item item = items.get(position);   // Get the desired item in the list of items
 
         // Get the elements of the item
+        ImageView imageView = view.findViewById(R.id.imageView);
         TextView name = view.findViewById(R.id.name);
         TextView value = view.findViewById(R.id.value);
         TextView desc = view.findViewById(R.id.desc);
         ImageView tagImage = view.findViewById(R.id.tag_image);
         ImageView tagImage2 = view.findViewById(R.id.tag_image2);
+
+        // set image
+        if (item.getDisplayImageUri() != null){
+            imageView.setVisibility(View.VISIBLE);
+            imageView.setImageURI(item.getDisplayImageUri());
+        }
+        else{
+            imageView.setVisibility(View.INVISIBLE);
+        }
 
 
         // Set the text for the elements of the item
