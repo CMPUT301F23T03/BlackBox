@@ -1,18 +1,24 @@
 package com.example.blackbox;
 
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+
+import android.content.Context;
+
+import android.net.Uri;
 import android.util.Log;
+
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.example.blackbox.authentication.GoogleAuthDB;
 import com.example.blackbox.inventory.InventoryDB;
 import com.example.blackbox.inventory.Item;
 import com.example.blackbox.tag.Tag;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
@@ -20,17 +26,45 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 
 public class InventoryDBTest {
     private final Tag basicTag = new Tag("Name", 1, "Color", "Description");
     private final ArrayList<Tag> tag_list = new ArrayList<>();
+    private InventoryDB inventoryDB;
+    private FirebaseStorage firebaseStorage;
+    private StorageReference imagesStorageReference;
+    private ArrayList<Uri> downloadUris;
+    private Context context;
+
+    @Before
+    public void setUp() {
+        context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        firebaseStorage = FirebaseStorage.getInstance();
+        imagesStorageReference = firebaseStorage.getReference().child("images");
+        inventoryDB = new InventoryDB(); // Initialize your InventoryDB instance
+    }
+
+
     /**
      * Deletes all items in the inventory DB
      * @param inventoryDB this is an InventoryDB object
@@ -166,4 +200,89 @@ public class InventoryDBTest {
         }
         clearInventoryDB(inventoryDB, userID);
     }
+
+    @Test
+    public void testAddImagesToDB() throws InterruptedException {
+        String userID = new GoogleAuthDB().getUid();
+        ArrayList<Uri> imageList = new ArrayList<>();
+        try {
+            // Retrieve images from the app's assets
+            Log.d("Test file name", "Getting file names");
+            List<String> imageFiles = getAssetImageFiles();
+            for (String fileName : imageFiles) {
+                // Construct URI for each image file in assets
+                String filePath = context.getFilesDir() + File.separator + fileName;
+                copyImageFromAssets(fileName, filePath);
+                Uri imageUri = Uri.fromFile(new File(filePath));
+                imageList.add(imageUri);
+            }
+        } catch (IOException e) {
+            Log.d("Test file name", "Fail to get file names");
+            e.printStackTrace();
+        }
+
+        CountDownLatch latch = new CountDownLatch(1);
+        inventoryDB.addImagesToDB(imageList);
+        downloadUris= inventoryDB.getDownloadUris();
+
+        boolean completed = latch.await(5, TimeUnit.SECONDS);
+        assertTrue(completed);
+    }
+
+
+    /**
+     * Clean up by deleting the copied image files after testing is done.
+     */
+    @After
+    public void cleanup() {
+        // Delete the copied image files when the test is done
+        String[] files = {};
+        try {
+            files = context.getAssets().list("imageAttach");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        for (String file : files) {
+            String filePath = context.getFilesDir() + File.separator + file;
+            File imageFile = new File(filePath);
+            if (imageFile.exists()) {
+                if (imageFile.delete()) {
+                    Log.d("Test Cleanup", "Deleted file: " + filePath);
+                } else {
+                    Log.d("Test Cleanup", "Failed to delete file: " + filePath);
+                }
+            }
+        }
+    }
+    // Helper method to fetch image files from assets directory
+    private List<String> getAssetImageFiles() throws IOException {
+        List<String> imageFiles = new ArrayList<>();
+        String[] files = context.getAssets().list("imageAttach");
+        if (files != null) {
+            for (String file : files) {
+                Log.d("Test file name", file);
+                imageFiles.add(file);
+            }
+        }
+        return imageFiles;
+    }
+
+    private void copyImageFromAssets(String fileName, String destFilePath) {
+        try {
+            InputStream in = context.getAssets().open("imageAttach"+ "/" + fileName);
+            OutputStream out = new FileOutputStream(destFilePath);
+
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = in.read(buffer)) > 0) {
+                out.write(buffer, 0, length);
+            }
+
+            in.close();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

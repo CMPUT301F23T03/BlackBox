@@ -42,6 +42,7 @@ public class InventoryDB {
     private int numberOfImages = 0;
     private FirebaseFirestore db;
     private FirebaseStorage storage;
+    private ArrayList<Uri> downloadUris;
 
     /**
      * Initializes the Firestore database and the 'inventory' collection reference.
@@ -84,11 +85,16 @@ public class InventoryDB {
         return inventory;
     }
 
+    public StorageReference getImagesStorageReference(){
+        return imagesStorageReference;
+    }
+
     /**
      * Adds a new item to the 'inventory' collection in the Firestore database.
      *
      * @param item The Item object to be added to the database.
      */
+
     public void addItemToDB(Item item) {
         Map<String, Object> data = generateItemHashMap(item);
         // Generate a custom itemId
@@ -147,6 +153,7 @@ public class InventoryDB {
                     imageRef.getDownloadUrl().addOnSuccessListener(downloadUri -> {
                         // Image uploaded successfully, now add its URL to Firestore
                         addImageUrlToFirestore(downloadUri);
+                        downloadUris.add(downloadUri);
                     });
                 })
                 .addOnFailureListener(e -> {
@@ -329,7 +336,8 @@ public class InventoryDB {
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        deleteImageDocumentAndStorage(document);
+                        String imageUrl = document.getString("imageUrl");
+                        deleteImageDocumentAndStorage(document, imageUrl);
                     }
                 })
                 .addOnFailureListener(e ->
@@ -341,19 +349,20 @@ public class InventoryDB {
      * Deletes an image document from Firestore and the associated image from Firebase Storage.
      *
      * @param document The QueryDocumentSnapshot representing the image document to be deleted.
+     * @param imageUrl represent the image url to be deleted.
      */
-    private void deleteImageDocumentAndStorage(QueryDocumentSnapshot document) {
-        String imageUrl = document.getString("imageUrl");
+    private void deleteImageDocumentAndStorage(QueryDocumentSnapshot document, String imageUrl) {
         if (imageUrl != null) {
             // Delete the image document from Firestore
-            document.getReference().delete()
-                    .addOnSuccessListener(aVoid ->
-                            Log.d("Firestore", "Image document deleted successfully")
-                    )
-                    .addOnFailureListener(e ->
-                            Log.e("Firestore", "Failed to delete image document: " + e.getMessage())
-                    );
-
+            if(document != null){
+                document.getReference().delete()
+                        .addOnSuccessListener(aVoid ->
+                                Log.d("Firestore", "Image document deleted successfully")
+                        )
+                        .addOnFailureListener(e ->
+                                Log.e("Firestore", "Failed to delete image document: " + e.getMessage())
+                        );
+            }
             // Delete the image from Firebase Storage
             StorageReference storageRef = storage.getReferenceFromUrl(imageUrl);
             storageRef.delete()
@@ -389,6 +398,9 @@ public class InventoryDB {
 
     public int getNumberOfImages(){
         return this.numberOfImages;
+    }
+    public ArrayList<Uri> getDownloadUris(){
+        return this.downloadUris;
     }
 }
 

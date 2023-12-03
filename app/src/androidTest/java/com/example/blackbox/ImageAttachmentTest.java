@@ -5,7 +5,6 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static junit.framework.TestCase.assertEquals;
-
 import static org.junit.Assert.fail;
 
 import android.content.Context;
@@ -31,26 +30,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-/**
- * This is a test class for the `ScanGalleryFragment` in an Android application. It uses the Espresso
- * testing framework and AndroidJUnit4 for UI testing and barcode extraction testing. The purpose of
- * this test is to ensure that the `ScanGalleryFragment` correctly extracts barcodes from images.
- *
- * The test involves:
- * - Copying an image file from the assets to the device's internal storage.
- * - Checking if the image file exists.
- * - Extracting barcodes from the image.
- * - Comparing the extracted barcode with the expected barcode.
- * - Cleaning up by deleting the copied image files after testing is done.
- *
- * This class is annotated with `@RunWith(AndroidJUnit4.class` to indicate that it's an Android JUnit
- * test. It uses `ActivityScenarioRule` to launch the `MainActivity` activity before running the test.
- */
 @RunWith(AndroidJUnit4.class)
-public class BarcodeDetectionTest {
+public class ImageAttachmentTest {
     private Context context;
     private ScanGalleryFragment fragment;
-    private String[] subdirectories = {"scanTest", "scanTestInvalid"};
+    private String[] subdirectories = {"imageAttach"};
 
     @Rule
     public ActivityScenarioRule<TestMainActivity> activityScenarioRule =
@@ -169,4 +153,6 @@ public class BarcodeDetectionTest {
             e.printStackTrace();
         }
     }
+
+
 }
