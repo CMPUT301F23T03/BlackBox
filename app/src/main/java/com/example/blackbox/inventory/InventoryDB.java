@@ -260,22 +260,6 @@ public class InventoryDB {
         void onError();
     }
 
-    public void downloadSingleImageFromUrl(String imageUrl, File imageFile){
-        StorageReference storageRef = storage.getReferenceFromUrl(imageUrl);
-        storageRef.getFile(imageFile)
-                .addOnSuccessListener(taskSnapshot -> {
-                    // Image downloaded successfully
-                    Log.d("Firebase Storage", "Image downloaded successfully to: " + imageFile.getAbsolutePath());
-                    // Handle the downloaded image (e.g., display or further processing)
-
-                })
-                .addOnFailureListener(e -> {
-                            Log.e("Firebase Storage","Failed to download image: " + e.getMessage());
-                        }
-                );
-    }
-
-
 
     /**
      * Updates an item in the Firestore database with new values
