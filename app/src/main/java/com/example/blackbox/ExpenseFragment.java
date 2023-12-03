@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.anychart.AnyChart;
@@ -39,6 +40,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -184,12 +186,6 @@ public class ExpenseFragment extends Fragment{
                             Item item = new Item(name, tags, dateOfPurchase, val, make, model, serialNumber, desc, comment, dbID, userID);
                             if (tagIDs != null && !tagIDs.isEmpty()) {
                                 for (String tagID : tagIDs) {
-//                                        Task<DocumentSnapshot> tagTask = tagDB.getTags().document(tagID).get();
-//                                        tagTasks.add(tagTask);
-//                                        Log.d("Firestore", "added task");
-//                                        tagTask.addOnSuccessListener(tagSnapshot -> {
-//                                            fetchTagForItem(item, tagSnapshot);
-//                                        });
                                     for (Tag tag : tagList) {
                                         if (tagID.equals(tag.getDataBaseID())) {
                                             item.getTags().add(tag);
@@ -207,14 +203,31 @@ public class ExpenseFragment extends Fragment{
 
                         Pie pie = AnyChart.pie();
 
+                        List<Integer> colors = Arrays.asList(ContextCompat.getColor(getContext(), R.color.light_green),
+                                ContextCompat.getColor(getContext(), R.color.dark_green));
+
+                        ArrayList<String> paletteColors = new ArrayList<>();
+
                         ArrayList<DataEntry> dataEntries = new ArrayList<>();
                         for (Tag tag : tagList) {
                             double pie_value = calculateTagSum(tag);
                             String tagName = tag.getName().replaceAll("'", "");;
-//                            tagName.replaceAll("\'", "");
+                            // Use the color from the Tag object
+                            String tagColor = tag.getHexStringColor();
+                            paletteColors.add(tagColor);
+
                             dataEntries.add(new ValueDataEntry(tagName, pie_value));
                         }
+                        // Convert ArrayList to array for the palette
+                        String[] paletteArray = paletteColors.toArray(new String[0]);
 
+                        // Set the palette for the pie chart
+                        pie.palette(paletteArray);
+
+                        pie.normal().stroke("#FFFFFF");
+                        pie.hovered().stroke("#FFFFFF");
+
+                        pie.hovered().stroke();
                         pie.labels(true);
                         pie.background().enabled(true);
                         pie.background().fill("#ffd54f 0.2");

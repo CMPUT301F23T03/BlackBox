@@ -63,9 +63,11 @@ public class Tag implements Serializable {
         return name;
     }
 
-    public String getHexStringColor(){
-        return String.format("#%02x", color);
+    // Modify getHexStringColor to use TagColor
+    public String getHexStringColor() {
+        return String.format("#%06X", (0xFFFFFF & color));
     }
+
     public int getColor() {
         return color;
     }

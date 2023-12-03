@@ -53,10 +53,11 @@ public class ExpenseListAdapter extends ArrayAdapter {
 
         if (currentTag != null) {
             tagName.setText(currentTag.getName());
+//            int backgroundColor = (position % 2 == 0) ? R.color.light_green : R.color.dark_green;
             color.setBackgroundTintList(ColorStateList.valueOf(currentTag.getColor()));
-              double tagSum = calculateTagSum(currentTag);
-              String val = StringFormatter.getMonetaryString(tagSum);
-              tagStatistic.setText(val);
+            double tagSum = calculateTagSum(currentTag);
+            String val = StringFormatter.getMonetaryString(tagSum);
+            tagStatistic.setText(val);
         }
 
         return convertView;
