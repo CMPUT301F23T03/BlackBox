@@ -18,6 +18,12 @@ import org.jsoup.nodes.Element;
 
 import java.io.IOException;
 
+/**
+ * Implementation of CustomHandler specifically designed for web scraping functionality.
+ * This handler is responsible for processing a barcode received as a request,
+ * performing web scraping on a predefined website ('https://www.barcodelookup.com/')
+ * to fetch product information based on the barcode data.
+ */
 public class WebScrapingHandler implements CustomHandler {
     private CustomHandler nextCustomHandler;
     private Item newItem;
@@ -27,6 +33,14 @@ public class WebScrapingHandler implements CustomHandler {
         this.nextCustomHandler = customHandler;
     }
 
+    /**
+     * Retrieves the attribute value based on the provided query from the given element.
+     * Handles elements such as input fields and text areas.
+     *
+     * @param element The HTML element to retrieve attribute value from.
+     * @param query   The query used to select the element.
+     * @return The attribute value or null if an exception occurs or the element is not found.
+     */
     private String getAttributeValue(Element element, String query) {
         try {
             Element selectedElement = element.select(query).first();

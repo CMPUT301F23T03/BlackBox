@@ -19,18 +19,23 @@ import com.example.blackbox.tag.Tag;
 import com.example.blackbox.utils.StringFormatter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
 public class ExpenseListAdapter extends ArrayAdapter {
 
     private ArrayList<Tag> tags;
+    private ArrayList<Item> items;
     private Context context;
 
-    public ExpenseListAdapter(@NonNull Context context, ArrayList<Tag> tags) {
+    public ExpenseListAdapter(@NonNull Context context, ArrayList<Tag> tags, ArrayList<Item> items) {
         super(context, 0, tags);
         this.tags = tags;
+        this.items = items;
         this.context = context;
+
     }
 
     @NonNull
@@ -48,11 +53,27 @@ public class ExpenseListAdapter extends ArrayAdapter {
 
         if (currentTag != null) {
             tagName.setText(currentTag.getName());
+//            int backgroundColor = (position % 2 == 0) ? R.color.light_green : R.color.dark_green;
             color.setBackgroundTintList(ColorStateList.valueOf(currentTag.getColor()));
-//            String val = StringFormatter.getMonetaryString(currentTag.getEstimatedValue()); // Convert double to a string with 2 decimal places
-//            tagStatistic.setText(val);
+            double tagSum = calculateTagSum(currentTag);
+            String val = StringFormatter.getMonetaryString(tagSum);
+            tagStatistic.setText(val);
         }
 
         return convertView;
     }
+
+    private double calculateTagSum(Tag tag) {
+        double tagSum = 0.0;
+        for (Item item : items) {
+            for (Tag itemTag : item.getTags()) {
+                if (itemTag.getDataBaseID().equals(tag.getDataBaseID())) {
+                    tagSum += item.getEstimatedValue();
+                    break;
+                }
+            }
+        }
+        return tagSum;
+    }
+
 }

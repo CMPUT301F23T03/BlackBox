@@ -312,11 +312,5 @@ public class InventorySortTest {
         onView(withText("Item 2")).check(matches(isDisplayed()));
 
     }
-
-    @Test
-    public void testSortByDate(){
-        // Need help implementing this, do not know how to select date
-        // from the date selector!
-    }
 }
 
