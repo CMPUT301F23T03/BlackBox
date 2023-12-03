@@ -27,9 +27,6 @@ import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
-
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
