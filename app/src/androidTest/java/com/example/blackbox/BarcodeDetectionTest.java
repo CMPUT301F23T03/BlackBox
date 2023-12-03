@@ -53,8 +53,8 @@ public class BarcodeDetectionTest {
     private String[] subdirectories = {"scanTest", "scanTestInvalid"};
 
     @Rule
-    public ActivityScenarioRule<MainActivity> activityScenarioRule =
-            new ActivityScenarioRule<>(MainActivity.class);
+    public ActivityScenarioRule<TestMainActivity> activityScenarioRule =
+            new ActivityScenarioRule<>(TestMainActivity.class);
 
     /**
      * Set up the test by initializing the `ScanGalleryFragment` and obtaining the context.
@@ -92,6 +92,7 @@ public class BarcodeDetectionTest {
 
                     // Create the fragment and test barcode extraction
                     Uri imageUri = Uri.fromFile(imageFile);
+
                     SparseArray<Barcode> expectedBarcode =  fragment.getBarcode(imageUri);
                     String stringBarcode;
                     try {
