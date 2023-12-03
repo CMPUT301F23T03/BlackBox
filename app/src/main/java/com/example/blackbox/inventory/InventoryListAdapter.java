@@ -78,7 +78,6 @@ public class InventoryListAdapter extends ArrayAdapter implements Filterable {
         TextView desc = view.findViewById(R.id.desc);
         ImageView tagImage = view.findViewById(R.id.tag_image);
         ImageView tagImage2 = view.findViewById(R.id.tag_image2);
-        ImageView itemImage = view.findViewById(R.id.item_list_item_image);
 
 
         // set image
