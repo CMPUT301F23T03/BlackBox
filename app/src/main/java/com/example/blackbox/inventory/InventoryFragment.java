@@ -160,6 +160,7 @@ public class InventoryFragment extends Fragment {
             public boolean onClose() {
                 Log.d("SearchView","On close triggered");
                 inventoryAdapter.getFilter().filter(null);
+                updateTotalSum();
                 return false;
             }
         });
@@ -171,6 +172,7 @@ public class InventoryFragment extends Fragment {
                 query = query.replaceAll(" ",",");
                 query = query.replaceAll("[^,a-zA-Z]","");
                 inventoryAdapter.getFilter().filter(query);
+                updateTotalSum();
                 return false;
             }
 
@@ -397,6 +399,7 @@ public class InventoryFragment extends Fragment {
             @Override
             public void onSuccess(ArrayList<Tag> tagList) {
                 boolean[] selectedTags = new boolean[tagList.size()];
+                Log.d("MultiSelectDialog",tagList.toString());
                 String[] tagNameList = new String[tagList.size()];
 
                 // Sorting tag list multi-select dialogue

@@ -35,6 +35,8 @@ public class InventoryListAdapter extends ArrayAdapter implements Filterable {
     private ArrayList<Item> items;
     private Context context;
 
+    private String notifyReason = "";
+
     /**
      * Constructor for the InventoryListAdapter.
      *
@@ -44,7 +46,7 @@ public class InventoryListAdapter extends ArrayAdapter implements Filterable {
     public InventoryListAdapter(@NonNull Context context, ArrayList<Item> items) {
         super(context, 0, items); // Call the constructor of the base class
         this.items = items;
-        this.originalItems = (ArrayList<Item>) items.clone();
+        this.originalItems = null;
         this.context = context;
     }
 
@@ -73,6 +75,8 @@ public class InventoryListAdapter extends ArrayAdapter implements Filterable {
         TextView desc = view.findViewById(R.id.desc);
         ImageView tagImage = view.findViewById(R.id.tag_image);
         ImageView tagImage2 = view.findViewById(R.id.tag_image2);
+        ImageView itemImage = view.findViewById(R.id.item_list_item_image);
+
 
 
         // Set the text for the elements of the item
@@ -130,14 +134,20 @@ public class InventoryListAdapter extends ArrayAdapter implements Filterable {
             protected FilterResults performFiltering(CharSequence constraint) {
                 Log.d("InventoryListAdapter","filtering reached");
                 FilterResults filterResults = new FilterResults();
-                if (constraint != null && constraint.length() > 0){
+
+                
+
+                if (notifyReason.equalsIgnoreCase("")){
+                    originalItems = (ArrayList<Item>) items.clone();
+                }
+                if (constraint != null){
                     String[] filterTokens = constraint.toString().split(",");
                     ArrayList<Item> results = new ArrayList<>();
                     for (String token: filterTokens){
                         for (Item item: originalItems){
-                            if (item.getDescription().contains(token)){
+                            if (item.getDescription().toLowerCase().contains(token.toLowerCase())){
                                 Log.d("InventoryListAdapter","item added");
-                                results.add(item);
+                                if (!results.contains(item)){results.add(item);}
                             }
                         }
                     }
@@ -155,15 +165,21 @@ public class InventoryListAdapter extends ArrayAdapter implements Filterable {
             protected void publishResults(CharSequence constraint, FilterResults results) {
                 if (results.count > 0){
                     Log.d("InventoryListAdapter","Data set notified");
+                    Toast.makeText(context,results.count + " Result(s) Found",Toast.LENGTH_SHORT).show();
                     items.clear();
                     items.addAll((Collection<? extends Item>) results.values);
+                    notifyReason = "filter";
                     notifyDataSetChanged();
-                }else if (constraint != null && constraint.length() > 0){
-                    Toast.makeText(context,"No Results Found",Toast.LENGTH_LONG).show();
+                }else if (constraint != null){
+                    items.clear();
+                    notifyReason = "filter";
+                    notifyDataSetChanged();
+                    Toast.makeText(context,"No Results Found",Toast.LENGTH_SHORT).show();
                 }else{
                     items.clear();
                     items.addAll((Collection<? extends Item>) results.values);
                     Log.d("InventoryListAdapter","items restored" + items.toString());
+                    notifyReason = "";
                     notifyDataSetChanged();
                 }
             }
