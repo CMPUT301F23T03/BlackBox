@@ -201,6 +201,12 @@ public class InventoryDBTest {
         clearInventoryDB(inventoryDB, userID);
     }
 
+    /**
+     * This method tests the addition of images to the database by fetching images from the app's assets,
+     * adding them to the database, and checking if the images were successfully added.
+     *
+     * @throws InterruptedException if the thread is interrupted while waiting
+     */
     @Test
     public void testAddImagesToDB() throws InterruptedException {
         String userID = new GoogleAuthDB().getUid();
