@@ -627,17 +627,15 @@ public class InventoryFunctionalityTest {
             Log.d("Sleep", "Exception");
         }
 
-        // Check if the first tag ImageView is visible
-        onView(withId(R.id.tag_image)).check(matches(isDisplayed()));
-
-        // Check if the second tag ImageView is visible
-        onView(withId(R.id.tag_image2)).check(matches(isDisplayed()));
-
         Espresso.onView(withText(name)).perform(click());
         Espresso.onView(withText(name2)).perform(click());
 
         // Click the button to set tags
         Espresso.onView(ViewMatchers.withId(R.id.set_tags_button)).perform(ViewActions.click());
+
+        onView(withText("Tag1")).check(matches(isChecked()));
+        onView(withText("Tag2")).check(matches(not(isChecked())));
+        onView(withText("Tag3")).check(matches(not(isChecked())));
 
         // Wait for the tag selection dialog to appear
         try {
@@ -652,13 +650,10 @@ public class InventoryFunctionalityTest {
         // Confirm the selection
         onView(withText("OK")).perform(ViewActions.click());
 
-        // Save the updated items
-        onView(withId(R.id.cancel_button)).perform(ViewActions.click());
+        Espresso.onView(withText(name)).perform(click());
 
-        onView(withId(R.id.tag_image)).check(matches(isDisplayed()));
-        onView(withId(R.id.tag_image2)).check(matches(not(isDisplayed())));
-
-        Espresso.onView(withText(name2)).perform(click());
+        // Click the button to set tags
+        Espresso.onView(ViewMatchers.withId(R.id.set_tags_button)).perform(ViewActions.click());
 
         // Wait for the tag selection dialog to appear
         try {
@@ -667,14 +662,25 @@ public class InventoryFunctionalityTest {
             Log.d("Sleep", "Exception");
         }
 
+        onView(withText("Tag1")).check(matches(not(isChecked())));
+        onView(withText("Tag2")).check(matches(isChecked()));
+        onView(withText("Tag3")).check(matches(not(isChecked())));
+
         // Remove tag in the dialog
         onView(withText("Tag2")).perform(ViewActions.click());
 
         // Confirm the selection
         onView(withText("OK")).perform(ViewActions.click());
 
-        onView(withId(R.id.tag_image)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.tag_image2)).check(matches(not(isDisplayed())));
+        Espresso.onView(withText(name)).perform(click());
+        Espresso.onView(withText(name2)).perform(click());
+
+        // Click the button to set tags
+        Espresso.onView(ViewMatchers.withId(R.id.set_tags_button)).perform(ViewActions.click());
+
+        onView(withText("Tag1")).check(matches(not(isChecked())));
+        onView(withText("Tag2")).check(matches(not(isChecked())));
+        onView(withText("Tag3")).check(matches(not(isChecked())));
     }
 
     /**
