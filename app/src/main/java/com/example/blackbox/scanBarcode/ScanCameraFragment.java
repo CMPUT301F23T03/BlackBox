@@ -146,6 +146,10 @@ public class ScanCameraFragment extends Fragment {
             if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
                     == PackageManager.PERMISSION_GRANTED) {
                 // Camera permission is granted, start the camera source.
+                cameraSource = new CameraSource.Builder(requireContext(), barcodeDetector)
+                        .setRequestedPreviewSize(1920, 1080)
+                        .setAutoFocusEnabled(true)
+                        .build();
                 cameraSource.start(surfaceView.getHolder());
                 barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
                     @Override
