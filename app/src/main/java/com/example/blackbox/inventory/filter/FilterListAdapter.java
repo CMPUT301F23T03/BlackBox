@@ -10,6 +10,7 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.blackbox.R;
+import com.example.blackbox.tag.Tag;
 import com.example.blackbox.utils.StringFormatter;
 import com.example.blackbox.inventory.Item;
 import com.example.blackbox.inventory.ItemList;
@@ -18,6 +19,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.ViewHolder> {
     private ArrayList<Filter> filterList;
@@ -67,10 +70,13 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
 
     public void clearFilters(){
         for (Filter filter: filterList){
-            updateItemList(filterList.indexOf(filter));
-            updateTotalSum();
-            filterList.remove(filter);
+            for (Item item: filter.getItemList()){
+                itemList.add(item);
+            }
         }
+        updateTotalSum();
+        filterList.clear();
+        inventoryAdapter.notifyDataSetChanged();
         FilterListAdapter.this.notifyDataSetChanged();
     }
 
@@ -126,6 +132,10 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
                                 }
                                 break;
                             case "tag":
+                                if (!filterByTags(filter,filteredItem)){
+                                    filter.addItemToFilter(filteredItem);
+                                    itemFiltered = true;
+                                }
                                 break;
                         }
                         if (!itemFiltered) {
@@ -157,5 +167,29 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
 
             return filter;
         }
+    }
+
+
+    private Set<String> createSet (ArrayList<Tag> tags){
+        Set<String> returnSet = new HashSet<>();
+
+        for (Tag tag : tags){
+            returnSet.add(tag.getDataBaseID());
+        }
+
+        return returnSet;
+    }
+    private boolean filterByTags(Filter filter, Item item){
+        ArrayList<Tag> selectedTags = filter.getTagArrayList();
+        Set<String> selectedTagsSet = createSet(selectedTags);
+        Set<String> itemSet = createSet(item.getTags());
+        Set<String> intersectionSet = new HashSet<>(itemSet);
+        intersectionSet.retainAll(selectedTagsSet);
+        if (intersectionSet.size() < selectedTags.size()){
+            return false;
+        }else{
+            return true;
+        }
+
     }
 }
