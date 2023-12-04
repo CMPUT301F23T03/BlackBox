@@ -14,6 +14,7 @@ import com.example.blackbox.R;
 public class NavigationManager {
     /**
      * This method swaps out the currently displayed fragment for a new one
+     * and allows the back button to be used to return the the previous fragment
      * @param fragment
      *          the fragment to be displayed
      * @param fm
@@ -37,6 +38,15 @@ public class NavigationManager {
         fragmentTransaction.commit();
     }
 
+    /**
+     * This method swaps out the currently displayed fragment for a new one
+     * and clears the backstack of all fragments so that the back button
+     * will not return to the previous fragment
+     * @param fragment
+     *          the fragment to be displayed
+     * @param fm
+     *          a fragment manager which allows the transaction to be processed
+     */
     public static void switchFragmentWithoutBack(Fragment fragment, FragmentManager fm) {
         // Create a FragmentTransaction to begin the transaction and replace the Fragment
         FragmentTransaction fragmentTransaction = fm.beginTransaction();

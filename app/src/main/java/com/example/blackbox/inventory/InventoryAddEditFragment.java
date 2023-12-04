@@ -168,6 +168,10 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
         recyclerView.setLayoutManager(new GridLayoutManager(activityContext, 2));
     }
 
+    /**
+     * Implements the interface from which the AttachImageFragment will pass an image Uri
+     * @param imageUri
+     */
     @Override
     public void onImageSelected(Uri imageUri) {
         // Handle the selected image URI here
@@ -371,6 +375,9 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
         }
     }
 
+    /**
+     * A method which displays a dialog for selecting tags
+     */
     private void showTagSelectionDialog() {
         TagDB tagDB = new TagDB();
         tagDB.getAllTags(new TagDB.OnGetTagsCallback() {

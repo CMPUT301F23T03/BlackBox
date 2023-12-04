@@ -63,6 +63,20 @@ public class AttachImageFragment extends Fragment {
     private ArrayList<Uri> uriArrayList = new ArrayList<>();
     // Listener for image selection
     private OnImageSelectedListener imageSelectedListener;
+
+    /**
+     * A method which sets up the image attachment fragment, including UI elements and listeners
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
@@ -115,11 +129,20 @@ public class AttachImageFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Get a list of uris
+     * @return
+     *      An arraylist of uris
+     */
     public ArrayList<Uri> getUriArrayList(){
         return uriArrayList;
     }
 
-    // Setter method for the listener
+    /**
+     * Setter method for the onImageSelectedListener
+     * @param listener
+     *      the listener whose reference will be stored
+     */
     public void setOnImageSelectedListener(OnImageSelectedListener listener) {
         this.imageSelectedListener = listener;
     }
@@ -167,7 +190,9 @@ public class AttachImageFragment extends Fragment {
         galleryButton.setOnClickListener(v -> pickMedia.launch(new PickVisualMediaRequest()));
     }
 
-
+    /**
+     * An interface which allows for an image selection to be handled by another class
+     */
     public interface OnImageSelectedListener {
         void onImageSelected(Uri imageUri);
     }
