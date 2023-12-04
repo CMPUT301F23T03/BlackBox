@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.example.blackbox"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.example.blackbox"},{"l":"com.example.blackbox.authentication"},{"l":"com.example.blackbox.inventory"},{"l":"com.example.blackbox.inventory.filter"},{"l":"com.example.blackbox.profile"},{"l":"com.example.blackbox.scanBarcode"},{"l":"com.example.blackbox.scanBarcode.handler"},{"l":"com.example.blackbox.tag"},{"l":"com.example.blackbox.utils"}];updateSearchResults();

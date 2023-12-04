@@ -265,15 +265,6 @@ public class Item implements Serializable {
         this.dateUpdated = date;
     }
 
-    public void setDateUpdatedWithString(String dateString){
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        try {
-            dateUpdated = dateFormat.parse(dateString);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     public boolean isSelected() {
         return isSelected;
     }

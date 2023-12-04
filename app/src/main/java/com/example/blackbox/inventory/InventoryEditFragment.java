@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.blackbox.DeletePopupFragment;
-import com.example.blackbox.ItemImageDB;
 import com.example.blackbox.R;
 
 import java.util.ArrayList;
@@ -101,6 +100,11 @@ public class InventoryEditFragment extends InventoryAddEditFragment {
 
     }
 
+    /**
+     * A helper method which sets up a listener to handle when the save button is clicked
+     * @param view
+     *      The view in which the save button is located
+     */
     private void setUpSaveButton(View view){
         // save an edited item by clicking the small add button
         Button small_save_button = view.findViewById(R.id.small_save_button);
