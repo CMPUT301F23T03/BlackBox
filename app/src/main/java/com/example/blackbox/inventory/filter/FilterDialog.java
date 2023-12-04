@@ -49,11 +49,15 @@ public abstract class FilterDialog{
     private static CheckBox dateCheck;
     private static CheckBox makeCheck;
     private static CheckBox tagCheck;
+
+    private static CheckBox keywordCheck;
     private static EditText lowerRange;
 
     private static ConstraintLayout priceLayer;
     private static ConstraintLayout makeLayer;
     private static ConstraintLayout dateLayer;
+
+    private static ConstraintLayout keywordSearchLayer;
     private static RecyclerView tagView;
 
     private static EditText upperRange;
@@ -61,6 +65,8 @@ public abstract class FilterDialog{
     private static DatePicker endDate;
     private static EditText make;
     private static FragmentActivity activityContext;
+
+    private static EditText keywordSearch;
 
     private static ItemList allItems;
     private static ArrayList<Item> filteredItems;
@@ -113,12 +119,28 @@ public abstract class FilterDialog{
                         FilterDialog.tagCheck.setChecked(true);
                         filterTagAdapter.shadeSelectedTags();
                         break;
+
+                    case "keyword":
+                        FilterDialog.keywordCheck.setChecked(true);
+                        keywordSearch.setText(String.join(",",filter.getKeywords()));
+                        break;
                 }
             }
         }
     }
 
     private static void initializeCheckBoxes(){
+
+        keywordCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    keywordSearchLayer.setVisibility(View.VISIBLE);
+                }else{
+                    keywordSearchLayer.setVisibility(View.GONE);
+                }
+            }
+        });
         tagCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -176,15 +198,18 @@ public abstract class FilterDialog{
         dateCheck = view.findViewById(R.id.date_checkbox);
         makeCheck = view.findViewById(R.id.make_checkbox);
         tagCheck = view.findViewById(R.id.tag_checkbox);
+        keywordCheck = view.findViewById(R.id.keyword_checkbox);
 
         priceLayer = view.findViewById(R.id.price_range);
         makeLayer = view.findViewById(R.id.filter_make_layout);
         tagView = view.findViewById(R.id.tag_selection_filter);
         dateLayer = view.findViewById(R.id.filter_date_range);
+        keywordSearchLayer = view.findViewById(R.id.keyword_layer);
 
         accept = view.findViewById(R.id.accept_button);
         cancel = view.findViewById(R.id.cancel_button);
         lowerRange = view.findViewById(R.id.first_number);
+        keywordSearch = view.findViewById(R.id.keyword_search);
         upperRange = view.findViewById(R.id.secondNumber);
         startDate = view.findViewById(R.id.start_date);
         endDate = view.findViewById(R.id.after_date);
@@ -336,6 +361,7 @@ public abstract class FilterDialog{
         double secondVal = Double.POSITIVE_INFINITY;
         String makeValue = make.getText().toString();
         int lowerBoundDay = startDate.getDayOfMonth();
+        String keywords = keywordSearch.getText().toString();
         int lowerBoundMonth = startDate.getMonth();
         int lowerBoundYear = startDate.getYear();
         int upperBoundDay = endDate.getDayOfMonth();
@@ -392,10 +418,45 @@ public abstract class FilterDialog{
             filterByTags();
         }
 
+        if (keywordSearchLayer.getVisibility() == View.VISIBLE){
+            filterBySearch(keywords);
+        }
+
         for (Item item: filteredItems){
             allItems.remove(item);
         }
         return true;
+    }
+
+    private static void filterBySearch(String keywords){
+        keywords = keywords.replaceAll(" ",",");
+        keywords = keywords.replaceAll("[^,a-zA-Z]","");
+        Filter filter = new Filter("keyword");
+        String[] tokenArray = keywords.toLowerCase().split(",");
+        Set<String>keywordTokens = createSet(tokenArray);
+        for(Item item: allItems){
+            Set<String> itemDescription = createSet(item.getDescription().toLowerCase().split(" "));
+            Set<String> intersectionSet = new HashSet<>(itemDescription);
+            intersectionSet.retainAll(keywordTokens);
+            if (intersectionSet.size() < tokenArray.length){
+                addToFilteredList(item,filter);
+            }
+        }
+
+        filter.setFilterName("Keyword(s)");
+        filter.setKeywords(tokenArray);
+        filterAdapter.addItem(filter);
+        filterAdapter.notifyDataSetChanged();
+    }
+
+    private static Set<String> createSet(String[] tokens) {
+        Set<String> returnSet = new HashSet<>();
+
+        for (String token : tokens) {
+            returnSet.add(token);
+        }
+
+        return returnSet;
     }
 
     private static Set<String> createSet (ArrayList<Tag> tags){

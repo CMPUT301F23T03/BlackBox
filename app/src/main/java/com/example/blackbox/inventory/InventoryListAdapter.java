@@ -174,9 +174,12 @@ public class InventoryListAdapter extends ArrayAdapter implements Filterable {
                     ArrayList<Item> results = new ArrayList<>();
                     for (Item item : originalItems) {
                         Set<String> itemDescription = createSet(item.getDescription().toLowerCase().split(" "));
+                        Set<String> itemName = createSet(item.getName().toLowerCase().split(" "));
+                        Set<String> nameIntersectionSet = new HashSet<>(filterTokensSet);
                         Set<String> intersectionSet = new HashSet<>(filterTokensSet);
+                        nameIntersectionSet.retainAll(itemName);
                         intersectionSet.retainAll(itemDescription);
-                        if (intersectionSet.size() >= filterTokens.length){
+                        if (intersectionSet.size() >= filterTokens.length || nameIntersectionSet.size() >= filterTokens.length){
                             results.add(item);
                         }
                     }

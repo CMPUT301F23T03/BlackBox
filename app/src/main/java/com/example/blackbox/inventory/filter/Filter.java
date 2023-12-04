@@ -10,7 +10,7 @@ import java.util.Date;
 
 public class Filter {
 
-    private String[] filterTypes = {"date","price","make","tag"};
+    private String[] filterTypes = {"date","price","make","tag","keyword"};
     private String filterType;
     private String filterName;
 
@@ -51,6 +51,16 @@ public class Filter {
 
     private String make = "";
     private double[] priceRange = new double[2];
+
+    public String[] getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(String[] keywords) {
+        this.keywords = keywords;
+    }
+
+    private String[] keywords;
     private String[] dateRange = new String[2];
     private ArrayList<Tag> tagArrayList = new ArrayList<>();
 
