@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.functionalityTests;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -15,7 +15,11 @@ import android.util.Log;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.blackbox.DBTests.InventoryDBTest;
+import com.example.blackbox.DBTests.TagDBTest;
+import com.example.blackbox.MainActivity;
 import com.example.blackbox.authentication.GoogleAuthDB;
+import com.example.blackbox.functionalityTests.TagFunctionalityTest;
 import com.example.blackbox.inventory.InventoryDB;
 import com.example.blackbox.inventory.Item;
 import com.example.blackbox.tag.Tag;

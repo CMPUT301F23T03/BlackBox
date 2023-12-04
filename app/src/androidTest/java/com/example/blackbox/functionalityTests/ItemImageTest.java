@@ -1,10 +1,9 @@
-package com.example.blackbox;
+package com.example.blackbox.functionalityTests;
 
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -14,16 +13,9 @@ import static org.hamcrest.CoreMatchers.anything;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.media.MediaScannerConnection;
-import android.os.SystemClock;
-import android.provider.Settings;
 import android.util.Log;
-import android.view.View;
 
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.espresso.Espresso;
 import androidx.test.espresso.action.ViewActions;
-import androidx.test.espresso.assertion.ViewAssertions;
-import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -32,7 +24,11 @@ import androidx.test.uiautomator.UiDevice;
 import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
-import org.junit.Before;
+
+import com.example.blackbox.DBTests.InventoryDBTest;
+import com.example.blackbox.MainActivity;
+import com.example.blackbox.R;
+
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -61,7 +57,7 @@ public class ItemImageTest {
         addTestItem1();
         UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         // click on the add button
-        onView(withId(R.id.add_button)).perform(click());
+        onView(ViewMatchers.withId(R.id.add_button)).perform(click());
         // scroll down
         onView(withId(R.id.add_img_btn)).perform(ViewActions.scrollTo());
         // click on add button

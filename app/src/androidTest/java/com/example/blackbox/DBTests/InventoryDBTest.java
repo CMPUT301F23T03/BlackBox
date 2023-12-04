@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.DBTests;
 
 
 import static org.junit.Assert.assertFalse;

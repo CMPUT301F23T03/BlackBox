@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.functionalityTests;
 
 import android.util.Log;
 
@@ -17,6 +17,9 @@ import androidx.test.uiautomator.UiObject;
 import androidx.test.uiautomator.UiObjectNotFoundException;
 import androidx.test.uiautomator.UiSelector;
 import androidx.test.uiautomator.Until;
+
+import com.example.blackbox.MainActivity;
+import com.example.blackbox.R;
 
 import org.junit.Rule;
 import org.junit.Test;

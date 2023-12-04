@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.functionalityTests;
 
 
 import static androidx.test.espresso.Espresso.onData;
@@ -19,10 +19,15 @@ import static org.hamcrest.CoreMatchers.not;
 import android.util.Log;
 
 import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.example.blackbox.DBTests.InventoryDBTest;
+import com.example.blackbox.DBTests.TagDBTest;
+import com.example.blackbox.MainActivity;
+import com.example.blackbox.R;
 import com.example.blackbox.tag.Tag;
 
 import org.junit.Rule;
@@ -59,7 +64,7 @@ public class TagFunctionalityTest {
      * Navigate from any fragment with the bottom nav bar to the settings page
      */
     public static void navigateToTags(){
-        onView(withId(R.id.settings)).perform(click());
+        onView(ViewMatchers.withId(R.id.settings)).perform(click());
         onView(withId(R.id.tags_cl)).perform(click());
     }
 
