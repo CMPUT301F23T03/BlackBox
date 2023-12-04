@@ -225,6 +225,5 @@ public class SearchBarTest {
         onView(withText("Item 1")).check(doesNotExist());
         onView(withText("Item 1")).check(doesNotExist());
 
-        //onView(withId(R.id.searchView)).perform(SearchVie)
     }
 }
