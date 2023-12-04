@@ -5,6 +5,7 @@ package com.example.blackbox;
         import static androidx.test.espresso.action.ViewActions.click;
         import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
         import static androidx.test.espresso.assertion.ViewAssertions.matches;
+        import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
         import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
         import static androidx.test.espresso.matcher.ViewMatchers.withId;
         import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
@@ -589,6 +590,91 @@ public class InventoryFunctionalityTest {
         onView(withText("item3")).check(doesNotExist());
         onView(withText("item2")).check(doesNotExist());
         onView(withText("item1")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testMultiSelectTags() {
+        setup();
+
+        // Perform a click on the long-clickable item
+        Espresso.onView(withText(name)).perform(ViewActions.longClick());
+
+        // Perform clicks on other items to simulate selection
+        Espresso.onView(withText(name2)).perform(click());
+
+        // Click the button to set tags
+        Espresso.onView(ViewMatchers.withId(R.id.set_tags_button)).perform(ViewActions.click());
+
+        // Wait for the tag selection dialog to appear
+        try {
+            Thread.sleep(maxDelay);
+        } catch (Exception e) {
+            Log.d("Sleep", "Exception");
+        }
+
+        // Assuming the tags are presented in a dialog with checkboxes
+        // Select tags in the dialog
+        onView(withText("Tag1")).perform(ViewActions.click());
+
+        // Confirm the selection
+        onView(withText("OK")).perform(ViewActions.click());
+
+
+        // Wait for the save operation to complete
+        try {
+            Thread.sleep(maxDelay);
+        } catch (Exception e) {
+            Log.d("Sleep", "Exception");
+        }
+
+        // Check if the first tag ImageView is visible
+        onView(withId(R.id.tag_image)).check(matches(isDisplayed()));
+
+        // Check if the second tag ImageView is visible
+        onView(withId(R.id.tag_image2)).check(matches(isDisplayed()));
+
+        Espresso.onView(withText(name)).perform(click());
+        Espresso.onView(withText(name2)).perform(click());
+
+        // Click the button to set tags
+        Espresso.onView(ViewMatchers.withId(R.id.set_tags_button)).perform(ViewActions.click());
+
+        // Wait for the tag selection dialog to appear
+        try {
+            Thread.sleep(maxDelay);
+        } catch (Exception e) {
+            Log.d("Sleep", "Exception");
+        }
+
+        // Remove tag in the dialog
+        onView(withText("Tag1")).perform(ViewActions.click());
+
+        // Confirm the selection
+        onView(withText("OK")).perform(ViewActions.click());
+
+        // Save the updated items
+        onView(withId(R.id.cancel_button)).perform(ViewActions.click());
+
+        onView(withId(R.id.tag_image)).check(matches(isDisplayed()));
+        onView(withId(R.id.tag_image2)).check(matches(not(isDisplayed())));
+
+        Espresso.onView(withText(name2)).perform(click());
+
+        // Wait for the tag selection dialog to appear
+        try {
+            Thread.sleep(maxDelay);
+        } catch (Exception e) {
+            Log.d("Sleep", "Exception");
+        }
+
+        // Remove tag in the dialog
+        onView(withText("Tag2")).perform(ViewActions.click());
+
+        // Confirm the selection
+        onView(withText("OK")).perform(ViewActions.click());
+
+        onView(withId(R.id.tag_image)).check(matches(not(isDisplayed())));
+        onView(withId(R.id.tag_image2)).check(matches(not(isDisplayed())));
     }
 
     /**
