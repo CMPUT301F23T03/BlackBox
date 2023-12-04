@@ -1,9 +1,12 @@
 com.example.blackbox
 com.example.blackbox.authentication
+com.example.blackbox.DBTests
+com.example.blackbox.functionalityTests
 com.example.blackbox.inventory
 com.example.blackbox.inventory.filter
 com.example.blackbox.profile
 com.example.blackbox.scanBarcode
 com.example.blackbox.scanBarcode.handler
 com.example.blackbox.tag
+com.example.blackbox.unitTests
 com.example.blackbox.utils
