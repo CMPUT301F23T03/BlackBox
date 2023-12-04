@@ -272,6 +272,7 @@ public class InventoryFragment extends Fragment {
                     // Hide the add button during long click
                     addButton.setVisibility(View.GONE);
 
+
                     // Make the delete and cancel button visible
                     deleteButton.setVisibility(View.VISIBLE);
                     cancelButton.setVisibility(View.VISIBLE);
@@ -366,9 +367,11 @@ public class InventoryFragment extends Fragment {
         searchView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Open the search functionality
-                searchView.setIconified(false);
-                boolean focused = searchView.hasFocus();
+                if (addButton.getVisibility() == View.VISIBLE){
+                    // Open the search functionality
+                    searchView.setIconified(false);
+                    boolean focused = searchView.hasFocus();
+                }
 
             }
         });

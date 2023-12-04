@@ -203,7 +203,6 @@ public class ExpenseFragment extends Fragment{
 
                         Pie pie = AnyChart.pie();
 
-
                         ArrayList<String> paletteColors = new ArrayList<>();
 
                         ArrayList<DataEntry> dataEntries = new ArrayList<>();
