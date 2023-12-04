@@ -381,8 +381,9 @@ public class InventoryFragment extends Fragment {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Log.d("SearchView","query submitted");
-                query = query.replaceAll(" ",",");
+                query = query.replaceAll("\\s+",",");
                 query = query.replaceAll("[^,a-zA-Z]","");
+                query = query.replaceAll(",+",",");
                 inventoryAdapter.getFilter().filter(query);
                 updateTotalSum();
                 return false;
