@@ -368,11 +368,9 @@ public class InventoryFragment extends Fragment {
         searchView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (addButton.getVisibility() == View.VISIBLE){
-                    // Open the search functionality
-                    searchView.setIconified(false);
-                    boolean focused = searchView.hasFocus();
-                }
+                // Open the search functionality
+                searchView.setIconified(false);
+                boolean focused = searchView.hasFocus();
 
             }
         });
@@ -392,19 +390,6 @@ public class InventoryFragment extends Fragment {
             public boolean onQueryTextChange(String newText) {
                 Log.d("SearchView","Query changed");
                 return false;
-            }
-        });
-        // makes bottom nav bar and add button disappear when searching
-        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    ((MainActivity) requireActivity()).toggleBottomNavigationView(false);
-//                    addButton.setVisibility(View.GONE);
-                } else {
-                    ((MainActivity) requireActivity()).toggleBottomNavigationView(true);
-//                    addButton.setVisibility(View.VISIBLE);
-                }
             }
         });
     }

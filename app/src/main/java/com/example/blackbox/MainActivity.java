@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewTreeObserver;
+import android.widget.FrameLayout;
 
 import com.example.blackbox.authentication.GoogleAuthDB;
 import com.example.blackbox.inventory.InventoryFragment;
@@ -30,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
     GoogleAuthDB googleAuthDB;
     private boolean functionality_test_mode = false;
     String currentFragment;
+    FrameLayout contentFragment;
+    private boolean navBarHidden;
+
 
 
     public MainActivity(){};
@@ -69,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // load home page
+        contentFragment = findViewById(R.id.contentFragment);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         bottomNavigationView.setSelectedItemId(R.id.inventory);
 
@@ -106,10 +112,15 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
 
+        setupKeyboardListener();
+
 
     }
 
 
+    /**
+     * A method to hide the nav bar when the keyboard
+     */
 
     /**
      * Override method called when the app requests permissions at runtime,
@@ -138,8 +149,11 @@ public class MainActivity extends AppCompatActivity {
     public void toggleBottomNavigationView(boolean isVisible) {
         if (isVisible) {
             bottomNavigationView.setVisibility(View.VISIBLE);
+            navBarHidden = false;
         } else {
             bottomNavigationView.setVisibility(View.GONE);
+            navBarHidden = true;
+
         }
     }
     @Override
@@ -147,5 +161,44 @@ public class MainActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         // Save relevant data to the outState bundle
         outState.putString("fragmentTag", currentFragment);
+    }
+
+    /**
+     * A method which sets up a listener to hide the nav bar when the screen is partially obscured, such as by a keyboard
+     */
+    private void setupKeyboardListener(){
+        // Define a threshold for the height difference
+        int keyboardHeightThreshold = 500;
+        // Get the root view of your layout
+        final View rootView = findViewById(android.R.id.content);
+
+        // Add a global layout listener to the root view
+        rootView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                // only check when the nav bar is not already hidden for the fragment
+                if (!navBarHidden) {
+                    // This method will be called whenever the layout changes, including when the keyboard is opened or closed
+
+                    // Get the height of the visible part of the root view
+                    int screenBottom = rootView.getBottom();
+
+                    // Get the height of the entire root view
+                    int navigationViewBottom = contentFragment.getBottom();
+
+                    // Calculate the height difference
+                    int heightDiff = screenBottom - navigationViewBottom;
+
+
+
+                    // Check if the height difference exceeds the threshold
+                    if (heightDiff > keyboardHeightThreshold) {
+                        bottomNavigationView.setVisibility(View.GONE);
+                    } else {
+                        bottomNavigationView.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+        });
     }
 }
