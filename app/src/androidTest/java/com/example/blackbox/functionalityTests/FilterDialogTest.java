@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.functionalityTests;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -20,12 +20,14 @@ import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.runner.AndroidJUnit4;
-
 import com.example.blackbox.DBTests.InventoryDBTest;
 import com.example.blackbox.DBTests.TagDBTest;
 import com.example.blackbox.functionalityTests.TagFunctionalityTest;
 
 import org.junit.Before;
+import com.example.blackbox.MainActivity;
+import com.example.blackbox.R;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,12 +49,17 @@ public class FilterDialogTest {
      * A method which sets up items and tags to be sorted
      */
     @Before
-    public void setup(){
+    public void setup() {
         clearDBs();
         addTestTags();
         addTestItem1();
         addTestItem2();
         addTestItem3();
+    }
+
+    @Test
+    public void testFilterDialog(){
+        Espresso.onView(ViewMatchers.withId(R.id.filter_button)).perform(ViewActions.click());
     }
 
     public void addTestTags() {

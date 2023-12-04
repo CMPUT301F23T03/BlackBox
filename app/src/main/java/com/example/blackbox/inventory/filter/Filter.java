@@ -85,7 +85,7 @@ public class Filter {
 
     /**
      * Gets the ArrayList of tags selected for the filter
-     * @return ArrayList<Tag>
+     * @return ArrayList of tags
      * @see Tag
      */
     public ArrayList<Tag> getTagArrayList() {
@@ -179,7 +179,7 @@ public class Filter {
 
     /**
      * Gets the list of items that the filter has filtered out as a result of the set filterType.
-     * @return ArrayList<Item>
+     * @return ArrayList of items
      * @see Item
      */
     public ArrayList<Item> getItemList(){

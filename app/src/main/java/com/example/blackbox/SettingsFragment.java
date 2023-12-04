@@ -44,6 +44,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * A fragment which allows the user to change their settings and access tag management
+ */
 public class SettingsFragment extends Fragment {
     View view;
     View tagsLayout;
