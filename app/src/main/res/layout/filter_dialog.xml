@@ -200,14 +200,18 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
         android:id="@+id/tag_selection_filter"
+        android:layout_width="393dp"
+        android:layout_height="0dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/filter_date_range"
-        android:padding="10dp"
+        android:fadeScrollbars="false"
         android:visibility="gone"
-        android:spinnerMode="dialog"
         />
 
     <androidx.constraintlayout.widget.ConstraintLayout

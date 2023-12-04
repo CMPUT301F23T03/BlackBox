@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.blackbox.authentication.GoogleAuthDB;
 import com.example.blackbox.MainActivity;
+import com.example.blackbox.inventory.filter.SpacingItemDecoration;
 import com.example.blackbox.utils.NavigationManager;
 import com.example.blackbox.profile.ProfileFragment;
 import com.example.blackbox.R;
@@ -177,10 +178,11 @@ public class InventoryFragment extends Fragment {
         inventoryAdapter = new InventoryListAdapter(activityContext, itemList);
         filterAdapter = new FilterListAdapter(filterList,itemList,inventoryAdapter, getActivity());
         LinearLayoutManager layoutManager = new LinearLayoutManager(activityContext,LinearLayoutManager.HORIZONTAL,false);
-        //GridLayoutManager layoutManager = new GridLayoutManager(this,);
-
+        int spacingInDp = 16;
+        SpacingItemDecoration spacingItemDecoration = new SpacingItemDecoration(activityContext,spacingInDp);
         filterViewList.setLayoutManager(layoutManager);
         filterViewList.setAdapter(filterAdapter);
+        filterViewList.addItemDecoration(spacingItemDecoration);
 
 
         itemViewList.setAdapter(inventoryAdapter);

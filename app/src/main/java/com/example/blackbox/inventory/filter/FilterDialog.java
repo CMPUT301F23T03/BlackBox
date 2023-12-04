@@ -8,13 +8,13 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.blackbox.R;
@@ -23,7 +23,6 @@ import com.example.blackbox.utils.StringFormatter;
 import com.example.blackbox.inventory.Item;
 import com.example.blackbox.inventory.ItemList;
 import com.example.blackbox.tag.Tag;
-import com.example.blackbox.tag.TagAdapter;
 import com.example.blackbox.tag.TagDB;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -32,10 +31,13 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class FilterDialog{
 
@@ -52,7 +54,7 @@ public abstract class FilterDialog{
     private static ConstraintLayout priceLayer;
     private static ConstraintLayout makeLayer;
     private static ConstraintLayout dateLayer;
-    private static Spinner tagSpinner;
+    private static RecyclerView tagView;
 
     private static EditText upperRange;
     private static DatePicker startDate;
@@ -72,24 +74,16 @@ public abstract class FilterDialog{
     private static ArrayList<Tag> tags = new ArrayList<>();
     private static ListenerRegistration tagDBListener;
 
-    private static TagAdapter tagAdapter;
+    private static FilterTagAdapter filterTagAdapter;
 
     private static void initializeSpinner(){
-        TagDB tagDB = new TagDB();
-        tagDB.getAllTags(new TagDB.OnGetTagsCallback() {
-            @Override
-            public void onSuccess(ArrayList<Tag> tagList) {
-                Log.d("TagFilter","Data received");
-            }
-
-            @Override
-            public void onError(String errorMessage) {
-                Log.e("TagFilter",errorMessage);
-            }
-        });
-        tagAdapter = new TagAdapter(activityContext,FilterDialog.tags);
-        tagSpinner.setAdapter(tagAdapter);
-        System.out.println(tags);
+        int spacingInDp = 16;
+        SpacingItemDecoration spacingItemDecoration = new SpacingItemDecoration(activityContext,spacingInDp);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(activityContext,LinearLayoutManager.HORIZONTAL,false);
+        filterTagAdapter = new FilterTagAdapter(FilterDialog.tags,layoutManager);
+        tagView.setAdapter(filterTagAdapter);
+        tagView.setLayoutManager(layoutManager);
+        tagView.addItemDecoration(spacingItemDecoration);
         Log.d("TagSpinner","initialized with data");
     }
 
@@ -117,6 +111,7 @@ public abstract class FilterDialog{
                         break;
                     case "tag":
                         FilterDialog.tagCheck.setChecked(true);
+                        filterTagAdapter.shadeSelectedTags();
                         break;
                 }
             }
@@ -128,10 +123,10 @@ public abstract class FilterDialog{
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked){
-                    tagSpinner.setVisibility(View.VISIBLE);
-                    Log.d("FilterTags",tags.toString());
+                    tagView.setVisibility(View.VISIBLE);
+                    initializeSpinner();
                 }else{
-                    tagSpinner.setVisibility(View.GONE);
+                    tagView.setVisibility(View.GONE);
                 }
 
             }
@@ -184,7 +179,7 @@ public abstract class FilterDialog{
 
         priceLayer = view.findViewById(R.id.price_range);
         makeLayer = view.findViewById(R.id.filter_make_layout);
-        tagSpinner = view.findViewById(R.id.tag_selection_filter);
+        tagView = view.findViewById(R.id.tag_selection_filter);
         dateLayer = view.findViewById(R.id.filter_date_range);
 
         accept = view.findViewById(R.id.accept_button);
@@ -268,12 +263,10 @@ public abstract class FilterDialog{
                 addToFilteredList(item,makeFilter);
             }
         }
-        if (makeFilter.getItemList().size() > 0){
             makeFilter.setFilterName(String.format("\'%s\'",make));
             makeFilter.setMake(make);
             filterAdapter.addItem(makeFilter);
             filterAdapter.notifyDataSetChanged();
-        }
 
     }
 
@@ -310,12 +303,11 @@ public abstract class FilterDialog{
                 Log.d("filterByDate","Error occurred with parsing date for item");
             }
         }
-        if (dateFilter.getItemList().size() > 0){
             dateFilter.setFilterName(String.format("%s - %s",lowerBound,upperBound));
             dateFilter.setDateRange(new String[]{lowerBound,upperBound});
             filterAdapter.addItem(dateFilter);
             filterAdapter.notifyDataSetChanged();
-        }
+
     }
 
     private static void filterByValues(double lowerBound,double upperBound){
@@ -326,12 +318,10 @@ public abstract class FilterDialog{
                 addToFilteredList(item,priceFilter);
             }
         }
-        if (priceFilter.getItemList().size() > 0){
             priceFilter.setFilterName(String.format("$%,.2f - $%,.2f",lowerBound,upperBound));
             priceFilter.setPriceRange(new double[]{lowerBound,upperBound});
             filterAdapter.addItem(priceFilter);
             filterAdapter.notifyDataSetChanged();
-        }
     }
 
     private static void addToFilteredList(Item item,Filter filter){
@@ -343,10 +333,6 @@ public abstract class FilterDialog{
 
     private static boolean handleSubmit(){
         double firstVal = 0;
-        String todayDate = "";
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            todayDate = LocalDate.now().toString();
-        }
         double secondVal = Double.POSITIVE_INFINITY;
         String makeValue = make.getText().toString();
         int lowerBoundDay = startDate.getDayOfMonth();
@@ -355,6 +341,9 @@ public abstract class FilterDialog{
         int upperBoundDay = endDate.getDayOfMonth();
         int upperBoundMonth = endDate.getMonth();
         int upperBoundYear = endDate.getYear();
+        Date lowerBoundDate = new Date();
+        Date upperBoundDate = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         try{
             //check first the vals, and then the dated
@@ -366,16 +355,12 @@ public abstract class FilterDialog{
                 secondVal = Double.parseDouble(upperRange.getText().toString());
             }
 
-            //first filter by date, and then by price, and then by make
-            if (lowerBoundYear <= upperBoundYear){
-                if (lowerBoundMonth <= upperBoundMonth){
-                    if (lowerBoundDay > upperBoundDay){
-                        throw new IllegalArgumentException("End date must be after start date");
-                    }
-                }else{
-                    throw new IllegalArgumentException("End date must be after start date");
-                }
-            }else{
+            String lowerBound = String.format("%d-%d-%d",lowerBoundYear,lowerBoundMonth + 1,lowerBoundDay);
+            String upperBound = String.format("%d-%d-%d",upperBoundYear,upperBoundMonth + 1,upperBoundDay);
+            lowerBoundDate = dateFormat.parse(lowerBound);
+            upperBoundDate = dateFormat.parse(upperBound);
+
+            if (lowerBoundDate.after(upperBoundDate)){
                 throw new IllegalArgumentException("End date must be after start date");
             }
 
@@ -389,6 +374,8 @@ public abstract class FilterDialog{
         } catch (IllegalArgumentException e){
             Toast.makeText(activityContext, e.getMessage(), Toast.LENGTH_SHORT).show();
             return false;
+        } catch (ParseException e) {
+            Toast.makeText(activityContext, "Upper Range (first) should be greater than Lower Range (second)", Toast.LENGTH_SHORT).show();
         }
 
         if (dateLayer.getVisibility() == View.VISIBLE){
@@ -401,9 +388,46 @@ public abstract class FilterDialog{
             filterByMake(makeValue);
         }
 
+        if (tagView.getVisibility() == View.VISIBLE){
+            filterByTags();
+        }
+
         for (Item item: filteredItems){
             allItems.remove(item);
         }
         return true;
+    }
+
+    private static Set<String> createSet (ArrayList<Tag> tags){
+        Set<String> returnSet = new HashSet<>();
+
+        for (Tag tag : tags){
+            returnSet.add(tag.getDataBaseID());
+        }
+
+        return returnSet;
+    }
+
+    private static void filterByTags(){
+        ArrayList<Tag> selectedTags = filterTagAdapter.getSelectedTags();
+        Set<String> selectedTagsSet = createSet(selectedTags);
+        Filter filter = new Filter("tag");
+        for (Item item : allItems){
+            if (item.getTags().size() < selectedTags.size()){
+                addToFilteredList(item,filter);
+            }else {
+                Set<String> itemSet = createSet(item.getTags());
+                Set<String> intersectionSet = new HashSet<>(itemSet);
+                intersectionSet.retainAll(selectedTagsSet);
+                if (intersectionSet.size() < selectedTags.size()){
+                    addToFilteredList(item,filter);
+                }
+            }
+        }
+
+        filter.setFilterName("Selected Tag(s)");
+        filter.setTagArrayList(selectedTags);
+        filterAdapter.addItem(filter);
+        filterAdapter.notifyDataSetChanged();
     }
 }
