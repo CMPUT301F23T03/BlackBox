@@ -33,12 +33,14 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Abstract Class responsible for showing filter AlertDialog, and using the input to filter
+ */
 public abstract class FilterDialog{
 
     private static TextView accept;
@@ -82,7 +84,11 @@ public abstract class FilterDialog{
 
     private static FilterTagAdapter filterTagAdapter;
 
-    private static void initializeSpinner(){
+    /**
+     * Initializes the RecycleView that holds all of the tags that can be selected for Filtering.
+     * @see FilterTagAdapter
+     */
+    private static void initializeTagView(){
         int spacingInDp = 16;
         SpacingItemDecoration spacingItemDecoration = new SpacingItemDecoration(activityContext,spacingInDp);
         LinearLayoutManager layoutManager = new LinearLayoutManager(activityContext,LinearLayoutManager.HORIZONTAL,false);
@@ -93,6 +99,10 @@ public abstract class FilterDialog{
         Log.d("TagSpinner","initialized with data");
     }
 
+    /**
+     * Selects the checkboxes previously selected in the last usage of FilterDialog.
+     *  Loads the Input information inputted in the last usage of FilterDialog.
+     */
     private static void usePresetCheckBoxes(){
         if (FilterDialog.filterAdapter.getItemCount() == 0){
             return;
@@ -129,6 +139,9 @@ public abstract class FilterDialog{
         }
     }
 
+    /**
+     * Sets the setOnCheckedChangeListener for all of the checkboxes that appear on the filter dialog.
+     */
     private static void initializeCheckBoxes(){
 
         keywordCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -146,7 +159,7 @@ public abstract class FilterDialog{
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked){
                     tagView.setVisibility(View.VISIBLE);
-                    initializeSpinner();
+                    initializeTagView();
                 }else{
                     tagView.setVisibility(View.GONE);
                 }
@@ -185,10 +198,19 @@ public abstract class FilterDialog{
         });
     }
 
+    /**
+     * Inflates activity with filter dialog, and then uses it show the filter AlertDialog. <br>
+     *  Inputs the filters RecyclerView to be used for adding or removing filters.<br>
+     *  Inputs ItemList to edit list of items displayed on the inventoryFragment.<br>
+     *  Inputs ArrayAdapter for ItemList to notify of changes to ItemList.
+     * @param activity
+     * @param incomingList
+     * @param inventoryAdapter
+     * @param filters
+     */
     public static void showFilter(FragmentActivity activity, ItemList incomingList, ArrayAdapter<Item> inventoryAdapter, RecyclerView.Adapter filters){
         FilterDialog.inventoryAdapter = inventoryAdapter;
         FilterDialog.filterAdapter = (FilterListAdapter) filters;
-        Log.d("FilterList",String.format("%d",FilterDialog.filterAdapter.getItemCount()));
         activityContext = activity;
         FilterDialog.totalSumView = activity.findViewById(R.id.total_sum);
         allItems = incomingList;
@@ -276,6 +298,16 @@ public abstract class FilterDialog{
     }
 
 
+    /**
+     * Inputs the data written in the make EditText field
+     * <br><br>Creates a new filter of type 'make' and then filters out items that don't match the make
+     *  by adding it to the itemList of the Filter object.<br><br>
+     *  Calls addToFilteredList to accomplish this.<br><br>
+     *  Edit name of generated filter and adds it to the FilterListAdapter to update on the InventoryFragment
+     * @param make
+     * @see FilterListAdapter
+     * @see com.example.blackbox.inventory.InventoryFragment
+     */
     private static void filterByMake(String make){
         Filter makeFilter = new Filter("make");
         for (Item item : allItems){
@@ -295,12 +327,26 @@ public abstract class FilterDialog{
 
     }
 
+    /**
+     * Updates the totalSum displayed on the InventoryFragment by editing the value of 'R.id.totalSumView'
+     * @see com.example.blackbox.inventory.InventoryFragment
+     */
     private static void updateTotalSum(){
         Double totalSum = allItems.calculateTotalSum();
         totalSumView.setText("Total: " + StringFormatter.getMonetaryString(totalSum));
 
     }
 
+    /**
+     * Inputs the data selected in the DatePickers on the dialog
+     * <br><br>Creates a new filter of type 'date' and then filters out items that don't match the bounds set
+     *  by adding them to the itemList of the Filter object.<br><br>
+     *  Calls addToFilteredList to accomplish this.<br><br>
+     *  Edit name of generated filter and adds it to the FilterListAdapter to update on the InventoryFragment
+     * @param lowerBoundDay,lowerBoundMonth,lowerBoundYear,upperBoundDay,upperBoundMonth,upperBoundYear
+     * @see FilterListAdapter
+     * @see com.example.blackbox.inventory.InventoryFragment
+     */
     private static void filterByDate(int lowerBoundDay,int lowerBoundMonth,int lowerBoundYear, int upperBoundDay, int upperBoundMonth, int upperBoundYear){
         Filter dateFilter = new Filter("date");
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -335,6 +381,17 @@ public abstract class FilterDialog{
 
     }
 
+
+    /**
+     * Inputs the data given in the EditText for lower price range and upper price range
+     * <br><br>Creates a new filter of type 'price' and then filters out items that don't match the bounds set
+     *  by adding them to the itemList of the Filter object.<br><br>
+     *  Calls addToFilteredList to accomplish this.<br><br>
+     *  Edit name of generated filter and adds it to the FilterListAdapter to update on the InventoryFragment
+     * @param lowerBound,upperBound
+     * @see FilterListAdapter
+     * @see com.example.blackbox.inventory.InventoryFragment
+     */
     private static void filterByValues(double lowerBound,double upperBound){
         Filter priceFilter = new Filter("price");
         for (Item item : allItems){
@@ -349,6 +406,14 @@ public abstract class FilterDialog{
             filterAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Helper function for all filterBy'filterType'() that adds given Item to the ItemList of the given Filter.
+     * <br><br> Also adds the given item to ArrayList<Item> filteredItems, which will be used to take away items
+     *  that need to be filtered away from the itemList displayed on the InventoryFragment.
+     * @param item
+     * @param filter
+     * @see com.example.blackbox.inventory.InventoryFragment
+     */
     private static void addToFilteredList(Item item,Filter filter){
         if (!filteredItems.contains(item)){
             filteredItems.add(item);
@@ -356,6 +421,12 @@ public abstract class FilterDialog{
         }
     }
 
+    /**
+     * Handles the submission of the filter AlertDialog created in showFilter()<Br><br>
+     * Adds items to be filtered out and pops them away from the itemList displayed in InventoryFragment
+     * @return true if there are no illegal arguments in the filter inputs, false otherwise
+     * @see com.example.blackbox.inventory.InventoryFragment
+     */
     private static boolean handleSubmit(){
         double firstVal = 0;
         double secondVal = Double.POSITIVE_INFINITY;
@@ -428,9 +499,21 @@ public abstract class FilterDialog{
         return true;
     }
 
+    /**
+     * Inputs the data given in the EditText for keyword search
+     * <br><br>Creates a new filter of type 'keyword' and then filters out items that don't match the bounds set
+     *  by adding them to the itemList of the Filter object.<br><br>
+     *  Calls addToFilteredList to accomplish this.<br><br>
+     *  Edit name of generated filter and adds it to the FilterListAdapter to update on the InventoryFragment
+     * @param keywords
+     * @see FilterListAdapter
+     * @see com.example.blackbox.inventory.InventoryFragment
+     */
     private static void filterBySearch(String keywords){
-        keywords = keywords.replaceAll(" ",",");
+        keywords = keywords.replaceAll("\\s+", ",");
         keywords = keywords.replaceAll("[^,a-zA-Z]","");
+        // replace repeated separators with just one
+        keywords = keywords.replaceAll(",+",",");
         Filter filter = new Filter("keyword");
         String[] tokenArray = keywords.toLowerCase().split(",");
         Set<String>keywordTokens = createSet(tokenArray);
@@ -449,6 +532,11 @@ public abstract class FilterDialog{
         filterAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Function that creates and returns a Set<String> for the given String[]
+     * @param tokens
+     * @return Set<String>
+     */
     private static Set<String> createSet(String[] tokens) {
         Set<String> returnSet = new HashSet<>();
 
@@ -459,6 +547,12 @@ public abstract class FilterDialog{
         return returnSet;
     }
 
+    /**
+     * Function that creates and returns a Set<String> for the given ArrayList<Tag>
+     * @param tags
+     * @return Set<String>
+     * @see Tag
+     */
     private static Set<String> createSet (ArrayList<Tag> tags){
         Set<String> returnSet = new HashSet<>();
 
@@ -469,6 +563,14 @@ public abstract class FilterDialog{
         return returnSet;
     }
 
+    /**
+     * Creates a new filter of type 'tags' and then filters out items that don't match the tags set
+     *  by adding them to the itemList of the Filter object.<br><br>
+     *  Calls addToFilteredList to accomplish this.<br><br>
+     *  Edit name of generated filter and adds it to the FilterListAdapter to update on the InventoryFragment
+     * @see FilterListAdapter
+     * @see com.example.blackbox.inventory.InventoryFragment
+     */
     private static void filterByTags(){
         ArrayList<Tag> selectedTags = filterTagAdapter.getSelectedTags();
         Set<String> selectedTagsSet = createSet(selectedTags);

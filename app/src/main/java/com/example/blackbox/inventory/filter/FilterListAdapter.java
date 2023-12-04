@@ -31,6 +31,14 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
     private TextView totalSum;
 
 
+    /**
+     * Initializes all of the relevant information need for the adapter.
+     * @param filterList to store list of applied filters
+     * @param itemList to store the list of items displayed in InventoryFragment
+     * @param inventoryAdapter to be able to put into effects changes made to itemList
+     * @param activity to access the totalSum displayed in InventoryFragment
+     * @see com.example.blackbox.inventory.InventoryFragment
+     */
     public FilterListAdapter(ArrayList<Filter> filterList, ItemList itemList, ArrayAdapter<Item> inventoryAdapter, FragmentActivity activity) {
         this.filterList = filterList;
         this.totalSum = activity.findViewById(R.id.total_sum);
@@ -39,12 +47,28 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
         this.inventoryAdapter = inventoryAdapter;
     }
 
+
+    /**
+     * Creates a new View for a given filter, and returns the ViewHolder for that View
+     * @param group The ViewGroup into which the new View will be added after it is bound to
+     *               an adapter position.
+     * @param position The view type of the new View.
+     *
+     * @return ViewHolder
+     *
+     * @see androidx.recyclerview.widget.RecyclerView.ViewHolder
+     * @see View
+     */
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup group, int position) {
         View newView = LayoutInflater.from(group.getContext()).inflate(R.layout.filter, group, false);
         return new ViewHolder(newView);
     }
 
+    /**
+     * Updates the total sum shown in the InventoryFragment
+     * @see com.example.blackbox.inventory.InventoryFragment
+     */
     private void updateTotalSum() {
         Double totalSum = itemList.calculateTotalSum();
         this.totalSum.setText("Total: " + StringFormatter.getMonetaryString(totalSum));
@@ -52,6 +76,13 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
     }
 
 
+    /**
+     * Initializes the information for a view once it is bound to a specific filter<br><br>
+     * Also creates the onClickListener for that view.
+     * @param viewHolder The ViewHolder which should be updated to represent the contents of the
+     *        item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         viewHolder.getTextView().setText(filterList.get(viewHolder.getAdapterPosition()).getFilterName());
@@ -66,6 +97,10 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
         });
     }
 
+    /**
+     * Clears the ArrayList <Filter> filterList by adding all of the items from each filter back into <br>
+     * ArrayList<Item> itemList and then calling updateTotalSum() to update the sum displayed.
+     */
     public void clearFilters() {
         for (Filter filter : filterList) {
             for (Item item : filter.getItemList()) {
@@ -78,11 +113,21 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
         FilterListAdapter.this.notifyDataSetChanged();
     }
 
+    /**
+     * Return size of ArrayList<Filter> filterList.
+     * @return int
+     */
     @Override
     public int getItemCount() {
         return filterList.size();
     }
 
+    /**
+     * Checks the items of the filter to be deleted and updates the itemList with each item if
+     * that matches all other filters
+     * <br><br>If not, adds corresponding item to Filter that filtered out the item.
+     * @param filterPosition used to get the the items for the filter at the specified location
+     */
     private void updateItemList(int filterPosition) {
         Filter clickedFilter = filterList.get(filterPosition);
         ArrayList<Item> filterItemList = clickedFilter.getItemList();
@@ -156,29 +201,53 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
         inventoryAdapter.notifyDataSetChanged();
     }
 
+    /**
+     * Returns ArrayList<Filter>, holding all Filters.
+     * @return ArrayList<Filter>
+     */
     public ArrayList<Filter> getFilterList() {
         return this.filterList;
     }
 
+    /**
+     * Adds given filter to ArrayList<Filter>, holding all filters.
+     * @param filter added to ArrayList<Filter> of Filters.
+     */
     public void addItem(Filter filter) {
         filterList.add(filter);
     }
 
+    /**
+     * Class that generates ViewHolder
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView filter;
 
+        /**
+         * Used to initialize ViewHolder object.
+         * @param view passed into super()
+         */
         public ViewHolder(View view) {
             super(view);
             filter = (TextView) view.findViewById(R.id.filter_name);
         }
 
+        /**
+         * Returns the TextView that stores the name of the filter
+         * @return TextView
+         */
         public TextView getTextView() {
 
             return filter;
         }
     }
 
-
+    /**
+     * Function that creates and returns a Set<String> for the given ArrayList<Tag>
+     * @param tags
+     * @return Set<String>
+     * @see Tag
+     */
     private Set<String> createSet(ArrayList<Tag> tags) {
         Set<String> returnSet = new HashSet<>();
 
@@ -189,6 +258,13 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
         return returnSet;
     }
 
+    /**
+     * Creates two sets, and checks if the intersection of them is of size greater than the given query, stored in tokenArray
+     * @param tokenArray  used to create set
+     * @param item  used to check if item matches items in tokenArray
+     * @return
+     * @see Set
+     */
     private boolean filterBySearch(String[] tokenArray, Item item) {
         Set<String> keywordTokens = createSet(tokenArray);
         Set<String> itemDescription = createSet(item.getDescription().toLowerCase().split(" "));
@@ -201,6 +277,11 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
         }
     }
 
+    /**
+     * Function that creates and returns a Set<String> for the given String[]
+     * @param tokens
+     * @return Set<String>
+     */
     private Set<String> createSet(String[] tokens) {
         Set<String> returnSet = new HashSet<>();
 
@@ -211,6 +292,13 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
         return returnSet;
     }
 
+    /**
+     * Creates two sets, and checks if the intersection of them is of size greater than the given query, stored in the ArrayList of Tags for the Filter.
+     * @param filter used to generate set of type Tags
+     * @param item used to check if item matches tags set in Filter
+     * @return
+     * @see Set
+     */
     private boolean filterByTags(Filter filter, Item item) {
         ArrayList<Tag> selectedTags = filter.getTagArrayList();
         Set<String> selectedTagsSet = createSet(selectedTags);

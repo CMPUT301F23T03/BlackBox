@@ -7,23 +7,46 @@ import android.view.View;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+/**
+ * Custom ItemDecoration class to add spacing between items in a RecyclerView.
+ */
 public class SpacingItemDecoration extends RecyclerView.ItemDecoration {
 
     private Context context;
     private int spacingInDp;
     private int spacing;
 
+    /**
+     * Constructor for SpacingItemDecoration.
+     *
+     * @param context      The context of the application or activity.
+     * @param spacingInDp  The spacing between items in density-independent pixels.
+     */
     public SpacingItemDecoration(Context context, int spacingInDp) {
         this.context = context;
         this.spacingInDp = spacingInDp;
         this.spacing = dpToPx(spacingInDp);
     }
 
+    /**
+     * Converts density-independent pixels to pixels based on the device density.
+     *
+     * @param dp The value in density-independent pixels.
+     * @return The value in pixels.
+     */
     private int dpToPx(int dp) {
         float density = context.getResources().getDisplayMetrics().density;
         return Math.round(dp * density);
     }
 
+    /**
+     * Adds spacing to the item views in the RecyclerView.
+     *
+     * @param outRect The output rect that will contain the spacing.
+     * @param view    The child view to be decorated.
+     * @param parent  The RecyclerView this ItemDecoration is decorating.
+     * @param state   The current state of RecyclerView.
+     */
     @Override
     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
         LinearLayoutManager layoutManager = (LinearLayoutManager) parent.getLayoutManager();
@@ -55,4 +78,3 @@ public class SpacingItemDecoration extends RecyclerView.ItemDecoration {
         }
     }
 }
-
