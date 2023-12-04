@@ -31,7 +31,6 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
     private TextView totalSum;
 
 
-
     public FilterListAdapter(ArrayList<Filter> filterList, ItemList itemList, ArrayAdapter<Item> inventoryAdapter, FragmentActivity activity) {
         this.filterList = filterList;
         this.totalSum = activity.findViewById(R.id.total_sum);
@@ -41,21 +40,20 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup group, int position){
-        View newView = LayoutInflater.from(group.getContext()).inflate(R.layout.filter,group,false);
+    public ViewHolder onCreateViewHolder(ViewGroup group, int position) {
+        View newView = LayoutInflater.from(group.getContext()).inflate(R.layout.filter, group, false);
         return new ViewHolder(newView);
     }
 
-    private void updateTotalSum(){
+    private void updateTotalSum() {
         Double totalSum = itemList.calculateTotalSum();
         this.totalSum.setText("Total: " + StringFormatter.getMonetaryString(totalSum));
 
     }
 
 
-
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder,final int position){
+    public void onBindViewHolder(ViewHolder viewHolder, final int position) {
         viewHolder.getTextView().setText(filterList.get(viewHolder.getAdapterPosition()).getFilterName());
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,9 +66,9 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
         });
     }
 
-    public void clearFilters(){
-        for (Filter filter: filterList){
-            for (Item item: filter.getItemList()){
+    public void clearFilters() {
+        for (Filter filter : filterList) {
+            for (Item item : filter.getItemList()) {
                 itemList.add(item);
             }
         }
@@ -81,18 +79,18 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
     }
 
     @Override
-    public int getItemCount(){
+    public int getItemCount() {
         return filterList.size();
     }
 
-    private void updateItemList(int filterPosition){
+    private void updateItemList(int filterPosition) {
         Filter clickedFilter = filterList.get(filterPosition);
         ArrayList<Item> filterItemList = clickedFilter.getItemList();
-        if (filterList.size() == 1){
-            for (Item filteredItem : filterItemList){
+        if (filterList.size() == 1) {
+            for (Item filteredItem : filterItemList) {
                 itemList.add(filteredItem);
             }
-        }else {
+        } else {
             for (Item filteredItem : filterItemList) {
                 boolean itemFiltered = false;
                 for (Filter filter : filterList) {
@@ -132,7 +130,13 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
                                 }
                                 break;
                             case "tag":
-                                if (!filterByTags(filter,filteredItem)){
+                                if (!filterByTags(filter, filteredItem)) {
+                                    filter.addItemToFilter(filteredItem);
+                                    itemFiltered = true;
+                                }
+                                break;
+                            case "keyword":
+                                if (!filterBySearch(filter.getKeywords(), filteredItem)) {
                                     filter.addItemToFilter(filteredItem);
                                     itemFiltered = true;
                                 }
@@ -152,46 +156,70 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
         inventoryAdapter.notifyDataSetChanged();
     }
 
-    public ArrayList<Filter> getFilterList(){
+    public ArrayList<Filter> getFilterList() {
         return this.filterList;
     }
 
-    public void addItem(Filter filter){
+    public void addItem(Filter filter) {
         filterList.add(filter);
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder{
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView filter;
-        public ViewHolder(View view){
+
+        public ViewHolder(View view) {
             super(view);
             filter = (TextView) view.findViewById(R.id.filter_name);
         }
 
-        public TextView getTextView(){
+        public TextView getTextView() {
 
             return filter;
         }
     }
 
 
-    private Set<String> createSet (ArrayList<Tag> tags){
+    private Set<String> createSet(ArrayList<Tag> tags) {
         Set<String> returnSet = new HashSet<>();
 
-        for (Tag tag : tags){
+        for (Tag tag : tags) {
             returnSet.add(tag.getDataBaseID());
         }
 
         return returnSet;
     }
-    private boolean filterByTags(Filter filter, Item item){
+
+    private boolean filterBySearch(String[] tokenArray, Item item) {
+        Set<String> keywordTokens = createSet(tokenArray);
+        Set<String> itemDescription = createSet(item.getDescription().toLowerCase().split(" "));
+        Set<String> intersectionSet = new HashSet<>(itemDescription);
+        intersectionSet.retainAll(keywordTokens);
+        if (intersectionSet.size() < tokenArray.length) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private Set<String> createSet(String[] tokens) {
+        Set<String> returnSet = new HashSet<>();
+
+        for (String token : tokens) {
+            returnSet.add(token);
+        }
+
+        return returnSet;
+    }
+
+    private boolean filterByTags(Filter filter, Item item) {
         ArrayList<Tag> selectedTags = filter.getTagArrayList();
         Set<String> selectedTagsSet = createSet(selectedTags);
         Set<String> itemSet = createSet(item.getTags());
         Set<String> intersectionSet = new HashSet<>(itemSet);
         intersectionSet.retainAll(selectedTagsSet);
-        if (intersectionSet.size() < selectedTags.size()){
+        if (intersectionSet.size() < selectedTags.size()) {
             return false;
-        }else{
+        } else {
             return true;
         }
 
