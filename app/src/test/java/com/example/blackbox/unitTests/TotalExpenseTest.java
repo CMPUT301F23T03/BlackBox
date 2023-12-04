@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.unitTests;
 
 import static org.junit.Assert.assertEquals;
 

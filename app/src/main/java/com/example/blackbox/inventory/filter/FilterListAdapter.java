@@ -98,8 +98,8 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
     }
 
     /**
-     * Clears the ArrayList <Filter> filterList by adding all of the items from each filter back into <br>
-     * ArrayList<Item> itemList and then calling updateTotalSum() to update the sum displayed.
+     * Clears the ArrayList  filterList by adding all of the items from each filter back into <br>
+     * ArrayList itemList and then calling updateTotalSum() to update the sum displayed.
      */
     public void clearFilters() {
         for (Filter filter : filterList) {
@@ -114,7 +114,7 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
     }
 
     /**
-     * Return size of ArrayList<Filter> filterList.
+     * Return size of ArrayList filterList.
      * @return int
      */
     @Override
@@ -202,16 +202,16 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
     }
 
     /**
-     * Returns ArrayList<Filter>, holding all Filters.
-     * @return ArrayList<Filter>
+     * Returns ArrayList, holding all Filters.
+     * @return ArrayList of filters
      */
     public ArrayList<Filter> getFilterList() {
         return this.filterList;
     }
 
     /**
-     * Adds given filter to ArrayList<Filter>, holding all filters.
-     * @param filter added to ArrayList<Filter> of Filters.
+     * Adds given filter to ArrayList holding all filters.
+     * @param filter added to ArrayList of Filters.
      */
     public void addItem(Filter filter) {
         filterList.add(filter);
