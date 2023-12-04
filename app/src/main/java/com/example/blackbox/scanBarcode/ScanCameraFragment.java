@@ -94,15 +94,16 @@ public class ScanCameraFragment extends Fragment {
                 .setBarcodeFormats(Barcode.ALL_FORMATS)
                 .build();
 
+        cameraSource = new CameraSource.Builder(requireContext(), barcodeDetector)
+                .setRequestedPreviewSize(1920, 1080)
+                .setAutoFocusEnabled(true)
+                .build();
+
         // Set up a callback for the SurfaceView to handle surface-related events.
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
                 // Initialize a camera source using the barcode detector and configure it.
-                cameraSource = new CameraSource.Builder(requireContext(), barcodeDetector)
-                        .setRequestedPreviewSize(1920, 1080)
-                        .setAutoFocusEnabled(true)
-                        .build();
                 startCameraSource();
             }
 
@@ -146,6 +147,19 @@ public class ScanCameraFragment extends Fragment {
                     == PackageManager.PERMISSION_GRANTED) {
                 // Camera permission is granted, start the camera source.
                 cameraSource.start(surfaceView.getHolder());
+                barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
+                    @Override
+                    public void release() {
+                        // Release resources when barcode processing is stopped.
+                    }
+
+                    @Override
+                    public void receiveDetections(Detector.Detections<Barcode> detections) {
+                        final SparseArray<Barcode> barcodes = detections.getDetectedItems();
+                        barcodeHandleChain.handleRequest(barcodeText, barcodes, toneGen1,
+                                getParentFragmentManager());
+                    }
+                });
             } else {
                 // Camera permission is not granted, request it from the user.
                 ActivityCompat.requestPermissions(requireActivity(),
@@ -201,7 +215,7 @@ public class ScanCameraFragment extends Fragment {
             // Check if the camera permission is granted.
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // Camera permission granted, proceed to start the camera source.
-//                startCameraSource();
+                startCameraSource();
             } else {
                 // Camera permission denied, handle accordingly (e.g., show a message to the user).
                 Toast.makeText(requireContext(), "Camera permission denied", Toast.LENGTH_SHORT).show();
