@@ -5,6 +5,7 @@ package com.example.blackbox;
         import static androidx.test.espresso.action.ViewActions.click;
         import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
         import static androidx.test.espresso.assertion.ViewAssertions.matches;
+        import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
         import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
         import static androidx.test.espresso.matcher.ViewMatchers.withId;
         import static androidx.test.espresso.matcher.ViewMatchers.withSpinnerText;
@@ -589,6 +590,97 @@ public class InventoryFunctionalityTest {
         onView(withText("item3")).check(doesNotExist());
         onView(withText("item2")).check(doesNotExist());
         onView(withText("item1")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void testMultiSelectTags() {
+        setup();
+
+        // Perform a click on the long-clickable item
+        Espresso.onView(withText(name)).perform(ViewActions.longClick());
+
+        // Perform clicks on other items to simulate selection
+        Espresso.onView(withText(name2)).perform(click());
+
+        // Click the button to set tags
+        Espresso.onView(ViewMatchers.withId(R.id.set_tags_button)).perform(ViewActions.click());
+
+        // Wait for the tag selection dialog to appear
+        try {
+            Thread.sleep(maxDelay);
+        } catch (Exception e) {
+            Log.d("Sleep", "Exception");
+        }
+
+        // Assuming the tags are presented in a dialog with checkboxes
+        // Select tags in the dialog
+        onView(withText("Tag1")).perform(ViewActions.click());
+
+        // Confirm the selection
+        onView(withText("OK")).perform(ViewActions.click());
+
+
+        // Wait for the save operation to complete
+        try {
+            Thread.sleep(maxDelay);
+        } catch (Exception e) {
+            Log.d("Sleep", "Exception");
+        }
+
+        Espresso.onView(withText(name)).perform(click());
+        Espresso.onView(withText(name2)).perform(click());
+
+        // Click the button to set tags
+        Espresso.onView(ViewMatchers.withId(R.id.set_tags_button)).perform(ViewActions.click());
+
+        onView(withText("Tag1")).check(matches(isChecked()));
+        onView(withText("Tag2")).check(matches(not(isChecked())));
+        onView(withText("Tag3")).check(matches(not(isChecked())));
+
+        // Wait for the tag selection dialog to appear
+        try {
+            Thread.sleep(maxDelay);
+        } catch (Exception e) {
+            Log.d("Sleep", "Exception");
+        }
+
+        // Remove tag in the dialog
+        onView(withText("Tag1")).perform(ViewActions.click());
+
+        // Confirm the selection
+        onView(withText("OK")).perform(ViewActions.click());
+
+        Espresso.onView(withText(name)).perform(click());
+
+        // Click the button to set tags
+        Espresso.onView(ViewMatchers.withId(R.id.set_tags_button)).perform(ViewActions.click());
+
+        // Wait for the tag selection dialog to appear
+        try {
+            Thread.sleep(maxDelay);
+        } catch (Exception e) {
+            Log.d("Sleep", "Exception");
+        }
+
+        onView(withText("Tag1")).check(matches(not(isChecked())));
+        onView(withText("Tag2")).check(matches(isChecked()));
+        onView(withText("Tag3")).check(matches(not(isChecked())));
+
+        // Remove tag in the dialog
+        onView(withText("Tag2")).perform(ViewActions.click());
+
+        // Confirm the selection
+        onView(withText("OK")).perform(ViewActions.click());
+
+        Espresso.onView(withText(name)).perform(click());
+        Espresso.onView(withText(name2)).perform(click());
+
+        // Click the button to set tags
+        Espresso.onView(ViewMatchers.withId(R.id.set_tags_button)).perform(ViewActions.click());
+
+        onView(withText("Tag1")).check(matches(not(isChecked())));
+        onView(withText("Tag2")).check(matches(not(isChecked())));
+        onView(withText("Tag3")).check(matches(not(isChecked())));
     }
 
     /**

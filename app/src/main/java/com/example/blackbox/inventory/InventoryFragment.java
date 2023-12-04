@@ -272,7 +272,9 @@ public class InventoryFragment extends Fragment {
                     toggleSelection(i);
 
                     // Hide the add button during long click
-                    addButton.setVisibility(View.GONE);
+                    addButton.setVisibility(View.INVISIBLE);
+                    addButton.setClickable(false);
+
 
                     // Make the delete and cancel button visible
                     deleteButton.setVisibility(View.VISIBLE);
@@ -392,32 +394,6 @@ public class InventoryFragment extends Fragment {
                 return false;
             }
         });
-        // makes bottom nav bar and add button disappear when searching
-        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    ((MainActivity) requireActivity()).toggleBottomNavigationView(false);
-                    addButton.setVisibility(View.GONE);
-                } else {
-                    ((MainActivity) requireActivity()).toggleBottomNavigationView(true);
-                    addButton.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-        // makes bottom nav bar and add button disappear when searching
-        searchView.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    ((MainActivity) requireActivity()).toggleBottomNavigationView(false);
-                    addButton.setVisibility(View.GONE);
-                } else {
-                    ((MainActivity) requireActivity()).toggleBottomNavigationView(true);
-                    addButton.setVisibility(View.VISIBLE);
-                }
-            }
-        });
     }
 
     /**
@@ -458,6 +434,8 @@ public class InventoryFragment extends Fragment {
 
         // Show the add button
         addButton.setVisibility(View.VISIBLE);
+        addButton.setClickable(true);
+
 
         // Reset long click flag
         isLongClick = false;
