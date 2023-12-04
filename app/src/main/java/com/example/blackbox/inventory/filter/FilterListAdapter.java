@@ -138,10 +138,14 @@ public class FilterListAdapter extends RecyclerView.Adapter<FilterListAdapter.Vi
                                 }
                                 break;
                         }
-                        if (!itemFiltered) {
-                            this.itemList.add(filteredItem);
-                        }
+
                     }
+
+                }
+                if (!itemFiltered) {
+//                            if (!itemList.contains(filteredItem)) {
+                    this.itemList.add(filteredItem);
+//                            }
                 }
             }
         }
