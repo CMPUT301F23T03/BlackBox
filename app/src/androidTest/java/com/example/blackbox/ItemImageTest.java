@@ -43,6 +43,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+/**
+ * This test checks the UI of the add image fragment and checks if the application can open camera and gallery
+ */
 public class ItemImageTest {
     @Rule
     public ActivityScenarioRule<MainActivity> activityScenarioRule = new ActivityScenarioRule<>(MainActivity.class);
@@ -55,6 +58,7 @@ public class ItemImageTest {
     @Test
     public void testAddImageAttachment() {
         InventoryDBTest.clearInventoryDB();
+        // add an item to check while editing an item
         addTestItem1();
         UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
         // click on the add button
@@ -95,7 +99,6 @@ public class ItemImageTest {
 
         // check if edit ui works
         // click on item
-        //onView(withId(R.id.item_list)).perform(click());
         onData(anything()).inAdapterView(withId(R.id.item_list)).atPosition(0).perform(click());
         // scroll down
         onView(withId(R.id.add_img_btn)).perform(ViewActions.scrollTo());
