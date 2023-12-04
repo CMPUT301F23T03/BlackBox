@@ -108,6 +108,11 @@ public class ItemImageTest {
         onView(withId(R.id.back_button)).perform(click());
     }
 
+    /**
+     * Adds an image to gallery
+     * @param context
+     * @param imagePath path of the image to be added
+     */
     private void loadImageToGallery(Context context, String imagePath) {
         // Assuming imagePath is something like "imageAttach/063350702109.jpg" in your assets
         try {
@@ -140,6 +145,9 @@ public class ItemImageTest {
         }
     }
 
+    /**
+     * Clicks on the first image in gallery if present, go back if not
+     */
     private void clickOnFirstImageInGallery() {
         // Use UI Automator to click on the first image in the Android gallery
         UiDevice uiDevice = UiDevice.getInstance((InstrumentationRegistry.getInstrumentation()));
@@ -166,6 +174,9 @@ public class ItemImageTest {
         }
     }
 
+    /**
+     * add an item to test
+     */
     public void addTestItem1() {
         onView(withId(R.id.add_button)).perform(click());
         onView(withId(R.id.name_editText)).perform(ViewActions.typeText("Item 1"));
