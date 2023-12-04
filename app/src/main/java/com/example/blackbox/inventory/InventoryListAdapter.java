@@ -22,10 +22,13 @@ import androidx.core.content.ContextCompat;
 import org.checkerframework.checker.units.qual.A;
 
 import com.example.blackbox.R;
+import com.example.blackbox.tag.Tag;
 import com.example.blackbox.utils.StringFormatter;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A custom ArrayAdapter for populating an inventory list view with Item objects.
@@ -80,11 +83,10 @@ public class InventoryListAdapter extends ArrayAdapter implements Filterable {
         ImageView tagImage2 = view.findViewById(R.id.tag_image2);
 
         // set image
-        if (item.getDisplayImageUri() != null){
+        if (item.getDisplayImageUri() != null) {
             imageView.setVisibility(View.VISIBLE);
             imageView.setImageURI(item.getDisplayImageUri());
-        }
-        else{
+        } else {
             imageView.setVisibility(View.INVISIBLE);
         }
 
@@ -103,32 +105,29 @@ public class InventoryListAdapter extends ArrayAdapter implements Filterable {
 
         desc.setText(strDesc);
 
-        if (item.getNumTags() == 0 ){
+        if (item.getNumTags() == 0) {
             // Hide the tag images
             tagImage.setVisibility(View.GONE);
             tagImage2.setVisibility(View.GONE);
             Log.d("SetColor", "Not Tags " + item.getName());
 
-        }
-        else if (item.getNumTags() == 1) {
+        } else if (item.getNumTags() == 1) {
             // hide one tag image
             tagImage.setVisibility(View.VISIBLE);
             tagImage2.setVisibility(View.GONE);
             Log.d("SetColor", "One Tag " + item.getName());
             tagImage.setBackgroundTintList(ColorStateList.valueOf(item.getTags().get(0).getColor()));
-        }
-        else{
+        } else {
             // show both tag images
             tagImage.setVisibility(View.VISIBLE);
             tagImage2.setVisibility(View.VISIBLE);
             int currentNightMode = context.getResources().getConfiguration().uiMode
                     & Configuration.UI_MODE_NIGHT_MASK;
             // set color based on whether in dark or light mode
-            if (currentNightMode == Configuration.UI_MODE_NIGHT_YES){
+            if (currentNightMode == Configuration.UI_MODE_NIGHT_YES) {
                 tagImage.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
                 tagImage2.setBackgroundTintList(ColorStateList.valueOf(Color.WHITE));
-            }
-            else{
+            } else {
                 // this has to be set otherwise it will default to something weird sometimes
                 tagImage.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
                 tagImage2.setBackgroundTintList(ColorStateList.valueOf(Color.BLACK));
@@ -147,33 +146,43 @@ public class InventoryListAdapter extends ArrayAdapter implements Filterable {
         return view;
     }
 
+    private Set<String> createSet(String[] tokens) {
+        Set<String> returnSet = new HashSet<>();
+
+        for (String token : tokens) {
+            returnSet.add(token);
+        }
+
+        return returnSet;
+    }
+
     @Override
-    public Filter getFilter(){
+    public Filter getFilter() {
         Filter filter = new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
-                Log.d("InventoryListAdapter","filtering reached");
+                Log.d("InventoryListAdapter", "filtering reached");
                 FilterResults filterResults = new FilterResults();
 
-                
 
-                if (notifyReason.equalsIgnoreCase("")){
+                if (notifyReason.equalsIgnoreCase("")) {
                     originalItems = (ArrayList<Item>) items.clone();
                 }
-                if (constraint != null){
-                    String[] filterTokens = constraint.toString().split(",");
+                if (constraint != null) {
+                    String[] filterTokens = constraint.toString().toLowerCase().split(",");
+                    Set<String> filterTokensSet = createSet(filterTokens);
                     ArrayList<Item> results = new ArrayList<>();
-                    for (String token: filterTokens){
-                        for (Item item: originalItems){
-                            if (item.getDescription().toLowerCase().contains(token.toLowerCase())){
-                                Log.d("InventoryListAdapter","item added");
-                                if (!results.contains(item)){results.add(item);}
-                            }
+                    for (Item item : originalItems) {
+                        Set<String> itemDescription = createSet(item.getDescription().toLowerCase().split(" "));
+                        Set<String> intersectionSet = new HashSet<>(filterTokensSet);
+                        intersectionSet.retainAll(itemDescription);
+                        if (intersectionSet.size() >= filterTokens.length){
+                            results.add(item);
                         }
                     }
                     filterResults.values = results;
                     filterResults.count = results.size();
-                }else{
+                } else {
                     //count here is kept to 0 so that we know that the results returned nothing
                     filterResults.values = originalItems;
                     filterResults.count = 0;
@@ -183,22 +192,22 @@ public class InventoryListAdapter extends ArrayAdapter implements Filterable {
 
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
-                if (results.count > 0){
-                    Log.d("InventoryListAdapter","Data set notified");
-                    Toast.makeText(context,results.count + " Result(s) Found",Toast.LENGTH_SHORT).show();
+                if (results.count > 0) {
+                    Log.d("InventoryListAdapter", "Data set notified");
+                    Toast.makeText(context, results.count + " Result(s) Found", Toast.LENGTH_SHORT).show();
                     items.clear();
                     items.addAll((Collection<? extends Item>) results.values);
                     notifyReason = "filter";
                     notifyDataSetChanged();
-                }else if (constraint != null){
+                } else if (constraint != null) {
                     items.clear();
                     notifyReason = "filter";
                     notifyDataSetChanged();
-                    Toast.makeText(context,"No Results Found",Toast.LENGTH_SHORT).show();
-                }else{
+                    Toast.makeText(context, "No Results Found", Toast.LENGTH_SHORT).show();
+                } else {
                     items.clear();
                     items.addAll((Collection<? extends Item>) results.values);
-                    Log.d("InventoryListAdapter","items restored" + items.toString());
+                    Log.d("InventoryListAdapter", "items restored" + items.toString());
                     notifyReason = "";
                     notifyDataSetChanged();
                 }
