@@ -140,6 +140,8 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
             }
         });
 
+
+
         setupBackButtonListener(view);
 
         // setup a date picker listener

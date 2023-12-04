@@ -14,7 +14,6 @@ import static org.hamcrest.CoreMatchers.anything;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.util.Log;
