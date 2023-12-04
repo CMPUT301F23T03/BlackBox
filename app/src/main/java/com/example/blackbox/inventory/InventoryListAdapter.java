@@ -79,7 +79,6 @@ public class InventoryListAdapter extends ArrayAdapter implements Filterable {
         ImageView tagImage = view.findViewById(R.id.tag_image);
         ImageView tagImage2 = view.findViewById(R.id.tag_image2);
 
-
         // set image
         if (item.getDisplayImageUri() != null){
             imageView.setVisibility(View.VISIBLE);

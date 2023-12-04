@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.blackbox.AddEditFragment;
 
+import com.example.blackbox.MainActivity;
 import com.example.blackbox.inventory.AttachImageFragment;
 import com.example.blackbox.authentication.GoogleAuthDB;
 import com.example.blackbox.ImageRecyclerAdapter;
@@ -139,6 +140,9 @@ public abstract class InventoryAddEditFragment extends AddEditFragment implement
                 showTagSelectionDialog();
             }
         });
+        ((MainActivity) requireActivity()).toggleBottomNavigationView(false);
+
+
 
         setupBackButtonListener(view);
 
