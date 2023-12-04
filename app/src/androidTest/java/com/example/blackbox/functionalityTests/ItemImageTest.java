@@ -90,6 +90,11 @@ public class ItemImageTest {
 //        onView(withId(R.id.confirm_button)).perform(click());
         // click back
         onView(withId(R.id.back_button)).perform(click());
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         onView(withId(R.id.back_button)).perform(click());
 
         // check if edit ui works

@@ -11,31 +11,29 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import android.util.Log;
 import android.view.View;
-import android.widget.DatePicker;
+import android.widget.SearchView;
 
-import androidx.test.espresso.Espresso;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.runner.AndroidJUnit4;
+
 import com.example.blackbox.DBTests.InventoryDBTest;
 import com.example.blackbox.DBTests.TagDBTest;
-import com.example.blackbox.functionalityTests.TagFunctionalityTest;
-
-import org.junit.Before;
 import com.example.blackbox.MainActivity;
 import com.example.blackbox.R;
 
+import org.hamcrest.Matcher;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(AndroidJUnit4.class)
-public class FilterDialogTest {
-    int maxDelay = 1000; //miliseconds
-
+public class SearchBarTest {
     private void clearDBs(){
         // clear inventory first to avoid errors
         InventoryDBTest.clearInventoryDB();
@@ -55,11 +53,6 @@ public class FilterDialogTest {
         addTestItem1();
         addTestItem2();
         addTestItem3();
-    }
-
-    @Test
-    public void testFilterDialog(){
-        Espresso.onView(ViewMatchers.withId(R.id.filter_button)).perform(ViewActions.click());
     }
 
     public void addTestTags() {
@@ -204,114 +197,33 @@ public class FilterDialogTest {
         }
     }
 
-    public void openFilter(){
-        onView(withId(R.id.filter_button)).perform(click());
-        try {
-            Thread.sleep(maxDelay);
-        }
-        catch (Exception e){
-            Log.d("Sleep", "Exception");
-        }
-        onView(withId(R.id.filter_layout)).check(matches(isDisplayed()));
+
+    public ViewAction typeSearchView(String text){
+        return new ViewAction() {
+            @Override
+            public String getDescription() {
+                return "Change search query";
+            }
+
+            @Override
+            public Matcher<View> getConstraints() {
+                return isAssignableFrom(SearchView.class);
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                ((SearchView) view).setQuery(text,true);
+            }
+        };
     }
     @Test
-    public void testFilterDialogExists(){
-        openFilter();
-    }
+    public void testSearchBar(){
+        String query = "nicest, car";
+        onView(withId(R.id.searchView)).perform(typeSearchView(query));
 
-    @Test
-    public void testCheckBoxes(){
-        openFilter();
-        onView(withId(R.id.price_checkbox)).perform(click());
-        onView(withId(R.id.price_range)).check(matches(isDisplayed()));
-
-        onView(withId(R.id.date_checkbox)).perform(click());
-        onView(withId(R.id.filter_date_range)).check(matches(isDisplayed()));
-
-        onView(withId(R.id.tag_checkbox)).perform(click());
-        onView(withId(R.id.tag_selection_filter)).check(matches(isDisplayed()));
-
-        onView(withId(R.id.make_checkbox)).perform(click());
-        onView(withId(R.id.filter_make_layout)).check(matches(isDisplayed()));
-
-        onView(withId(R.id.keyword_checkbox)).perform(click());
-        onView(withId(R.id.keyword_layer)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void testPriceFilter(){
-        openFilter();
-        onView(withId(R.id.price_checkbox)).perform(click());
-        onView(withId(R.id.first_number)).perform(replaceText("90"));
-        onView(withId(R.id.secondNumber)).perform(replaceText("160"));
-        onView(withId(R.id.accept_button)).perform(click());
-
-        //Confirmed
-        onView(withText("$90.00 - $160.00")).check(matches(isDisplayed()));
-        onView(withText("Item 3")).check(doesNotExist());
-        onView(withText("Item 2")).check(matches(isDisplayed()));
-        onView(withText("Item 1")).check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void testMakeFilter(){
-        openFilter();
-        onView(withId(R.id.make_checkbox)).perform(click());
-        onView(withId(R.id.make_edit_text)).perform(replaceText("Mercedes"));
-        onView(withId(R.id.accept_button)).perform(click());
-
-        //confirmed
-        onView(withText("'Mercedes'")).check(matches(isDisplayed()));
-        onView(withText("Item 3")).check(matches(isDisplayed()));
-        onView(withText("Item 1")).check(doesNotExist());
-        onView(withText("Item 2")).check(doesNotExist());
-
-        onView(withText("'Mercedes'")).perform(click());
-        onView(withText("Item 3")).check(matches(isDisplayed()));
-        onView(withText("Item 2")).check(matches(isDisplayed()));
-        onView(withText("Item 1")).check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void testKeywordFilter(){
-        openFilter();
-        onView(withId(R.id.keyword_checkbox)).perform(click());
-        onView(withId(R.id.keyword_search)).perform(replaceText("Nicest, Car"));
-        onView(withId(R.id.accept_button)).perform(click());
-
-        //confirmed
-        onView(withText("Keyword(s)")).check(matches(isDisplayed()));
         onView(withText("Item 3")).check(matches(isDisplayed()));
         onView(withText("Item 1")).check(doesNotExist());
         onView(withText("Item 1")).check(doesNotExist());
 
-        onView(withText("Keyword(s)")).perform(click());
-        onView(withText("Item 3")).check(matches(isDisplayed()));
-        onView(withText("Item 2")).check(matches(isDisplayed()));
-        onView(withText("Item 1")).check(matches(isDisplayed()));
     }
-
-    @Test
-    public void testTagFilter(){
-        openFilter();
-        onView(withId(R.id.tag_checkbox)).perform(click());
-        onView(withText("Antique")).perform(click());
-        onView(withId(R.id.accept_button)).perform(click());
-
-        //confirmed
-        onView(withText("Selected Tag(s)")).check(matches(isDisplayed()));
-        onView(withText("Item 3")).check(matches(isDisplayed()));
-        onView(withText("Item 1")).check(doesNotExist());
-        onView(withText("Item 1")).check(doesNotExist());
-
-        onView(withText("Selected Tag(s)")).perform(click());
-        onView(withText("Item 3")).check(matches(isDisplayed()));
-        onView(withText("Item 2")).check(matches(isDisplayed()));
-        onView(withText("Item 1")).check(matches(isDisplayed()));
-
-        onView(withText("Selected Tag(s)")).check(doesNotExist());
-
-    }
-
-
 }
