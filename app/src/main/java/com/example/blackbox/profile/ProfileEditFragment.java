@@ -90,8 +90,8 @@ public class ProfileEditFragment extends Fragment {
         });
 
         // Add text watchers for the text boxes to ensure that character limit is not exceeded
-        int maxCharName = 20;
-        int maxCharBio = 50;
+        int maxCharName = 30;
+        int maxCharBio = 70;
         EditTextCharacterLimitWatcher nameTextWatcher = new EditTextCharacterLimitWatcher(editTextName, maxCharName);
         editTextName.addTextChangedListener(nameTextWatcher);
         EditTextCharacterLimitWatcher bioTextWatcher = new EditTextCharacterLimitWatcher(editTextBio, maxCharBio);
