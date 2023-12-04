@@ -510,8 +510,10 @@ public abstract class FilterDialog{
      * @see com.example.blackbox.inventory.InventoryFragment
      */
     private static void filterBySearch(String keywords){
-        keywords = keywords.replaceAll(" ",",");
+        keywords = keywords.replaceAll("\\s+", ",");
         keywords = keywords.replaceAll("[^,a-zA-Z]","");
+        // replace repeated separators with just one
+        keywords = keywords.replaceAll(",+",",");
         Filter filter = new Filter("keyword");
         String[] tokenArray = keywords.toLowerCase().split(",");
         Set<String>keywordTokens = createSet(tokenArray);

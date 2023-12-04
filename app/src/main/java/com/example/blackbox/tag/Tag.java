@@ -103,6 +103,11 @@ public class Tag implements Serializable {
         this.dateUpdated = date;
     }
 
+    /**
+     * Set the date of a tag with a string
+     * @param dateString
+     *      The string which represents the date to set
+     */
     public void setDateUpdatedWithString(String dateString){
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {

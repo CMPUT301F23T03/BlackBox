@@ -14,13 +14,25 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
+/**
+ * An adapter to display a list of images
+ */
 public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageRecyclerAdapter.ViewHolder> {
     private ArrayList<Uri> displayedUris;  // Track displayed images
     private Context context;
+
+    /**
+     * Constructor for the adapter
+     * @param context
+     *      the context that the view exists within
+     * @param displayedUris
+     *      the Uris of the images to display
+     */
     public ImageRecyclerAdapter(Context context, ArrayList<Uri> displayedUris) {
         this.context = context;
         this.displayedUris = displayedUris;
     }
+
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
@@ -54,6 +66,11 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageRecyclerAdap
         }
     }
 
+    /**
+     * Shows a confirmation dialog for removing an image from the list
+     * @param position
+     *      The position of the image whose deletion button was pressed in the list
+     */
     private void showConfirmationDialog(int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage("Are you sure you want to remove this image?")
@@ -66,7 +83,9 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageRecyclerAdap
         alertDialog.show();
     }
 
-    // Method to remove an item at a specific position
+    /**
+     *  Method to remove an item at a specific position
+     */
     private void removeItem(int position) {
         displayedUris.remove(position);
         notifyDataSetChanged();
@@ -77,7 +96,9 @@ public class ImageRecyclerAdapter extends RecyclerView.Adapter<ImageRecyclerAdap
         return (displayedUris != null) ? displayedUris.size() : 0;
     }
 
-    // Add this method to update displayed images
+    /**
+     *  Add this method to update displayed images
+     */
     public void updateDisplayedUris(ArrayList<Uri> updatedUris) {
         displayedUris.clear();
         displayedUris.addAll(updatedUris);

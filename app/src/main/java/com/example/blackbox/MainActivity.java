@@ -145,7 +145,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    // Method to show/hide BottomNavigationView
+    /**
+     * Method to show/hide BottomNavigationView
+     * @param isVisible
+     *          a boolean which represents whether to show "true" or hide "false" the bottom navigation view
+     */
     public void toggleBottomNavigationView(boolean isVisible) {
         if (isVisible) {
             bottomNavigationView.setVisibility(View.VISIBLE);
@@ -156,6 +160,12 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+    /**
+     * A method which describes how to save the state of the activity when being destroyed or recreated
+     * @param outState
+     *      Bundle in which to place the saved state.
+     */
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);

@@ -23,6 +23,10 @@ import com.example.blackbox.inventory.Item;
 public class DeletePopupFragment extends AppCompatDialogFragment {
 
 
+    /**
+     * Creates a bundle which contains information indicating that the deletion should go ahead and
+     * send it to the calling fragment
+     */
     private void onDeletionConfirmed() {
         // Set the result to be passed back to the TagEditFragment
         Bundle result = new Bundle();
@@ -30,6 +34,10 @@ public class DeletePopupFragment extends AppCompatDialogFragment {
         getParentFragmentManager().setFragmentResult("DELETE_RESULT_KEY", result);
     }
 
+    /**
+     * Creates a bundle which contains information indicating that the deletion should not go ahead and
+     * send it to the calling fragment
+     */
     private void onDeletionCanceled() {
         // Set the result to be passed back to the TagEditFragment
         Bundle result = new Bundle();
@@ -37,6 +45,13 @@ public class DeletePopupFragment extends AppCompatDialogFragment {
         getParentFragmentManager().setFragmentResult("DELETE_RESULT_KEY", result);
     }
 
+    /**
+     * A method to create a new DeletePopupFragment with specific text
+     * @param message
+     *      The text to display to the user
+     * @return
+     *      A DeletePopupFragment
+     */
     public static DeletePopupFragment newInstance(String message) {
         Bundle args = new Bundle();
         args.putSerializable("message", message);    // serialize Item object
@@ -52,6 +67,7 @@ public class DeletePopupFragment extends AppCompatDialogFragment {
      * or null if this is a freshly created Fragment.
      *
      * @return
+     *      The dialog
      */
     @NonNull
     @Override

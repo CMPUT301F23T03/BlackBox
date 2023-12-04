@@ -156,31 +156,12 @@ public class SettingsFragment extends Fragment {
             if (darkModeButton.isChecked()) {
                 // Enable dark mode
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                // reload fragment
-//                    NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), getParentFragmentManager());
             } else {
                 // Disable dark mode
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                // reload fragment
-//                    NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), getParentFragmentManager());
+
             }
         });
-//        darkModeButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-//            @Override
-//            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-//                if (isChecked) {
-//                    // Enable dark mode
-//                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-//                    // reload fragment
-////                    NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), getParentFragmentManager());
-//                } else {
-//                    // Disable dark mode
-//                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-//                    // reload fragment
-////                    NavigationManager.switchFragmentWithoutBack(new SettingsFragment(), getParentFragmentManager());
-//                }
-//            }
-//        });
 
     }
 
@@ -218,6 +199,9 @@ public class SettingsFragment extends Fragment {
         confirmationPopup.show(getParentFragmentManager(), "DELETE_TAG");
     }
 
+    /**
+     * A method which clears out all items associated with the current user from the database
+     */
     private void resetInventory(){
         CollectionReference inventory = new InventoryDB().getInventory();
         // get all items from the user
@@ -257,6 +241,9 @@ public class SettingsFragment extends Fragment {
            }
         });
     }
+    /**
+     * A method which clears out all tags associated with the current user from the database
+     */
     private void resetTags(){
         CollectionReference tagCollection = new TagDB().getTags();
         tagCollection.whereEqualTo("user_id",googleAuthDB.getUid()).get().addOnCompleteListener(task -> {
