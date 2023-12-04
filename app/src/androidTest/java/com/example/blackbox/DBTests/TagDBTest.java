@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.DBTests;
 
 import com.example.blackbox.authentication.GoogleAuthDB;
 import com.example.blackbox.tag.Tag;

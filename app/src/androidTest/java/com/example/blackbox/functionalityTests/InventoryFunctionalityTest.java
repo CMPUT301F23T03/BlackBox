@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.functionalityTests;
 
         import static androidx.test.espresso.Espresso.onData;
         import static androidx.test.espresso.Espresso.onView;
@@ -25,6 +25,10 @@ package com.example.blackbox;
         import androidx.test.ext.junit.rules.ActivityScenarioRule;
         import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+        import com.example.blackbox.DBTests.InventoryDBTest;
+        import com.example.blackbox.MainActivity;
+        import com.example.blackbox.R;
+        import com.example.blackbox.DBTests.TagDBTest;
         import com.example.blackbox.inventory.Item;
         import com.example.blackbox.tag.Tag;
         import com.example.blackbox.utils.StringFormatter;
@@ -74,7 +78,7 @@ public class InventoryFunctionalityTest {
         TagFunctionalityTest.navigateToTags();
 
         // Click on the "Add" button to add a new tag.
-        onView(withId(R.id.add_tag_button)).perform(click());
+        onView(ViewMatchers.withId(R.id.add_tag_button)).perform(click());
 
         // Create and add the first tag
         onView(withId(R.id.name_editText)).perform(ViewActions.replaceText("Tag1"));

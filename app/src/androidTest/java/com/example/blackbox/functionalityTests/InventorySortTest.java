@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.functionalityTests;
 
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
@@ -15,8 +15,13 @@ import static org.hamcrest.CoreMatchers.is;
 import androidx.test.espresso.action.ViewActions;
 //import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.espresso.matcher.RootMatchers;
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import com.example.blackbox.DBTests.InventoryDBTest;
+import com.example.blackbox.MainActivity;
+import com.example.blackbox.R;
+import com.example.blackbox.DBTests.TagDBTest;
 import com.example.blackbox.inventory.Item;
 
 import org.junit.Before;
@@ -48,7 +53,7 @@ public class InventorySortTest {
         // Switch to the tag fragment
         TagFunctionalityTest.navigateToTags();
         // Click on the "Add" button to add a new tag.
-        onView(withId(R.id.add_tag_button)).perform(click());
+        onView(ViewMatchers.withId(R.id.add_tag_button)).perform(click());
 
         // Create and add the first tag
         onView(withId(R.id.name_editText)).perform(ViewActions.replaceText("Tag1"));

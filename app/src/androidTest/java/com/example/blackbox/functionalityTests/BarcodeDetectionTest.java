@@ -1,4 +1,4 @@
-package com.example.blackbox;
+package com.example.blackbox.functionalityTests;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
@@ -13,9 +13,12 @@ import android.net.Uri;
 import android.util.Log;
 import android.util.SparseArray;
 
+import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import com.example.blackbox.R;
+import com.example.blackbox.TestMainActivity;
 import com.example.blackbox.scanBarcode.ScanGalleryFragment;
 import com.google.android.gms.vision.barcode.Barcode;
 
@@ -74,7 +77,7 @@ public class BarcodeDetectionTest {
      */
     @Test
     public void testGetBarcode() throws IOException {
-        onView(withId(R.id.contentFragment))
+        onView(ViewMatchers.withId(R.id.contentFragment))
                 .check(matches(isDisplayed()));
 
         // Iterate over each subdirectory
