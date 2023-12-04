@@ -1,1 +1,9 @@
 com.example.blackbox
+com.example.blackbox.authentication
+com.example.blackbox.inventory
+com.example.blackbox.inventory.filter
+com.example.blackbox.profile
+com.example.blackbox.scanBarcode
+com.example.blackbox.scanBarcode.handler
+com.example.blackbox.tag
+com.example.blackbox.utils

@@ -115,6 +115,12 @@ public class ItemList extends ArrayList<Item> {
         };
         this.sort(tagComp);
     }
+
+    /**
+     * Calculate the sum of the values of all items in the list
+     * @return
+     *      The calculated estimate as double
+     */
     public Double calculateTotalSum() {
         Double totalSum = 0.0;
         for (Item item : this) {

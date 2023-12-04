@@ -67,6 +67,11 @@ public class TagAdapter extends ArrayAdapter {
         return view;
     }
 
+    /**
+     * Returns the number of tags in the list
+     * @return
+     *      An int for the number of tags in the list
+     */
     @Override
     public int getCount(){
         return tags.size();

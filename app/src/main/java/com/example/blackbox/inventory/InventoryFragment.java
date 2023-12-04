@@ -653,6 +653,9 @@ public class InventoryFragment extends Fragment {
     }
 
 
+    /**
+     * A method to update the images which displayed by accessing the database
+     */
     private void updateDisplayedImages(){
         for (Item item : itemList){
             inventoryDB.getImages()

@@ -169,6 +169,11 @@ public class TagDB {
         });
     }
 
+    /**
+     * A method which returns all tags
+     * @param callback
+     *      An implementation of the interface OnGetTagsCallback
+     */
     public void getAllTags(OnGetTagsCallback callback) {
         tags.whereEqualTo("user_id",googleAuthDB.getUid()).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -192,6 +197,10 @@ public class TagDB {
                 });
     }
 
+    /**
+     * An interface which calling classes can implement in order to execute code
+     * upon the completion of the getAllTagsTask
+     */
     public interface OnGetTagsCallback {
         void onSuccess(ArrayList<Tag> tagList);
 
