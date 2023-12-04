@@ -758,6 +758,7 @@ public class InventoryFragment extends Fragment {
     private void processUpdate(){
         // preform updates
         inventoryAdapter.notifyDataSetChanged();
+        updateDisplayedImages();
         updateTotalSum();
         Log.d("Firestore", "Processed Update");
     }
